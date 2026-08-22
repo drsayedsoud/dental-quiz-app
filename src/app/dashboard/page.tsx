@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
@@ -8,18 +8,18 @@ import { useAuth } from '@/context/AuthContext';
 const sections = [
   {
     id: 'medical',
-    title: '╪º┘ä╪╖╪¿ ╪º┘ä╪¿╪┤╪▒┘è',
-    subtitle: 'Medical Prometric (┘é╪▒┘è╪¿╪º┘ï)',
-    icon: '≡ƒ⌐║',
+    title: 'الطب البشري',
+    subtitle: 'Medical Prometric (قريباً)',
+    icon: '👨‍⚕️',
     gradient: 'from-blue-600 to-indigo-700 opacity-60 cursor-not-allowed',
     href: '#',
     comingSoon: true,
   },
   {
     id: 'dental',
-    title: '╪╖╪¿ ╪º┘ä╪ú╪│┘å╪º┘å',
-    subtitle: 'Dental Prometric (╪¼╪º┘ç╪▓)',
-    icon: '≡ƒª╖',
+    title: 'طب الأسنان',
+    subtitle: 'Dental Prometric (جاهز)',
+    icon: '🦷',
     gradient: 'from-cyan-600 to-blue-700',
     href: '/dental',
     comingSoon: false,
@@ -39,11 +39,11 @@ export default function DashboardPage() {
 
   const handlePressStart = () => {
     pressTimer.current = setTimeout(() => {
-      const pin = prompt('╪ú╪»╪«┘ä ╪º┘ä╪▒┘à╪▓ ╪º┘ä╪│╪▒┘è ┘ä┘ä┘ê╪¡╪⌐ ╪º┘ä╪¬╪¡┘â┘à:');
+      const pin = prompt('أدخل الرقم السري للوحة التحكم:');
       if (pin === '1153') {
         router.push('/admin');
       } else if (pin !== null) {
-        alert('╪º┘ä╪▒┘à╪▓ ╪º┘ä╪│╪▒┘è ╪║┘è╪▒ ╪╡╪¡┘è╪¡!');
+        alert('الرقم السري غير صحيح!');
       }
     }, 1500); // 1.5 seconds long press
   };
@@ -58,7 +58,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-cyan-400 text-xl">ΓÅ│ ╪¼╪º╪▒┘ì ╪º┘ä╪¬╪¡┘à┘è┘ä...</div>
+        <div className="text-cyan-400 text-xl">⏳ جاري التحميل...</div>
       </div>
     );
   }
@@ -79,7 +79,7 @@ export default function DashboardPage() {
             onClick={() => router.push('/admin')}
             className="absolute top-4 right-4 bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 border border-cyan-500/30 px-4 py-2 rounded-xl transition font-bold flex items-center gap-2"
           >
-            <span>ΓÜÖ∩╕Å</span> ╪º┘ä╪Ñ╪╣╪»╪º╪»╪º╪¬
+            <span>⚙️</span> الإعدادات
           </button>
         ) : (
           <button
@@ -89,9 +89,9 @@ export default function DashboardPage() {
             onTouchStart={handlePressStart}
             onTouchEnd={handlePressEnd}
             className="absolute top-4 right-4 text-gray-500 hover:text-gray-400 transition p-2 cursor-default select-none"
-            title="╪º┘ä╪Ñ╪╣╪»╪º╪»╪º╪¬"
+            title="الإعدادات"
           >
-            ΓÜÖ∩╕Å
+            ⚙️
           </button>
         )}
 
@@ -103,11 +103,11 @@ export default function DashboardPage() {
         >
           <h1 className="text-3xl font-extrabold text-gradient mb-2">Prometric</h1>
           <p className="text-gray-400 text-sm">
-            ┘à╪▒╪¡╪¿╪º┘ï {profile?.email?.split('@')[0] || '╪¿┘â'} ≡ƒæï
+            مرحباً {profile?.email?.split('@')[0] || 'بك'} 👋
           </p>
           {profile?.isVip && (
             <span className="inline-block mt-2 bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 text-xs font-bold px-3 py-1 rounded-full">
-              Γ¡É VIP
+              ⭐ VIP
             </span>
           )}
         </motion.div>
@@ -122,7 +122,7 @@ export default function DashboardPage() {
               transition={{ delay: index * 0.15 }}
               onClick={() => {
                 if (section.comingSoon) {
-                  alert('≡ƒôÜ ┘ç╪░╪º ╪º┘ä┘é╪│┘à ┘é┘è╪» ╪º┘ä╪¬╪╖┘ê┘è╪▒ ┘ê╪│┘è╪¬┘à ╪¬┘ê┘ü┘è╪▒ ╪ú╪│╪ª┘ä╪⌐ ╪º┘ä╪¿╪┤╪▒┘è ┘é╪▒┘è╪¿╪º┘ï ╪Ñ┘å ╪┤╪º╪í ╪º┘ä┘ä┘ç!');
+                  alert('📚 هذا القسم قيد التطوير وسيتم توفير أسئلة البشري قريباً إن شاء الله!');
                 } else {
                   router.push(section.href);
                 }
@@ -136,7 +136,7 @@ export default function DashboardPage() {
                   <p className="text-white/60 text-sm mt-1">{section.subtitle}</p>
                 </div>
                 <span className="text-white/40 text-2xl">
-                  {section.comingSoon ? '≡ƒöÆ' : 'ΓåÉ'}
+                  {section.comingSoon ? '🔒' : '←'}
                 </span>
               </div>
             </motion.button>
@@ -154,19 +154,19 @@ export default function DashboardPage() {
             onClick={() => router.push('/about')}
             className="w-full glass glass-hover rounded-xl py-3 text-gray-400 hover:text-white text-sm transition"
           >
-            ┘à┘å ┘å╪¡┘å
+            من نحن
           </button>
           <button
             onClick={() => router.push('/privacy')}
             className="w-full glass glass-hover rounded-xl py-3 text-gray-400 hover:text-white text-sm transition"
           >
-            ╪│┘è╪º╪│╪⌐ ╪º┘ä╪«╪╡┘ê╪╡┘è╪⌐
+            سياسة الخصوصية
           </button>
           <button
             onClick={logout}
             className="w-full bg-red-500/10 border border-red-500/20 rounded-xl py-3 text-red-400 hover:bg-red-500/20 text-sm font-semibold transition"
           >
-            ╪¬╪│╪¼┘è┘ä ╪«╪▒┘ê╪¼
+            تسجيل خروج
           </button>
         </motion.div>
       </div>

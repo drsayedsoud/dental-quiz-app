@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState, useCallback, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -59,7 +59,7 @@ function QuizContent() {
         const data = await res.json();
         setQuestions(data.questions || []);
       } catch (err) {
-        setError('حدث خطأ في تحميل الأسئلة. حاول مرة أخرى.');
+        setError('Ø­Ø¯Ø« Ø®Ø·Ø£ ÙÙŠ ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ø£Ø³Ø¦Ù„Ø©. Ø­Ø§ÙˆÙ„ Ù…Ø±Ø© Ø£Ø®Ø±Ù‰.');
       } finally {
         setLoadingQuestions(false);
       }
@@ -72,13 +72,26 @@ function QuizContent() {
     correctSoundRef.current = new Audio('/sounds/win.mp3');
     wrongSoundRef.current = new Audio('/sounds/lose.mp3');
     const savedMute = sessionStorage.getItem('isMuted') === 'true';
-    setIsMuted(savedMute);
+    setTimeout(() => setIsMuted(savedMute), 0);
   }, []);
 
   // Timer
+  const handleNext = useCallback(() => {
+    if (currentIndex >= questions.length - 1) {
+      saveSession();
+      router.push(/result?score=+score+&attempted=+(attempted+1)+&subject=+(subject||'') + &section=+(section||''));
+    } else {
+      setCurrentIndex(prev => prev + 1);
+      setAnswered(false);
+      setSelected(null);
+      setTimeout(() => setTimeLeft(30), 0);
+      setShowExplanation(false);
+    }
+  }, [currentIndex, questions.length, score, attempted, subject, section, router]);
+
   useEffect(() => {
     if (loadingQuestions || answered || questions.length === 0) return;
-    setTimeLeft(30);
+    setTimeout(() => setTimeLeft(30), 0);
     timerRef.current = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 1) {
@@ -123,7 +136,7 @@ function QuizContent() {
       // Save session and go to results
       if (user) {
         saveQuizSession(user.uid, {
-          subject: subject || 'مختلط',
+          subject: subject || 'Ù…Ø®ØªÙ„Ø·',
           score,
           attempted: attempted,
           lastQuestionIndex: currentIndex,
@@ -148,7 +161,7 @@ function QuizContent() {
   const handleFinish = async () => {
     if (user) {
       await saveQuizSession(user.uid, {
-        subject: subject || 'مختلط',
+        subject: subject || 'Ù…Ø®ØªÙ„Ø·',
         score,
         attempted,
         lastQuestionIndex: currentIndex,
@@ -182,8 +195,8 @@ function QuizContent() {
   if (loadingQuestions) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#0a0a0a]">
-        <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }} className="text-4xl mb-4">🦷</motion.div>
-        <p className="text-gray-400">جارٍ تحميل الأسئلة...</p>
+        <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }} className="text-4xl mb-4">ðŸ¦·</motion.div>
+        <p className="text-gray-400">Ø¬Ø§Ø±Ù ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ø£Ø³Ø¦Ù„Ø©...</p>
       </div>
     );
   }
@@ -191,8 +204,8 @@ function QuizContent() {
   if (error || questions.length === 0) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#0a0a0a] px-4">
-        <p className="text-red-400 text-lg mb-4">{error || 'لا توجد أسئلة متاحة'}</p>
-        <button onClick={() => router.back()} className="bg-cyan-600 text-white px-6 py-3 rounded-xl">العودة</button>
+        <p className="text-red-400 text-lg mb-4">{error || 'Ù„Ø§ ØªÙˆØ¬Ø¯ Ø£Ø³Ø¦Ù„Ø© Ù…ØªØ§Ø­Ø©'}</p>
+        <button onClick={() => router.back()} className="bg-cyan-600 text-white px-6 py-3 rounded-xl">Ø§Ù„Ø¹ÙˆØ¯Ø©</button>
       </div>
     );
   }
@@ -209,7 +222,7 @@ function QuizContent() {
           <span className="text-gray-500 mr-2"> ({percentage}%)</span>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={toggleMute} className="text-xl">{isMuted ? '🔇' : '🔊'}</button>
+          <button onClick={toggleMute} className="text-xl">{isMuted ? 'ðŸ”‡' : 'ðŸ”Š'}</button>
           <span className={`font-mono font-bold text-lg ${timeLeft <= 10 ? 'text-red-400' : 'text-cyan-400'}`}>
             {timeLeft}s
           </span>
@@ -227,7 +240,7 @@ function QuizContent() {
 
       {/* Question Counter */}
       <div className="text-center mb-4">
-        {subject && <p className="text-cyan-400 font-bold mb-1">📘 {subject}</p>}
+        {subject && <p className="text-cyan-400 font-bold mb-1">ðŸ“˜ {subject}</p>}
         <p className="text-gray-500 text-sm">Question {currentIndex + 1} of {questions.length}</p>
       </div>
 
@@ -278,7 +291,7 @@ function QuizContent() {
               onClick={() => setShowExplanation(!showExplanation)}
               className="w-full bg-purple-500/10 border border-purple-500/20 text-purple-400 py-3 rounded-xl text-sm font-semibold hover:bg-purple-500/20 transition"
             >
-              {showExplanation ? '🔽 إخفاء الشرح' : '📘 عرض الشرح'}
+              {showExplanation ? 'ðŸ”½ Ø¥Ø®ÙØ§Ø¡ Ø§Ù„Ø´Ø±Ø­' : 'ðŸ“˜ Ø¹Ø±Ø¶ Ø§Ù„Ø´Ø±Ø­'}
             </button>
 
             {showExplanation && (
@@ -289,13 +302,13 @@ function QuizContent() {
               >
                 {currentQuestion.explanation && (
                   <div>
-                    <p className="text-cyan-400 text-xs font-bold mb-1">📘 Explanation:</p>
+                    <p className="text-cyan-400 text-xs font-bold mb-1">ðŸ“˜ Explanation:</p>
                     <p className="text-gray-300 text-sm leading-relaxed">{currentQuestion.explanation}</p>
                   </div>
                 )}
                 {currentQuestion.detailed && currentQuestion.detailed !== 'nan' && (
                   <div>
-                    <p className="text-cyan-400 text-xs font-bold mb-1">📝 Detailed:</p>
+                    <p className="text-cyan-400 text-xs font-bold mb-1">ðŸ“ Detailed:</p>
                     <p className="text-gray-300 text-sm leading-relaxed">{currentQuestion.detailed}</p>
                   </div>
                 )}
@@ -308,15 +321,15 @@ function QuizContent() {
           onClick={handleNext}
           className="w-full bg-gradient-to-l from-cyan-600 to-blue-600 text-white font-bold py-3.5 rounded-xl hover:from-cyan-500 hover:to-blue-500 transition"
         >
-          {currentIndex >= questions.length - 1 ? '🏁 إنهاء' : '→ السؤال التالي'}
+          {currentIndex >= questions.length - 1 ? 'ðŸ Ø¥Ù†Ù‡Ø§Ø¡' : 'â†’ Ø§Ù„Ø³Ø¤Ø§Ù„ Ø§Ù„ØªØ§Ù„ÙŠ'}
         </button>
 
         <button onClick={copyToAI} className="w-full bg-violet-500/10 border border-violet-500/20 text-violet-400 py-3 rounded-xl text-sm font-semibold hover:bg-violet-500/20 transition">
-          🤖 Ask AI
+          ðŸ¤– Ask AI
         </button>
 
         <button onClick={handleFinish} className="w-full bg-red-500/10 border border-red-500/20 text-red-400 py-3 rounded-xl text-sm font-semibold hover:bg-red-500/20 transition">
-          🛑 إنهاء الجلسة
+          ðŸ›‘ Ø¥Ù†Ù‡Ø§Ø¡ Ø§Ù„Ø¬Ù„Ø³Ø©
         </button>
       </div>
     </div>
@@ -327,10 +340,11 @@ export default function QuizPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a]">
-        <p className="text-gray-400">جارٍ التحميل...</p>
+        <p className="text-gray-400">Ø¬Ø§Ø±Ù Ø§Ù„ØªØ­Ù…ÙŠÙ„...</p>
       </div>
     }>
       <QuizContent />
     </Suspense>
   );
 }
+
