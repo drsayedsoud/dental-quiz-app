@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -16,10 +16,10 @@ function ResultContent() {
   let message = '';
   let emoji = '';
   let color = '';
-  if (percentage >= 90) { message = 'Ù…Ù…ØªØ§Ø²! Ø§Ø³ØªÙ…Ø± ÙÙŠ Ù‡Ø°Ø§ Ø§Ù„Ø£Ø¯Ø§Ø¡ Ø§Ù„Ø±Ø§Ø¦Ø¹ ðŸ’ª'; emoji = 'ðŸ†'; color = 'text-yellow-400'; }
-  else if (percentage >= 70) { message = 'Ø£Ø¯Ø§Ø¡ Ø¬ÙŠØ¯ Ø¬Ø¯Ù‹Ø§! Ø§Ù‚ØªØ±Ø¨Øª Ù…Ù† Ø§Ù„ØªÙ…ÙŠØ² ðŸ‘'; emoji = 'ðŸŒŸ'; color = 'text-cyan-400'; }
-  else if (percentage >= 50) { message = 'Ù„Ø³ØªÙŽ Ø¨Ø¹ÙŠØ¯Ù‹Ø§ Ø¹Ù† Ø§Ù„Ø£ÙØ¶Ù„! ÙˆØ§ØµÙ„ Ø§Ù„Ù…Ø°Ø§ÙƒØ±Ø© âœ¨'; emoji = 'ðŸ’¡'; color = 'text-blue-400'; }
-  else { message = 'Ù„Ø§ ØªÙŠØ£Ø³ØŒ Ø§Ù„Ø¨Ø¯Ø§ÙŠØ© Ø¯Ø§Ø¦Ù…Ù‹Ø§ ØµØ¹Ø¨Ø©! ÙˆØ§ØµÙ„ Ø§Ù„ØªØ¯Ø±ÙŠØ¨ ðŸš€'; emoji = 'ðŸ”¥'; color = 'text-orange-400'; }
+  if (percentage >= 90) { message = 'ممتاز! استمر في هذا الأداء الرائع 💪'; emoji = '🏆'; color = 'text-yellow-400'; }
+  else if (percentage >= 70) { message = 'أداء جيد جداً! اقتربت من التميز 👏'; emoji = '🌟'; color = 'text-cyan-400'; }
+  else if (percentage >= 50) { message = 'لستَ بعيداً عن الأفضل! واصل المذاكرة ✨'; emoji = '💡'; color = 'text-blue-400'; }
+  else { message = 'لا تيأس، البداية دائماً صعبة! واصل التدريب 🚀'; emoji = '🔥'; color = 'text-orange-400'; }
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-4">
@@ -39,7 +39,7 @@ function ResultContent() {
             {emoji}
           </motion.div>
 
-          <h1 className="text-2xl font-bold text-white mb-2">Ù†ØªÙŠØ¬Ø© Ø§Ù„Ø§Ø®ØªØ¨Ø§Ø±</h1>
+          <h1 className="text-2xl font-bold text-white mb-2">نتيجة الاختبار</h1>
 
           {/* Score Circle */}
           <div className="relative w-32 h-32 mx-auto my-6">
@@ -62,7 +62,7 @@ function ResultContent() {
 
           <div className="space-y-2 mb-6">
             <p className="text-gray-300">
-              <span className="text-green-400 font-bold">{score}</span> ØµØ­ÙŠØ­Ø© Ù…Ù† <span className="text-cyan-400 font-bold">{attempted}</span> Ø³Ø¤Ø§Ù„
+              <span className="text-green-400 font-bold">{score}</span> صحيحة من <span className="text-cyan-400 font-bold">{attempted}</span> سؤال
             </p>
             <p className={`${color} font-bold text-lg`}>{message}</p>
           </div>
@@ -73,13 +73,13 @@ function ResultContent() {
               onClick={() => router.push('/dental')}
               className="w-full bg-gradient-to-l from-cyan-600 to-blue-600 text-white font-bold py-3.5 rounded-xl hover:from-cyan-500 hover:to-blue-500 transition"
             >
-              ðŸ”„ Ø§Ø®ØªØ¨Ø§Ø± Ø¢Ø®Ø±
+              🔄 اختبار آخر
             </button>
             <button
               onClick={() => router.push('/dashboard')}
               className="w-full glass glass-hover rounded-xl py-3 text-gray-400 hover:text-white transition"
             >
-              â† Ø§Ù„Ø¹ÙˆØ¯Ø© Ù„Ù„Ø±Ø¦ÙŠØ³ÙŠØ©
+              ← العودة للرئيسية
             </button>
           </div>
         </div>
@@ -92,13 +92,10 @@ export default function ResultPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a]">
-        <p className="text-gray-400">Ø¬Ø§Ø±Ù Ø§Ù„ØªØ­Ù…ÙŠÙ„...</p>
+        <p className="text-gray-400">جارٍ التحميل...</p>
       </div>
     }>
       <ResultContent />
     </Suspense>
   );
 }
-
-
-
