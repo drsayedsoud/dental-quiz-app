@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -20,11 +20,11 @@ export default function SignupPage() {
     setError('');
 
     if (password.length < 6) {
-      setError('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+      setError('ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ± ÙŠØ¬Ø¨ Ø£Ù† ØªÙƒÙˆÙ† 6 Ø£Ø­Ø±Ù Ø¹Ù„Ù‰ Ø§Ù„Ø£Ù‚Ù„');
       return;
     }
     if (password !== confirmPassword) {
-      setError('كلمات المرور غير متطابقة');
+      setError('ÙƒÙ„Ù…Ø§Øª Ø§Ù„Ù…Ø±ÙˆØ± ØºÙŠØ± Ù…ØªØ·Ø§Ø¨Ù‚Ø©');
       return;
     }
 
@@ -32,13 +32,13 @@ export default function SignupPage() {
     try {
       await signupWithEmail(email, password);
       router.replace('/dashboard');
-    } catch (err: unknown) {
+    } catch (err: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
       if (err.code === 'auth/email-already-in-use') {
-        setError('هذا البريد الإلكتروني مسجل بالفعل');
+        setError('Ù‡Ø°Ø§ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ Ù…Ø³Ø¬Ù„ Ø¨Ø§Ù„ÙØ¹Ù„');
       } else if (err.code === 'auth/invalid-email') {
-        setError('البريد الإلكتروني غير صالح');
+        setError('Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ ØºÙŠØ± ØµØ§Ù„Ø­');
       } else {
-        setError('حدث خطأ أثناء إنشاء الحساب');
+        setError('Ø­Ø¯Ø« Ø®Ø·Ø£ Ø£Ø«Ù†Ø§Ø¡ Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„Ø­Ø³Ø§Ø¨');
       }
     } finally {
       setLoading(false);
@@ -52,7 +52,7 @@ export default function SignupPage() {
       await loginWithGoogle();
       router.replace('/dashboard');
     } catch {
-      setError('حدث خطأ أثناء التسجيل بـ Google');
+      setError('Ø­Ø¯Ø« Ø®Ø·Ø£ Ø£Ø«Ù†Ø§Ø¡ Ø§Ù„ØªØ³Ø¬ÙŠÙ„ Ø¨Ù€ Google');
     } finally {
       setLoading(false);
     }
@@ -70,9 +70,9 @@ export default function SignupPage() {
       >
         <div className="glass rounded-3xl p-8">
           <div className="text-center mb-8">
-            <div className="text-5xl mb-3">🦷</div>
-            <h1 className="text-2xl font-bold text-gradient">إنشاء حساب جديد</h1>
-            <p className="text-gray-400 text-sm mt-2">انضم إلى Prometric Dent الآن</p>
+            <div className="text-5xl mb-3">ðŸ¦·</div>
+            <h1 className="text-2xl font-bold text-gradient">Ø¥Ù†Ø´Ø§Ø¡ Ø­Ø³Ø§Ø¨ Ø¬Ø¯ÙŠØ¯</h1>
+            <p className="text-gray-400 text-sm mt-2">Ø§Ù†Ø¶Ù… Ø¥Ù„Ù‰ Prometric Dent Ø§Ù„Ø¢Ù†</p>
           </div>
 
           {error && (
@@ -90,7 +90,7 @@ export default function SignupPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="البريد الإلكتروني"
+              placeholder="Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ"
               required
               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition"
               dir="ltr"
@@ -99,7 +99,7 @@ export default function SignupPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="كلمة المرور (6 أحرف على الأقل)"
+              placeholder="ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ± (6 Ø£Ø­Ø±Ù Ø¹Ù„Ù‰ Ø§Ù„Ø£Ù‚Ù„)"
               required
               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition"
               dir="ltr"
@@ -108,7 +108,7 @@ export default function SignupPage() {
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="تأكيد كلمة المرور"
+              placeholder="ØªØ£ÙƒÙŠØ¯ ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±"
               required
               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition"
               dir="ltr"
@@ -118,13 +118,13 @@ export default function SignupPage() {
               disabled={loading}
               className="w-full bg-gradient-to-l from-cyan-600 to-blue-600 text-white font-bold py-3.5 rounded-xl hover:from-cyan-500 hover:to-blue-500 transition disabled:opacity-50"
             >
-              {loading ? '⏳ جارٍ الإنشاء...' : 'إنشاء الحساب'}
+              {loading ? 'â³ Ø¬Ø§Ø±Ù Ø§Ù„Ø¥Ù†Ø´Ø§Ø¡...' : 'Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„Ø­Ø³Ø§Ø¨'}
             </button>
           </form>
 
           <div className="flex items-center gap-3 my-6">
             <div className="flex-1 h-px bg-white/10" />
-            <span className="text-gray-500 text-xs">أو</span>
+            <span className="text-gray-500 text-xs">Ø£Ùˆ</span>
             <div className="flex-1 h-px bg-white/10" />
           </div>
 
@@ -139,13 +139,13 @@ export default function SignupPage() {
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
             </svg>
-            سجل بحساب Google
+            Ø³Ø¬Ù„ Ø¨Ø­Ø³Ø§Ø¨ Google
           </button>
 
           <p className="text-center text-gray-400 text-sm mt-6">
-            لديك حساب بالفعل؟{' '}
+            Ù„Ø¯ÙŠÙƒ Ø­Ø³Ø§Ø¨ Ø¨Ø§Ù„ÙØ¹Ù„ØŸ{' '}
             <Link href="/login" className="text-cyan-400 hover:text-cyan-300 font-semibold">
-              سجل دخول
+              Ø³Ø¬Ù„ Ø¯Ø®ÙˆÙ„
             </Link>
           </p>
         </div>
@@ -153,3 +153,4 @@ export default function SignupPage() {
     </div>
   );
 }
+
