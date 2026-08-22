@@ -30,6 +30,8 @@ export default function DashboardPage() {
   const { user, profile, loading, logout } = useAuth();
   const router = useRouter();
   const pressTimer = useRef<NodeJS.Timeout | null>(null);
+  const medicalPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const isMedicalLongPress = useRef(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -52,6 +54,38 @@ export default function DashboardPage() {
     if (pressTimer.current) {
       clearTimeout(pressTimer.current);
       pressTimer.current = null;
+    }
+  };
+
+  const handleMedicalPressStart = () => {
+    isMedicalLongPress.current = false;
+    medicalPressTimer.current = setTimeout(async () => {
+      isMedicalLongPress.current = true;
+      try {
+        if ('caches' in window) {
+          const cacheKeys = await window.caches.keys();
+          await Promise.all(cacheKeys.map((key) => window.caches.delete(key)));
+        }
+        if ('serviceWorker' in navigator) {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          for (const reg of registrations) {
+            await reg.unregister();
+          }
+        }
+        sessionStorage.clear();
+        alert('🧹 تم مسح الكاش والملفات المؤقتة للمتصفح بنجاح! جاري إعادة تشغيل التطبيق...');
+        window.location.href = window.location.origin + window.location.pathname + '?reload=' + Date.now();
+      } catch (e) {
+        console.error('Error clearing cache:', e);
+        window.location.reload();
+      }
+    }, 1500); // 1.5 seconds long press
+  };
+
+  const handleMedicalPressEnd = () => {
+    if (medicalPressTimer.current) {
+      clearTimeout(medicalPressTimer.current);
+      medicalPressTimer.current = null;
     }
   };
 
@@ -98,14 +132,23 @@ export default function DashboardPage() {
               initial={{ x: -30, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: index * 0.15 }}
+              onMouseDown={section.id === 'medical' ? handleMedicalPressStart : undefined}
+              onMouseUp={section.id === 'medical' ? handleMedicalPressEnd : undefined}
+              onMouseLeave={section.id === 'medical' ? handleMedicalPressEnd : undefined}
+              onTouchStart={section.id === 'medical' ? handleMedicalPressStart : undefined}
+              onTouchEnd={section.id === 'medical' ? handleMedicalPressEnd : undefined}
               onClick={() => {
+                if (section.id === 'medical' && isMedicalLongPress.current) {
+                  isMedicalLongPress.current = false;
+                  return;
+                }
                 if (section.comingSoon) {
                   alert('📚 هذا القسم قيد التطوير وسيتم توفير أسئلة البشري قريباً إن شاء الله!');
                 } else {
                   router.push(section.href);
                 }
               }}
-              className={`w-full bg-gradient-to-l ${section.gradient} rounded-2xl p-6 text-right hover:scale-[1.02] active:scale-[0.98] transition-transform shadow-lg text-white`}
+              className={`w-full bg-gradient-to-l ${section.gradient} rounded-2xl p-6 text-right hover:scale-[1.02] active:scale-[0.98] transition-transform shadow-lg text-white select-none`}
             >
               <div className="flex items-center gap-4">
                 <span className="text-5xl">{section.icon}</span>
@@ -179,4 +222,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
