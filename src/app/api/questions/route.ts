@@ -1,5 +1,7 @@
-﻿import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { google } from 'googleapis';
+import fs from 'fs/promises';
+import path from 'path';
 
 const SPREADSHEET_ID = process.env.GOOGLE_SHEETS_SPREADSHEET_ID;
 const SERVICE_ACCOUNT_EMAIL = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
@@ -19,7 +21,47 @@ const subjectRanges: Record<string, { start: number; end: number }> = {
   'Oral Medicine': { start: 4368, end: 4600 },
 };
 
+function parseCSVLine(line: string): string[] {
+  const result: string[] = [];
+  let current = '';
+  let inQuotes = false;
+
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    if (char === '"') {
+      if (inQuotes && line[i + 1] === '"') {
+        current += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (char === ',' && !inQuotes) {
+      result.push(current);
+      current = '';
+    } else {
+      current += char;
+    }
+  }
+  result.push(current);
+  return result;
+}
+
+async function getLocalCsvData(filename: string): Promise<string[][]> {
+  try {
+    const filePath = path.join(process.cwd(), 'public', filename);
+    const content = await fs.readFile(filePath, 'utf-8');
+    const lines = content.split(/\r?\n/).filter(line => line.trim().length > 0);
+    return lines.slice(1).map(parseCSVLine);
+  } catch (err) {
+    console.error('Error reading local CSV:', err);
+    return [];
+  }
+}
+
 async function getSheetData(range: string) {
+  if (!SPREADSHEET_ID || !SERVICE_ACCOUNT_EMAIL || !PRIVATE_KEY) {
+    throw new Error('Google Sheets credentials not configured');
+  }
   const auth = new google.auth.JWT({
     email: SERVICE_ACCOUNT_EMAIL,
     key: PRIVATE_KEY,
@@ -61,26 +103,49 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const subject = searchParams.get('subject');
     const mode = searchParams.get('mode');
+    const section = searchParams.get('section') || searchParams.get('type') || 'dental';
 
-    let range = 'Sheet1!A2:K';
     let questions;
 
-    if (subject && subjectRanges[subject]) {
-      const { start, end } = subjectRanges[subject];
-      range = `Sheet1!A${start}:K${end}`;
-      const rows = await getSheetData(range);
-      questions = parseQuestions(rows);
-    } else if (mode === 'exam') {
-      // Random exam: fetch all and pick 50 random
-      const rows = await getSheetData(range);
+    if (section === 'medical') {
+      const rows = await getLocalCsvData('questions_medical.csv');
       const all = parseQuestions(rows);
-      questions = shuffleArray(all).slice(0, 50);
+      questions = mode === 'exam' ? shuffleArray(all).slice(0, 50) : all.slice(0, 50);
     } else {
-      const rows = await getSheetData(range);
-      questions = parseQuestions(rows).slice(0, 50);
+      // Dental section
+      try {
+        let range = 'Sheet1!A2:K';
+        if (subject && subjectRanges[subject]) {
+          const { start, end } = subjectRanges[subject];
+          range = `Sheet1!A${start}:K${end}`;
+          const rows = await getSheetData(range);
+          questions = parseQuestions(rows);
+        } else if (mode === 'exam') {
+          const rows = await getSheetData(range);
+          const all = parseQuestions(rows);
+          questions = shuffleArray(all).slice(0, 50);
+        } else {
+          const rows = await getSheetData(range);
+          questions = parseQuestions(rows).slice(0, 50);
+        }
+      } catch (sheetErr) {
+        console.warn('Falling back to local questions.csv:', sheetErr);
+        const rows = await getLocalCsvData('questions.csv');
+        if (subject && subjectRanges[subject]) {
+          const { start, end } = subjectRanges[subject];
+          const sliceRows = rows.slice(Math.max(0, start - 2), end - 1);
+          questions = parseQuestions(sliceRows);
+        } else if (mode === 'exam') {
+          const all = parseQuestions(rows);
+          questions = shuffleArray(all).slice(0, 50);
+        } else {
+          const all = parseQuestions(rows);
+          questions = all.slice(0, 50);
+        }
+      }
     }
 
-    return NextResponse.json({ questions }, {
+    return NextResponse.json({ questions: questions || [] }, {
       headers: {
         'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=7200',
       },
@@ -93,6 +158,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-
-
-

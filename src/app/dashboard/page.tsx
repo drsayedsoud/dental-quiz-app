@@ -164,19 +164,13 @@ export default function DashboardPage() {
                 onMouseLeave={handlePressEnd}
                 onTouchStart={handlePressStart}
                 onTouchEnd={handlePressEnd}
-                onClick={() => {
-                  const pin = prompt('أدخل الرقم السري للوحة التحكم:');
-                  if (pin === '1153') {
-                    router.push('/admin');
-                  } else if (pin !== null) {
-                    alert('الرقم السري غير صحيح!');
-                  }
+                onClick={(e) => {
+                  e.preventDefault();
                 }}
-                className="text-xs text-gray-500 hover:text-cyan-400 transition flex items-center gap-1.5 py-1 px-2.5 rounded-lg hover:bg-white/5 select-none"
-                title="خاص بالإدارة"
+                className="text-xs text-gray-600 hover:text-gray-500 transition p-1 rounded-md hover:bg-white/5 select-none cursor-default"
+                title=""
               >
-                <span>⚙️</span>
-                <span>خاص بالإدارة</span>
+                ⚙️
               </button>
             )}
           </div>
