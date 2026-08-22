@@ -10,8 +10,6 @@ import {
   resetUserQuestionCount,
   UserProfile
 } from '@/lib/firestore';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 
 export default function AdminPage() {
   const { user, profile, loading } = useAuth();
@@ -56,8 +54,7 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-blue-500/30 flex flex-col">
-      <Header />
-      <main className="flex-grow container mx-auto px-4 py-8 max-w-5xl pt-24">
+            <main className="flex-grow container mx-auto px-4 py-8 max-w-5xl pt-24">
         <h1 className="text-3xl font-bold mb-8 flex items-center gap-3">
           <span className="text-4xl">⚙️</span> لوحة التحكم والإدارة
         </h1>
@@ -148,7 +145,7 @@ export default function AdminPage() {
           </div>
         )}
       </main>
-      <Footer />
-    </div>
+          </div>
   );
 }
+

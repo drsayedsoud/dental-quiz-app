@@ -1,8 +1,6 @@
 ﻿'use client';
 
 import { useRouter } from 'next/navigation';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 
 const subjects = [
   { name: 'Anatomy', icon: '🦴' },
@@ -18,8 +16,7 @@ export default function MedicalPage() {
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-emerald-500/30 flex flex-col">
-      <Header />
-      <main className="flex-grow container mx-auto px-4 py-8 max-w-lg pt-24">
+            <main className="flex-grow container mx-auto px-4 py-8 max-w-lg pt-24">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-l from-emerald-400 to-teal-600 mb-2">
             الطب البشري
@@ -41,7 +38,7 @@ export default function MedicalPage() {
           ))}
         </div>
       </main>
-      <Footer />
-    </div>
+          </div>
   );
 }
+
