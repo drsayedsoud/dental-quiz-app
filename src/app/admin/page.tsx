@@ -20,7 +20,7 @@ export default function AdminPage() {
   const [isLoadingUsers, setIsLoadingUsers] = useState(true);
 
   useEffect(() => {
-    if (!loading && (!user || profile?.role !== 'admin')) {
+    if (!loading && (!user || (profile?.role !== 'admin' && user.email !== 'drsayedsoudnew@gmail.com'))) {
       router.replace('/login');
     }
   }, [user, profile, loading, router]);
@@ -48,7 +48,7 @@ export default function AdminPage() {
     }
   };
 
-  if (loading || !user || profile?.role !== 'admin') {
+  if (loading || !user || (profile?.role !== 'admin' && user.email !== 'drsayedsoudnew@gmail.com')) {
     return <div className="min-h-screen flex items-center justify-center text-white">جاري التحقق...</div>;
   }
 
