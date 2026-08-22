@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
-import { incrementQuestionCount, saveQuizSession } from '@/lib/firestore';
+import { incrementQuestionCount, saveQuizSession, toggleBookmark, isBookmarked } from '@/lib/firestore';
 
 interface Question {
   question: string;
@@ -36,6 +36,10 @@ function QuizContent() {
   const [isMuted, setIsMuted] = useState(false);
   const [loadingQuestions, setLoadingQuestions] = useState(true);
   const [error, setError] = useState('');
+  
+  // Bookmarks and Wrong answers tracking
+  const [isCurrentBookmarked, setIsCurrentBookmarked] = useState(false);
+  const [wrongAnswers, setWrongAnswers] = useState<Question[]>([]);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const correctSoundRef = useRef<HTMLAudioElement | null>(null);
@@ -87,19 +91,41 @@ function QuizContent() {
           section: (section as 'dental' | 'quran')
         }).catch(console.error);
       }
+      sessionStorage.setItem('wrongAnswers', JSON.stringify(wrongAnswers));
       router.push(`/result?score=${score}&attempted=${attempted+1}&subject=${subject||""}&section=${section||""}`);
     } else {
       setCurrentIndex(prev => prev + 1);
       setAnswered(false);
       setSelectedAnswer(null);
-      setTimeout(() => setTimeLeft(30), 0);
+      if (mode !== 'simulation') {
+        setTimeout(() => setTimeLeft(30), 0);
+      }
       setShowExplanation(false);
     }
-  }, [currentIndex, questions.length, score, attempted, subject, section, router, user]);
+  }, [currentIndex, questions.length, score, attempted, subject, section, router, user, wrongAnswers, mode]);
+
+  const currentQuestion = questions[currentIndex];
+
+  // Check bookmark status on question change
+  useEffect(() => {
+    if (user && currentQuestion) {
+      isBookmarked(user.uid, currentQuestion.question).then(setIsCurrentBookmarked);
+    }
+  }, [currentIndex, currentQuestion, user]);
+
+  const isSimulation = mode === 'simulation';
+  const initialTime = isSimulation ? 120 * 60 : 30; // 120 mins for simulation, 30s per question otherwise
 
   useEffect(() => {
+    // Only reset timer if not in simulation mode
     if (loadingQuestions || answered || questions.length === 0) return;
-    setTimeout(() => setTimeLeft(30), 0);
+    if (!isSimulation) {
+      setTimeout(() => setTimeLeft(initialTime), 0);
+    } else if (currentIndex === 0 && !answered && timeLeft === 30) {
+      // Initialize simulation timer on first load
+      setTimeout(() => setTimeLeft(initialTime), 0);
+    }
+    
     timerRef.current = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 1) {
@@ -110,8 +136,9 @@ function QuizContent() {
         return prev - 1;
       });
     }, 1000);
+    
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [currentIndex, loadingQuestions, answered, questions.length]);
+  }, [currentIndex, loadingQuestions, answered, questions.length, isSimulation, initialTime]);
 
   const currentQuestion = questions[currentIndex];
 
@@ -122,7 +149,11 @@ function QuizContent() {
     if (timerRef.current) clearInterval(timerRef.current);
 
     const isCorrect = choice === currentQuestion.correct;
-    if (isCorrect) setScore(prev => prev + 1);
+    if (isCorrect) {
+      setScore(prev => prev + 1);
+    } else {
+      setWrongAnswers(prev => [...prev, currentQuestion]);
+    }
     setAttempted(prev => prev + 1);
 
     // Play sound
@@ -139,7 +170,6 @@ function QuizContent() {
     }
   }, [answered, currentQuestion, isMuted, user]);
 
-
   const handleFinish = async () => {
     if (user) {
       await saveQuizSession(user.uid, {
@@ -151,6 +181,7 @@ function QuizContent() {
       }).catch(() => {});
       refreshProfile().catch(() => {});
     }
+    sessionStorage.setItem('wrongAnswers', JSON.stringify(wrongAnswers));
     const params = new URLSearchParams({
       score: String(score),
       attempted: String(attempted),
@@ -173,6 +204,12 @@ function QuizContent() {
     }
   };
 
+  const handleBookmarkToggle = async () => {
+    if (!user || !currentQuestion) return;
+    const isNowBookmarked = await toggleBookmark(user.uid, currentQuestion);
+    setIsCurrentBookmarked(isNowBookmarked);
+  };
+
   // Loading state
   if (loadingQuestions) {
     return (
@@ -193,7 +230,14 @@ function QuizContent() {
   }
 
   const percentage = attempted > 0 ? ((score / attempted) * 100).toFixed(1) : '0.0';
-  const timerPercent = (timeLeft / 30) * 100;
+  const timerPercent = (timeLeft / initialTime) * 100;
+  
+  const formatTime = (seconds: number) => {
+    if (seconds < 60) return `${seconds}s`;
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  };
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] px-4 py-4 max-w-2xl mx-auto" dir="ltr">
@@ -205,8 +249,8 @@ function QuizContent() {
         </div>
         <div className="flex items-center gap-2">
           <button onClick={toggleMute} className="text-xl">{isMuted ? '🔇' : '🔊'}</button>
-          <span className={`font-mono font-bold text-lg ${timeLeft <= 10 ? 'text-red-400' : 'text-cyan-400'}`}>
-            {timeLeft}s
+          <span className={`font-mono font-bold text-lg ${timeLeft <= (isSimulation ? 60 : 10) ? 'text-red-400' : 'text-cyan-400'}`}>
+            {formatTime(timeLeft)}
           </span>
         </div>
       </div>
@@ -214,16 +258,23 @@ function QuizContent() {
       {/* Timer Progress Bar */}
       <div className="w-full h-1.5 bg-gray-800 rounded-full mb-4 overflow-hidden">
         <motion.div
-          className={`h-full rounded-full ${timeLeft <= 10 ? 'bg-red-500' : 'bg-cyan-500'}`}
+          className={`h-full rounded-full ${timeLeft <= (isSimulation ? 60 : 10) ? 'bg-red-500' : 'bg-cyan-500'}`}
           animate={{ width: `${timerPercent}%` }}
           transition={{ duration: 0.5 }}
         />
       </div>
 
       {/* Question Counter */}
-      <div className="text-center mb-4">
+      <div className="text-center mb-4 relative">
         {subject && <p className="text-cyan-400 font-bold mb-1">📘 {subject}</p>}
         <p className="text-gray-500 text-sm">Question {currentIndex + 1} of {questions.length}</p>
+        <button 
+          onClick={handleBookmarkToggle}
+          className="absolute right-0 top-1/2 -translate-y-1/2 text-2xl transition-transform active:scale-75"
+          title={isCurrentBookmarked ? "إلغاء الحفظ" : "حفظ السؤال"}
+        >
+          {isCurrentBookmarked ? '⭐' : '☆'}
+        </button>
       </div>
 
       {/* Question */}
@@ -306,9 +357,14 @@ function QuizContent() {
           {currentIndex >= questions.length - 1 ? '🏁 إنهاء' : '← السؤال التالي'}
         </button>
 
-        <button onClick={copyToAI} className="w-full bg-violet-500/10 border border-violet-500/20 text-violet-400 py-3 rounded-xl text-sm font-semibold hover:bg-violet-500/20 transition">
-          🤖 Ask AI
-        </button>
+        <div className="grid grid-cols-2 gap-3">
+          <button onClick={copyToAI} className="bg-violet-500/10 border border-violet-500/20 text-violet-400 py-3 rounded-xl text-sm font-semibold hover:bg-violet-500/20 transition flex items-center justify-center gap-2">
+            🤖 Ask AI
+          </button>
+          <button onClick={handleBookmarkToggle} className={`border py-3 rounded-xl text-sm font-semibold transition flex items-center justify-center gap-2 ${isCurrentBookmarked ? 'bg-yellow-500/10 border-yellow-500/20 text-yellow-400 hover:bg-yellow-500/20' : 'bg-gray-500/10 border-gray-500/20 text-gray-400 hover:bg-gray-500/20'}`}>
+            {isCurrentBookmarked ? '⭐ محفوظ' : '☆ حفظ السؤال'}
+          </button>
+        </div>
 
         <button onClick={handleFinish} className="w-full bg-red-500/10 border border-red-500/20 text-red-400 py-3 rounded-xl text-sm font-semibold hover:bg-red-500/20 transition">
           🛑 إنهاء الجلسة

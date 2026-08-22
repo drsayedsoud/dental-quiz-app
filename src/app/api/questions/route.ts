@@ -114,7 +114,10 @@ export async function GET(request: NextRequest) {
     if (section === 'medical') {
       const rows = await getLocalCsvData('questions_medical.csv');
       const all = parseQuestions(rows, true);
-      questions = mode === 'exam' ? shuffleArray(all).slice(0, 50) : shuffleArray(all);
+      if (mode === 'exam') questions = shuffleArray(all).slice(0, 50);
+      else if (mode === 'simulation') questions = shuffleArray(all).slice(0, 100);
+      else if (mode === 'quick') questions = shuffleArray(all).slice(0, 10);
+      else questions = shuffleArray(all);
     } else {
       // Dental section
       try {
@@ -129,6 +132,14 @@ export async function GET(request: NextRequest) {
           const rows = await getSheetData(range);
           const all = parseQuestions(rows, true);
           questions = shuffleArray(all).slice(0, 50);
+        } else if (mode === 'simulation') {
+          const rows = await getSheetData(range);
+          const all = parseQuestions(rows, true);
+          questions = shuffleArray(all).slice(0, 100);
+        } else if (mode === 'quick') {
+          const rows = await getSheetData(range);
+          const all = parseQuestions(rows, true);
+          questions = shuffleArray(all).slice(0, 10);
         } else {
           const rows = await getSheetData(range);
           const all = parseQuestions(rows, true);
@@ -145,6 +156,12 @@ export async function GET(request: NextRequest) {
         } else if (mode === 'exam') {
           const all = parseQuestions(rows, true);
           questions = shuffleArray(all).slice(0, 50);
+        } else if (mode === 'simulation') {
+          const all = parseQuestions(rows, true);
+          questions = shuffleArray(all).slice(0, 100);
+        } else if (mode === 'quick') {
+          const all = parseQuestions(rows, true);
+          questions = shuffleArray(all).slice(0, 10);
         } else {
           const all = parseQuestions(rows, true);
           questions = shuffleArray(all);

@@ -35,9 +35,10 @@ export default function SplashPage() {
           initial={{ y: -20 }}
           animate={{ y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
-          className="text-7xl mb-6"
+          className="text-7xl mb-6 flex justify-center gap-4"
         >
-          🦷
+          <span>🦷</span>
+          <span className="opacity-80">👨‍⚕️</span>
         </motion.div>
 
         {/* App Name */}
@@ -47,7 +48,7 @@ export default function SplashPage() {
           transition={{ delay: 0.5, duration: 0.6 }}
           className="text-4xl md:text-5xl font-extrabold text-gradient mb-3"
         >
-          Prometric Dent
+          Prometric Quiz
         </motion.h1>
 
         <motion.p
@@ -56,7 +57,7 @@ export default function SplashPage() {
           transition={{ delay: 0.7, duration: 0.6 }}
           className="text-gray-400 text-lg"
         >
-          اختبر نفسك وتفوّق
+          المنصة الشاملة لأطباء الأسنان والطب البشري
         </motion.p>
 
         {/* Loading dots */}

@@ -69,6 +69,14 @@ function ResultContent() {
 
           {/* Actions */}
           <div className="space-y-3">
+            {attempted > score && (
+              <button
+                onClick={() => router.push('/review')}
+                className="w-full bg-red-500/10 border border-red-500/20 text-red-400 font-bold py-3.5 rounded-xl hover:bg-red-500/20 transition flex justify-center items-center gap-2"
+              >
+                <span>📋</span> راجع أخطاءك ({attempted - score})
+              </button>
+            )}
             <button
               onClick={() => router.push('/dental')}
               className="w-full bg-gradient-to-l from-cyan-600 to-blue-600 text-white font-bold py-3.5 rounded-xl hover:from-cyan-500 hover:to-blue-500 transition"
@@ -80,6 +88,24 @@ function ResultContent() {
               className="w-full glass glass-hover rounded-xl py-3 text-gray-400 hover:text-white transition"
             >
               ← العودة للرئيسية
+            </button>
+            <button
+              onClick={() => {
+                const shareData = {
+                  title: 'نتيجتي في Prometric Quiz',
+                  text: `حصلت على ${percentage.toFixed(0)}% (${score}/${attempted}) في تطبيق Prometric Quiz! ${emoji}`,
+                  url: window.location.origin,
+                };
+                if (navigator.share) {
+                  navigator.share(shareData).catch(console.error);
+                } else {
+                  navigator.clipboard.writeText(shareData.text);
+                  alert('تم نسخ النتيجة للحافظة!');
+                }
+              }}
+              className="w-full bg-green-500/10 border border-green-500/20 text-green-400 font-bold py-3.5 rounded-xl hover:bg-green-500/20 transition flex justify-center items-center gap-2"
+            >
+              <span>📤</span> شارك نتيجتك
             </button>
           </div>
         </div>

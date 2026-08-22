@@ -1,7 +1,7 @@
 import {
   doc, getDoc, setDoc, updateDoc, collection,
   addDoc, query, where, getDocs, orderBy, limit,
-  serverTimestamp, increment, Timestamp
+  serverTimestamp, increment, Timestamp, deleteDoc
 } from 'firebase/firestore';
 import { db } from './firebase';
 
@@ -72,6 +72,15 @@ export async function getUserSessions(
   return snap.docs.map(d => d.data() as QuizSession);
 }
 
+export async function getAllUserSessions(userId: string): Promise<QuizSession[]> {
+  const q = query(
+    collection(db, 'users', userId, 'sessions'),
+    orderBy('date', 'desc')
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map(d => d.data() as QuizSession);
+}
+
 export async function getLastSessionForSubject(
   userId: string,
   subject: string
@@ -108,4 +117,50 @@ export async function resetUserQuestionCount(userId: string) {
   } catch (e) {
     return false;
   }
+}
+
+// ===== Bookmarks =====
+export interface Bookmark {
+  id?: string;
+  question: string;
+  choices: string[];
+  correct: string;
+  explanation: string;
+  detailed: string;
+  metadata: string;
+  savedAt: Timestamp;
+}
+
+export async function toggleBookmark(userId: string, questionData: Omit<Bookmark, 'savedAt' | 'id'>) {
+  // Use a simple hash of the question text as the document ID to prevent duplicates
+  const hash = questionData.question.substring(0, 50).replace(/[^a-zA-Z0-9]/g, '');
+  const docRef = doc(db, 'users', userId, 'bookmarks', hash);
+  const snap = await getDoc(docRef);
+  
+  if (snap.exists()) {
+    await deleteDoc(docRef);
+    return false; // unbookmarked
+  } else {
+    await setDoc(docRef, {
+      ...questionData,
+      savedAt: serverTimestamp(),
+    });
+    return true; // bookmarked
+  }
+}
+
+export async function getBookmarks(userId: string): Promise<Bookmark[]> {
+  const q = query(
+    collection(db, 'users', userId, 'bookmarks'),
+    orderBy('savedAt', 'desc')
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...d.data() } as Bookmark));
+}
+
+export async function isBookmarked(userId: string, questionText: string): Promise<boolean> {
+  const hash = questionText.substring(0, 50).replace(/[^a-zA-Z0-9]/g, '');
+  const docRef = doc(db, 'users', userId, 'bookmarks', hash);
+  const snap = await getDoc(docRef);
+  return snap.exists();
 }

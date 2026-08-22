@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
 import { DentalIconMap } from '@/components/DentalIcons';
+import { getAllUserSessions, QuizSession } from '@/lib/firestore';
 
 const subjects = [
   { name: 'Endodontic', startIndex: 2270 },
@@ -39,8 +40,14 @@ export default function DentalPage() {
   const router = useRouter();
   const [selectedSubject, setSelectedSubject] = useState<{ name: string; startIndex: number } | null>(null);
 
+  const [sessions, setSessions] = useState<QuizSession[]>([]);
+
   useEffect(() => {
-    if (!loading && !user) router.replace('/login');
+    if (!loading && !user) {
+      router.replace('/login');
+    } else if (user) {
+      getAllUserSessions(user.uid).then(setSessions);
+    }
   }, [user, loading, router]);
 
   if (loading || !user) return null;
@@ -61,6 +68,14 @@ export default function DentalPage() {
       params.set('mode', 'exam');
     }
     router.push(`/quiz?${params.toString()}`);
+  };
+  
+  const getSubjectStats = (subjectName: string) => {
+    const subjSessions = sessions.filter(s => s.subject === subjectName);
+    if (subjSessions.length === 0) return null;
+    const totalAttempted = subjSessions.reduce((sum, s) => sum + s.attempted, 0);
+    const totalScore = subjSessions.reduce((sum, s) => sum + s.score, 0);
+    return totalAttempted > 0 ? Math.round((totalScore / totalAttempted) * 100) : 0;
   };
 
   return (
@@ -96,6 +111,7 @@ export default function DentalPage() {
         <div className="grid grid-cols-2 gap-3.5 mb-6">
           {subjects.map((subject, index) => {
             const IconComp = DentalIconMap[subject.name];
+            const accuracy = getSubjectStats(subject.name);
             return (
               <motion.button
                 key={subject.name}
@@ -104,24 +120,39 @@ export default function DentalPage() {
                 transition={{ delay: index * 0.03 }}
                 whileTap={{ scale: 0.96 }}
                 onClick={() => setSelectedSubject(subject)}
-                className="glass rounded-3xl p-4 flex flex-col items-center justify-between text-center border border-white/10 hover:border-cyan-500/40 hover:bg-white/10 transition-all shadow-xl group aspect-square"
+                className="glass rounded-3xl p-4 flex flex-col items-center justify-between text-center border border-white/10 hover:border-cyan-500/40 hover:bg-white/10 transition-all shadow-xl group aspect-square relative overflow-hidden"
               >
+                {/* Progress Bar background if stats exist */}
+                {accuracy !== null && (
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gray-800">
+                    <div 
+                      className={`h-full ${accuracy >= 75 ? 'bg-green-500' : accuracy >= 50 ? 'bg-yellow-500' : 'bg-red-500'}`}
+                      style={{ width: `${accuracy}%` }}
+                    />
+                  </div>
+                )}
+                
+                {accuracy !== null && (
+                  <div className={`absolute top-2 right-2 text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-black/50 ${accuracy >= 75 ? 'text-green-400' : accuracy >= 50 ? 'text-yellow-400' : 'text-red-400'}`}>
+                    {accuracy}%
+                  </div>
+                )}
+
                 {/* Visual Dental Illustration */}
-                <div className="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center group-hover:scale-110 transition duration-300">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center group-hover:scale-110 transition duration-300 mt-2">
                   {IconComp && <IconComp className="w-full h-full drop-shadow-md" />}
                 </div>
 
                 {/* Specialty Title */}
-                <div className="w-full">
-                  <h2 className="font-extrabold text-white text-sm sm:text-base leading-tight tracking-wide group-hover:text-cyan-400 transition">
+                <div className="w-full mt-2">
+                  <h2 className="font-extrabold text-white text-xs sm:text-sm leading-tight tracking-wide group-hover:text-cyan-400 transition">
                     {subject.name}
                   </h2>
                 </div>
 
                 {/* Subtle Tap Indicator */}
-                <div className="w-full flex items-center justify-center gap-1 text-[11px] text-cyan-400/80 font-medium py-1 px-2 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
+                <div className="w-full flex items-center justify-center gap-1 text-[10px] text-cyan-400/80 font-medium py-1 px-2 mt-2 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
                   <span>اضغط للاختيار</span>
-                  <span>←</span>
                 </div>
               </motion.button>
             );
