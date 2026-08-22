@@ -114,10 +114,15 @@ export async function GET(request: NextRequest) {
     if (section === 'medical') {
       const rows = await getLocalCsvData('questions_medical.csv');
       const all = parseQuestions(rows, true);
-      if (mode === 'exam') questions = shuffleArray(all).slice(0, 50);
-      else if (mode === 'simulation') questions = shuffleArray(all).slice(0, 100);
-      else if (mode === 'quick') questions = shuffleArray(all).slice(0, 10);
-      else questions = shuffleArray(all);
+      let filtered = all;
+      if (subject) {
+        // subject is stored in row[10] which parseQuestions maps to 'metadata'
+        filtered = all.filter(q => q.metadata && q.metadata.toLowerCase() === subject.toLowerCase());
+      }
+      if (mode === 'exam') questions = shuffleArray(filtered).slice(0, 50);
+      else if (mode === 'simulation') questions = shuffleArray(filtered).slice(0, 100);
+      else if (mode === 'quick') questions = shuffleArray(filtered).slice(0, 10);
+      else questions = shuffleArray(filtered);
     } else {
       // Dental section
       try {
