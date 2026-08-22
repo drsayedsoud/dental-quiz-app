@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -23,11 +23,11 @@ export default function LoginPage() {
       router.replace('/dashboard');
     } catch (err: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
       if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
-        setError('Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ Ø£Ùˆ ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ± ØºÙŠØ± ØµØ­ÙŠØ­Ø©');
+        setError('البريد الإلكتروني أو كلمة المرور غير صحيحة');
       } else if (err.code === 'auth/wrong-password') {
-        setError('ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ± ØºÙŠØ± ØµØ­ÙŠØ­Ø©');
+        setError('كلمة المرور غير صحيحة');
       } else {
-        setError('Ø­Ø¯Ø« Ø®Ø·Ø£ Ø£Ø«Ù†Ø§Ø¡ ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„');
+        setError('حدث خطأ أثناء تسجيل الدخول');
       }
     } finally {
       setLoading(false);
@@ -41,7 +41,7 @@ export default function LoginPage() {
       await loginWithGoogle();
       router.replace('/dashboard');
     } catch (err: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
-      setError('Ø­Ø¯Ø« Ø®Ø·Ø£ Ø£Ø«Ù†Ø§Ø¡ ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„ Ø¨Ù€ Google');
+      setError('حدث خطأ أثناء تسجيل الدخول بـ Google');
     } finally {
       setLoading(false);
     }
@@ -60,9 +60,9 @@ export default function LoginPage() {
         <div className="glass rounded-3xl p-8">
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="text-5xl mb-3">ðŸ¦·</div>
-            <h1 className="text-2xl font-bold text-gradient">ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„</h1>
-            <p className="text-gray-400 text-sm mt-2">Ù…Ø±Ø­Ø¨Ø§Ù‹ Ø¨Ùƒ ÙÙŠ Prometric Dent</p>
+            <div className="text-5xl mb-3">🦷</div>
+            <h1 className="text-2xl font-bold text-gradient">تسجيل الدخول</h1>
+            <p className="text-gray-400 text-sm mt-2">مرحباً بك في Prometric Dent</p>
           </div>
 
           {/* Error */}
@@ -83,7 +83,7 @@ export default function LoginPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ"
+                placeholder="البريد الإلكتروني"
                 required
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition"
                 dir="ltr"
@@ -94,7 +94,7 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±"
+                placeholder="كلمة المرور"
                 required
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition"
                 dir="ltr"
@@ -105,14 +105,14 @@ export default function LoginPage() {
               disabled={loading}
               className="w-full bg-gradient-to-l from-cyan-600 to-blue-600 text-white font-bold py-3.5 rounded-xl hover:from-cyan-500 hover:to-blue-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'â³ Ø¬Ø§Ø±Ù Ø§Ù„Ø¯Ø®ÙˆÙ„...' : 'Ø¯Ø®ÙˆÙ„'}
+              {loading ? '⏳ جارٍ الدخول...' : 'دخول'}
             </button>
           </form>
 
           {/* Divider */}
           <div className="flex items-center gap-3 my-6">
             <div className="flex-1 h-px bg-white/10" />
-            <span className="text-gray-500 text-xs">Ø£Ùˆ</span>
+            <span className="text-gray-500 text-xs">أو</span>
             <div className="flex-1 h-px bg-white/10" />
           </div>
 
@@ -128,14 +128,14 @@ export default function LoginPage() {
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
             </svg>
-            Ø³Ø¬Ù„ Ø¨Ø­Ø³Ø§Ø¨ Google
+            سجل بحساب Google
           </button>
 
           {/* Sign Up Link */}
           <p className="text-center text-gray-400 text-sm mt-6">
-            Ù„ÙŠØ³ Ù„Ø¯ÙŠÙƒ Ø­Ø³Ø§Ø¨ØŸ{' '}
+            ليس لديك حساب؟{' '}
             <Link href="/signup" className="text-cyan-400 hover:text-cyan-300 font-semibold">
-              Ø³Ø¬Ù„ Ø§Ù„Ø¢Ù†
+              سجل الآن
             </Link>
           </p>
         </div>
@@ -143,4 +143,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
