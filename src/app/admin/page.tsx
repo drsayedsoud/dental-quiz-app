@@ -30,8 +30,11 @@ export default function AdminPage() {
   const medicalFileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    if (!loading && (!user || (profile?.role !== 'admin' && user.email !== 'drsayedsoudnew@gmail.com'))) {
-      router.replace('/login');
+    if (!loading) {
+      const isPinAuth = typeof window !== 'undefined' && sessionStorage.getItem('admin_pin_auth') === 'true';
+      if (!user || (!isPinAuth && profile?.role !== 'admin' && user.email !== 'drsayedsoudnew@gmail.com')) {
+        router.replace('/login');
+      }
     }
   }, [user, profile, loading, router]);
 
@@ -101,7 +104,9 @@ export default function AdminPage() {
     }
   };
 
-  if (loading || !user || (profile?.role !== 'admin' && user.email !== 'drsayedsoudnew@gmail.com')) {
+  const isPinAuthed = typeof window !== 'undefined' && sessionStorage.getItem('admin_pin_auth') === 'true';
+
+  if (loading || !user || (!isPinAuthed && profile?.role !== 'admin' && user.email !== 'drsayedsoudnew@gmail.com')) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black text-cyan-400">
         ⏳ جاري التحقق من صلاحيات الإدارة...
