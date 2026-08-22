@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -15,13 +15,13 @@ const sections = [
     href: '/dental',
   },
   {
-    id: 'quran',
-    title: 'مسابقات القرآن',
-    subtitle: 'Quran Competitions',
-    icon: '📖',
-    gradient: 'from-gray-100 to-white text-gray-900',
-    href: '/quran',
-  },
+    id: 'medical',
+    title: 'الطب البشري',
+    subtitle: 'Prometric Medical Exams',
+    icon: '🩺',
+    gradient: 'from-emerald-600 to-teal-700',
+    href: '/medical',
+  }
 ];
 
 export default function DashboardPage() {
@@ -37,7 +37,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-cyan-400 text-xl">⏳ جارٍ التحميل...</div>
+        <div className="text-cyan-400 text-xl">جاري التحميل...</div>
       </div>
     );
   }
@@ -46,11 +46,9 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] relative">
-      {/* Background effects */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-cyan-500/5 rounded-full blur-[150px]" />
 
       <div className="relative z-10 px-4 py-8 max-w-lg mx-auto">
-        {/* Header */}
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -58,16 +56,23 @@ export default function DashboardPage() {
         >
           <h1 className="text-3xl font-extrabold text-gradient mb-2">Prometric Dent Said</h1>
           <p className="text-gray-400 text-sm">
-            مرحباً {profile?.email?.split('@')[0] || 'بك'} 👋
+            مرحباً بك، {profile?.email?.split('@')[0] || 'دكتور'} 👋
           </p>
           {profile?.isVip && (
             <span className="inline-block mt-2 bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 text-xs font-bold px-3 py-1 rounded-full">
-              ⭐ VIP
+              👑 VIP
             </span>
+          )}
+          {profile?.role === 'admin' && (
+            <button
+              onClick={() => router.push('/admin')}
+              className="inline-block mt-2 ml-2 bg-purple-500/10 border border-purple-500/30 text-purple-400 text-xs font-bold px-3 py-1 rounded-full hover:bg-purple-500/20"
+            >
+              ⚙️ الإعدادات
+            </button>
           )}
         </motion.div>
 
-        {/* Section Cards */}
         <div className="space-y-4 mb-10">
           {sections.map((section, index) => (
             <motion.button
@@ -76,21 +81,18 @@ export default function DashboardPage() {
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: index * 0.15 }}
               onClick={() => router.push(section.href)}
-              className={`w-full bg-gradient-to-l ${section.gradient} rounded-2xl p-6 text-right hover:scale-[1.02] active:scale-[0.98] transition-transform shadow-lg`}
+              className={`w-full bg-gradient-to-l ${section.gradient} rounded-2xl p-6 text-right hover:scale-[1.02] active:scale-[0.98] transition-transform shadow-lg flex items-center gap-4`}
             >
-              <div className="flex items-center gap-4">
                 <span className="text-5xl">{section.icon}</span>
                 <div className="flex-1">
-                  <h2 className={`text-xl font-bold ${section.id === 'quran' ? 'text-gray-900' : 'text-white'}`}>{section.title}</h2>
-                  <p className={`text-sm mt-1 ${section.id === 'quran' ? 'text-gray-600' : 'text-white/60'}`}>{section.subtitle}</p>
+                  <h2 className="text-xl font-bold text-white">{section.title}</h2>
+                  <p className="text-sm mt-1 text-white/60">{section.subtitle}</p>
                 </div>
-                <span className={`text-2xl ${section.id === 'quran' ? 'text-gray-400' : 'text-white/40'}`}>←</span>
-              </div>
+                <span className="text-2xl text-white/40">👈</span>
             </motion.button>
           ))}
         </div>
 
-        {/* Footer Links */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -113,7 +115,7 @@ export default function DashboardPage() {
             onClick={logout}
             className="w-full bg-red-500/10 border border-red-500/20 rounded-xl py-3 text-red-400 hover:bg-red-500/20 text-sm font-semibold transition"
           >
-            تسجيل خروج
+            تسجيل الخروج
           </button>
         </motion.div>
       </div>
