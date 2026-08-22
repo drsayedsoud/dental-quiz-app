@@ -131,32 +131,6 @@ function QuizContent() {
     }
   }, [answered, currentQuestion, isMuted, user]);
 
-  const handleNext = useCallback(() => {
-    if (currentIndex >= questions.length - 1) {
-      // Save session and go to results
-      if (user) {
-        saveQuizSession(user.uid, {
-          subject: subject || 'Ù…Ø®ØªÙ„Ø·',
-          score,
-          attempted: attempted,
-          lastQuestionIndex: currentIndex,
-          section: section as 'dental' | 'quran',
-        }).catch(() => {});
-        refreshProfile().catch(() => {});
-      }
-      const params = new URLSearchParams({
-        score: String(score),
-        attempted: String(attempted),
-        total: String(questions.length),
-      });
-      router.replace(`/result?${params.toString()}`);
-      return;
-    }
-    setCurrentIndex(prev => prev + 1);
-    setAnswered(false);
-    setSelectedAnswer(null);
-    setShowExplanation(false);
-  }, [currentIndex, questions.length, score, attempted, subject, section, user, router, refreshProfile]);
 
   const handleFinish = async () => {
     if (user) {
