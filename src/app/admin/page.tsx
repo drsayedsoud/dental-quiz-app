@@ -16,7 +16,7 @@ export default function AdminPage() {
   const router = useRouter();
   
   const [activeTab, setActiveTab] = useState<'users' | 'files'>('users');
-  const [usersList, setUsersList] = useState<any[]>([]);
+  const [usersList, setUsersList] = useState<(UserProfile & { id: string })[]>([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(true);
 
   useEffect(() => {
@@ -148,4 +148,5 @@ export default function AdminPage() {
           </div>
   );
 }
+
 
