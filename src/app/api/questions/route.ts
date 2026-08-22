@@ -76,19 +76,6 @@ async function getSheetData(range: string) {
   return response.data.values || [];
 }
 
-function parseQuestions(rows: string[][]) {
-  return rows
-    .filter(row => row[0] && row[1])
-    .map(row => ({
-      question: row[0] || '',
-      choices: [row[1] || '', row[2] || '', row[3] || '', row[4] || ''],
-      correct: row[5] || '',
-      explanation: row[6] || '',
-      detailed: row[9] || '',
-      metadata: row[10] || '',
-    }));
-}
-
 function shuffleArray<T>(array: T[]): T[] {
   const shuffled = [...array];
   for (let i = shuffled.length - 1; i > 0; i--) {
@@ -96,6 +83,23 @@ function shuffleArray<T>(array: T[]): T[] {
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
   return shuffled;
+}
+
+function parseQuestions(rows: string[][], shuffleChoices = true) {
+  return rows
+    .filter(row => row[0] && row[1])
+    .map(row => {
+      const originalChoices = [row[1] || '', row[2] || '', row[3] || '', row[4] || ''].filter(c => c.trim().length > 0);
+      const choices = shuffleChoices ? shuffleArray(originalChoices) : originalChoices;
+      return {
+        question: (row[0] || '').trim(),
+        choices,
+        correct: (row[5] || '').trim(),
+        explanation: (row[6] || '').trim(),
+        detailed: (row[9] || '').trim(),
+        metadata: (row[10] || '').trim(),
+      };
+    });
 }
 
 export async function GET(request: NextRequest) {
@@ -109,8 +113,8 @@ export async function GET(request: NextRequest) {
 
     if (section === 'medical') {
       const rows = await getLocalCsvData('questions_medical.csv');
-      const all = parseQuestions(rows);
-      questions = mode === 'exam' ? shuffleArray(all).slice(0, 50) : all.slice(0, 50);
+      const all = parseQuestions(rows, true);
+      questions = mode === 'exam' ? shuffleArray(all).slice(0, 50) : shuffleArray(all);
     } else {
       // Dental section
       try {
@@ -119,14 +123,16 @@ export async function GET(request: NextRequest) {
           const { start, end } = subjectRanges[subject];
           range = `Sheet1!A${start}:K${end}`;
           const rows = await getSheetData(range);
-          questions = parseQuestions(rows);
+          const parsed = parseQuestions(rows, true);
+          questions = shuffleArray(parsed); // Shuffled all questions of this subject
         } else if (mode === 'exam') {
           const rows = await getSheetData(range);
-          const all = parseQuestions(rows);
+          const all = parseQuestions(rows, true);
           questions = shuffleArray(all).slice(0, 50);
         } else {
           const rows = await getSheetData(range);
-          questions = parseQuestions(rows).slice(0, 50);
+          const all = parseQuestions(rows, true);
+          questions = shuffleArray(all);
         }
       } catch (sheetErr) {
         console.warn('Falling back to local questions.csv:', sheetErr);
@@ -134,20 +140,23 @@ export async function GET(request: NextRequest) {
         if (subject && subjectRanges[subject]) {
           const { start, end } = subjectRanges[subject];
           const sliceRows = rows.slice(Math.max(0, start - 2), end - 1);
-          questions = parseQuestions(sliceRows);
+          const parsed = parseQuestions(sliceRows, true);
+          questions = shuffleArray(parsed); // Shuffled all questions of this subject
         } else if (mode === 'exam') {
-          const all = parseQuestions(rows);
+          const all = parseQuestions(rows, true);
           questions = shuffleArray(all).slice(0, 50);
         } else {
-          const all = parseQuestions(rows);
-          questions = all.slice(0, 50);
+          const all = parseQuestions(rows, true);
+          questions = shuffleArray(all);
         }
       }
     }
 
     return NextResponse.json({ questions: questions || [] }, {
       headers: {
-        'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=7200',
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
       },
     });
   } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
