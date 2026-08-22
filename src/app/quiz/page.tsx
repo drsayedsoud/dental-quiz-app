@@ -40,6 +40,7 @@ function QuizContent() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const correctSoundRef = useRef<HTMLAudioElement | null>(null);
   const wrongSoundRef = useRef<HTMLAudioElement | null>(null);
+  const sessionSavedRef = useRef(false);
 
   // Fetch questions
   useEffect(() => {

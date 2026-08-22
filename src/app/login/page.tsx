@@ -21,7 +21,7 @@ export default function LoginPage() {
     try {
       await loginWithEmail(email, password);
       router.replace('/dashboard');
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
         setError('البريد الإلكتروني أو كلمة المرور غير صحيحة');
       } else if (err.code === 'auth/wrong-password') {
@@ -40,7 +40,7 @@ export default function LoginPage() {
     try {
       await loginWithGoogle();
       router.replace('/dashboard');
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError('حدث خطأ أثناء تسجيل الدخول بـ Google');
     } finally {
       setLoading(false);

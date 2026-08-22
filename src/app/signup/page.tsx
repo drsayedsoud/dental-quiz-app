@@ -32,7 +32,7 @@ export default function SignupPage() {
     try {
       await signupWithEmail(email, password);
       router.replace('/dashboard');
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (err.code === 'auth/email-already-in-use') {
         setError('هذا البريد الإلكتروني مسجل بالفعل');
       } else if (err.code === 'auth/invalid-email') {
