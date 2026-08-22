@@ -1,4 +1,4 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 @layer base {
   :root {
@@ -21,6 +21,11 @@
 
   html {
     scroll-behavior: smooth;
+  }
+
+  html, body {
+    overflow-x: hidden;
+    width: 100%;
   }
 
   body {
@@ -69,3 +74,4 @@
     box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
   }
 }
+
