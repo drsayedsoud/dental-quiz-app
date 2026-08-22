@@ -78,16 +78,26 @@ function QuizContent() {
   // Timer
   const handleNext = useCallback(() => {
     if (currentIndex >= questions.length - 1) {
-      saveSession();
+      if (user) {
+        import('@/lib/firestore').then(({ saveQuizSession }) => {
+          saveQuizSession(user.uid, {
+            subject,
+            score,
+            attempted: attempted + 1,
+            lastQuestionIndex: currentIndex,
+            section: (section as 'dental' | 'quran')
+          }).catch(console.error);
+        });
+      }
       router.push(`/result?score=${score}&attempted=${attempted+1}&subject=${subject||""}&section=${section||""}`);
     } else {
       setCurrentIndex(prev => prev + 1);
       setAnswered(false);
-      setSelected(null);
+      setSelectedAnswer(null);
       setTimeout(() => setTimeLeft(30), 0);
       setShowExplanation(false);
     }
-  }, [currentIndex, questions.length, score, attempted, subject, section, router]);
+  }, [currentIndex, questions.length, score, attempted, subject, section, router, user]);
 
   useEffect(() => {
     if (loadingQuestions || answered || questions.length === 0) return;
