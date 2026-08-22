@@ -73,28 +73,6 @@ export default function DashboardPage() {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-cyan-500/5 rounded-full blur-[150px]" />
 
       <div className="relative z-10 px-4 py-8 max-w-lg mx-auto">
-        {/* Admin Settings Button */}
-        {isAdmin ? (
-          <button
-            onClick={() => router.push('/admin')}
-            className="absolute top-4 right-4 bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 border border-cyan-500/30 px-4 py-2 rounded-xl transition font-bold flex items-center gap-2"
-          >
-            <span>⚙️</span> الإعدادات
-          </button>
-        ) : (
-          <button
-            onMouseDown={handlePressStart}
-            onMouseUp={handlePressEnd}
-            onMouseLeave={handlePressEnd}
-            onTouchStart={handlePressStart}
-            onTouchEnd={handlePressEnd}
-            className="absolute top-4 right-4 text-gray-500 hover:text-gray-400 transition p-2 cursor-default select-none"
-            title="الإعدادات"
-          >
-            ⚙️
-          </button>
-        )}
-
         {/* Header */}
         <motion.div
           initial={{ y: -20, opacity: 0 }}
@@ -168,6 +146,40 @@ export default function DashboardPage() {
           >
             تسجيل خروج
           </button>
+
+          {/* Admin settings button - small and side */}
+          <div className="pt-2 flex justify-start">
+            {isAdmin ? (
+              <button
+                onClick={() => router.push('/admin')}
+                className="text-xs text-gray-500 hover:text-cyan-400 transition flex items-center gap-1.5 py-1 px-2.5 rounded-lg hover:bg-white/5"
+              >
+                <span>⚙️</span>
+                <span>خاص بالإدارة</span>
+              </button>
+            ) : (
+              <button
+                onMouseDown={handlePressStart}
+                onMouseUp={handlePressEnd}
+                onMouseLeave={handlePressEnd}
+                onTouchStart={handlePressStart}
+                onTouchEnd={handlePressEnd}
+                onClick={() => {
+                  const pin = prompt('أدخل الرقم السري للوحة التحكم:');
+                  if (pin === '1153') {
+                    router.push('/admin');
+                  } else if (pin !== null) {
+                    alert('الرقم السري غير صحيح!');
+                  }
+                }}
+                className="text-xs text-gray-500 hover:text-cyan-400 transition flex items-center gap-1.5 py-1 px-2.5 rounded-lg hover:bg-white/5 select-none"
+                title="خاص بالإدارة"
+              >
+                <span>⚙️</span>
+                <span>خاص بالإدارة</span>
+              </button>
+            )}
+          </div>
         </motion.div>
       </div>
     </div>

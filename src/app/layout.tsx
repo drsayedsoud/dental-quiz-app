@@ -3,6 +3,7 @@ import { Cairo } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/context/AuthContext';
 import InstallPrompt from '@/components/InstallPrompt';
+import WakeLock from '@/components/WakeLock';
 
 const cairo = Cairo({
   subsets: ['arabic', 'latin'],
@@ -38,6 +39,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-screen">
         <AuthProvider>
+          <WakeLock />
           {children}
           <InstallPrompt />
         </AuthProvider>
