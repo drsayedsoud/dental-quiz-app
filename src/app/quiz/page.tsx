@@ -79,7 +79,7 @@ function QuizContent() {
   const handleNext = useCallback(() => {
     if (currentIndex >= questions.length - 1) {
       saveSession();
-      router.push(/result?score=+score+&attempted=+(attempted+1)+&subject=+(subject||'') + &section=+(section||''));
+      router.push(/result?score=&attempted=&subject=&section=);
     } else {
       setCurrentIndex(prev => prev + 1);
       setAnswered(false);
@@ -347,4 +347,5 @@ export default function QuizPage() {
     </Suspense>
   );
 }
+
 
