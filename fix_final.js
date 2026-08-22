@@ -1,4 +1,16 @@
-@import "tailwindcss";
+﻿const fs = require('fs');
+
+// Fix Quiz Page
+const quizPath = 'src/app/quiz/page.tsx';
+let quizCode = fs.readFileSync(quizPath, 'utf8');
+quizCode = quizCode.replace(/router\.push\(\/result\?score=&attempted=&subject=&section=\);/, 'router.push(`/result?score=${score}&attempted=${attempted+1}&subject=${subject||""}&section=${section||""}`);');
+fs.writeFileSync(quizPath, quizCode, 'utf8');
+
+// Fix Globals CSS
+const cssPath = 'src/app/globals.css';
+let cssCode = fs.readFileSync(cssPath, 'utf8');
+// I will just reset the CSS to what it should be
+const correctCss = `@import "tailwindcss";
 
 @layer base {
   :root {
@@ -67,4 +79,7 @@
   .glow-gold {
     box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
   }
-}
+}`;
+fs.writeFileSync(cssPath, correctCss, 'utf8');
+
+console.log("Fixes applied safely.");

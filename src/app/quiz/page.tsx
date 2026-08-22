@@ -79,7 +79,7 @@ function QuizContent() {
   const handleNext = useCallback(() => {
     if (currentIndex >= questions.length - 1) {
       saveSession();
-      router.push(/result?score=&attempted=&subject=&section=);
+      router.push(`/result?score=${score}&attempted=${attempted+1}&subject=${subject||""}&section=${section||""}`);
     } else {
       setCurrentIndex(prev => prev + 1);
       setAnswered(false);
