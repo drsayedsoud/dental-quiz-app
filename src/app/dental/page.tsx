@@ -196,11 +196,6 @@ export default function DentalPage() {
                     {subject.name}
                   </h2>
                 </div>
-
-                {/* Subtle Tap Indicator */}
-                <div className="w-full flex items-center justify-center gap-1 text-[10px] text-cyan-400/80 font-medium py-1 px-2 mt-2 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
-                  <span>اضغط للاختيار</span>
-                </div>
               </motion.button>
             );
           })}
