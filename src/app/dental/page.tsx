@@ -6,17 +6,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
 
 const subjects = [
-  { name: 'Endodontic', icon: '🦷', startIndex: 2270 },
-  { name: 'Operative', icon: '🔧', startIndex: 5013 },
-  { name: 'Oral Surgery', icon: '🔪', startIndex: 2991 },
-  { name: 'Periodontic', icon: '🩺', startIndex: 4112 },
-  { name: 'Fixed Prosthodontic', icon: '🏗️', startIndex: 4601 },
-  { name: 'Pedodontic', icon: '👶', startIndex: 3290 },
-  { name: 'Orthodontic', icon: '😁', startIndex: 3511 },
-  { name: 'Pathology', icon: '🔬', startIndex: 5223 },
-  { name: 'Radiology', icon: '📸', startIndex: 3880 },
-  { name: 'Removable Prosthodontic', icon: '🦿', startIndex: 4804 },
-  { name: 'Oral Medicine', icon: '💊', startIndex: 4368 },
+  { name: 'Endodontic', arabicName: 'علاج الجذور والأعصاب', icon: '⚡', startIndex: 2270 },
+  { name: 'Operative', arabicName: 'حشو وترميم وتجميل الأسنان', icon: '💎', startIndex: 5013 },
+  { name: 'Oral Surgery', arabicName: 'جراحة الفم والفكين والخلع', icon: '✂️', startIndex: 2991 },
+  { name: 'Periodontic', arabicName: 'أمراض وعلاج اللثة', icon: '🌿', startIndex: 4112 },
+  { name: 'Fixed Prosthodontic', arabicName: 'التركيبات الثابتة والتيجان والجسور', icon: '👑', startIndex: 4601 },
+  { name: 'Pedodontic', arabicName: 'طب أسنان الأطفال', icon: '🧸', startIndex: 3290 },
+  { name: 'Orthodontic', arabicName: 'تقويم وتراصف الأسنان', icon: '📐', startIndex: 3511 },
+  { name: 'Pathology', arabicName: 'علم الأمراض وفحص الأنسجة', icon: '🔬', startIndex: 5223 },
+  { name: 'Radiology', arabicName: 'الأشعة والتصوير السني', icon: '🩻', startIndex: 3880 },
+  { name: 'Removable Prosthodontic', arabicName: 'الاستعاضة والأطقم المتحركة', icon: '👄', startIndex: 4804 },
+  { name: 'Oral Medicine', arabicName: 'طب وتشخيص وأدوية الفم', icon: '💊', startIndex: 4368 },
 ];
 
 const studyLinks: Record<string, string> = {
@@ -69,7 +69,7 @@ export default function DentalPage() {
       <div className="relative z-10 px-4 py-6 max-w-lg mx-auto">
         {/* Header */}
         <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="text-center mb-6">
-          <h1 className="text-2xl font-extrabold text-gradient">🦷 طب الأسنان</h1>
+          <h1 className="text-2xl font-extrabold text-gradient">🦷 تخصصات طب الأسنان</h1>
           <div className="mt-2 inline-block bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 text-sm font-bold px-4 py-1.5 rounded-full">
             {profile?.questionCount || 0} سؤال محلول
           </div>
@@ -87,7 +87,7 @@ export default function DentalPage() {
           disabled={isLimited}
           className="w-full bg-gradient-to-l from-green-600 to-emerald-700 text-white font-bold py-4 rounded-2xl mb-6 shadow-lg hover:from-green-500 hover:to-emerald-600 transition disabled:opacity-40 disabled:cursor-not-allowed text-lg"
         >
-          🧪 ادخل اختبار الآن
+          🧪 ادخل اختبار شامل الآن
         </motion.button>
 
         {/* Subject Cards */}
@@ -97,18 +97,23 @@ export default function DentalPage() {
               key={subject.name}
               initial={{ x: -20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: index * 0.05 }}
+              transition={{ delay: index * 0.04 }}
             >
               <button
                 onClick={() => setExpandedSubject(expandedSubject === subject.name ? null : subject.name)}
                 className="w-full glass glass-hover rounded-2xl p-4 text-right transition"
               >
                 <div className="flex items-center gap-3">
-                  <span className="text-2xl">{subject.icon}</span>
-                  <span className="flex-1 font-bold text-white">{subject.name}</span>
+                  <span className="text-2xl w-11 h-11 flex items-center justify-center bg-white/5 rounded-xl border border-white/10 shrink-0">
+                    {subject.icon}
+                  </span>
+                  <div className="flex-1 text-right">
+                    <div className="font-bold text-white text-base leading-snug">{subject.name}</div>
+                    <div className="text-xs text-cyan-400/80 font-medium mt-0.5">{subject.arabicName}</div>
+                  </div>
                   <motion.span
                     animate={{ rotate: expandedSubject === subject.name ? 90 : 0 }}
-                    className="text-gray-400"
+                    className="text-gray-400 text-xs"
                   >
                     ◄
                   </motion.span>
@@ -154,7 +159,7 @@ export default function DentalPage() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
           onClick={() => router.push('/dashboard')}
-          className="w-full mt-6 glass glass-hover rounded-xl py-3 text-gray-400 hover:text-white text-sm transition"
+          className="w-full mt-6 glass glass-hover rounded-xl py-3 text-gray-400 hover:text-white text-sm transition font-semibold"
         >
           ← العودة للأقسام
         </motion.button>
