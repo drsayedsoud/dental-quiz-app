@@ -46,7 +46,7 @@ export interface QuizSession {
   score: number;
   attempted: number;
   lastQuestionIndex: number;
-  section: 'dental' | 'quran';
+  section: 'dental' | 'medical' | 'quran' | string;
 }
 
 export async function saveQuizSession(

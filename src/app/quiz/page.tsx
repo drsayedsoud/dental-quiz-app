@@ -88,7 +88,7 @@ function QuizContent() {
           score,
           attempted: attempted + 1,
           lastQuestionIndex: currentIndex,
-          section: (section as 'dental' | 'quran')
+          section: section
         }).catch(console.error);
       }
       sessionStorage.setItem('wrongAnswers', JSON.stringify(wrongAnswers));
@@ -175,7 +175,7 @@ function QuizContent() {
         score,
         attempted,
         lastQuestionIndex: currentIndex,
-        section: section as 'dental' | 'quran',
+        section: section,
       }).catch(() => {});
       refreshProfile().catch(() => {});
     }
