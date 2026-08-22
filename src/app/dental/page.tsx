@@ -1,22 +1,22 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
 
 const subjects = [
-  { name: 'Endodontic', arabicName: 'علاج الجذور والأعصاب', icon: '⚡', startIndex: 2270 },
-  { name: 'Operative', arabicName: 'حشو وترميم وتجميل الأسنان', icon: '💎', startIndex: 5013 },
-  { name: 'Oral Surgery', arabicName: 'جراحة الفم والفكين والخلع', icon: '✂️', startIndex: 2991 },
-  { name: 'Periodontic', arabicName: 'أمراض وعلاج اللثة', icon: '🌿', startIndex: 4112 },
-  { name: 'Fixed Prosthodontic', arabicName: 'التركيبات الثابتة والتيجان والجسور', icon: '👑', startIndex: 4601 },
-  { name: 'Pedodontic', arabicName: 'طب أسنان الأطفال', icon: '🧸', startIndex: 3290 },
-  { name: 'Orthodontic', arabicName: 'تقويم وتراصف الأسنان', icon: '📐', startIndex: 3511 },
-  { name: 'Pathology', arabicName: 'علم الأمراض وفحص الأنسجة', icon: '🔬', startIndex: 5223 },
-  { name: 'Radiology', arabicName: 'الأشعة والتصوير السني', icon: '🩻', startIndex: 3880 },
-  { name: 'Removable Prosthodontic', arabicName: 'الاستعاضة والأطقم المتحركة', icon: '👄', startIndex: 4804 },
-  { name: 'Oral Medicine', arabicName: 'طب وتشخيص وأدوية الفم', icon: '💊', startIndex: 4368 },
+  { name: 'Endodontic', icon: '⚡', startIndex: 2270 },
+  { name: 'Operative', icon: '💎', startIndex: 5013 },
+  { name: 'Oral Surgery', icon: '✂️', startIndex: 2991 },
+  { name: 'Periodontic', icon: '🌿', startIndex: 4112 },
+  { name: 'Fixed Prosthodontic', icon: '👑', startIndex: 4601 },
+  { name: 'Pedodontic', icon: '🧸', startIndex: 3290 },
+  { name: 'Orthodontic', icon: '📐', startIndex: 3511 },
+  { name: 'Pathology', icon: '🔬', startIndex: 5223 },
+  { name: 'Radiology', icon: '🩻', startIndex: 3880 },
+  { name: 'Removable Prosthodontic', icon: '👄', startIndex: 4804 },
+  { name: 'Oral Medicine', icon: '💊', startIndex: 4368 },
 ];
 
 const studyLinks: Record<string, string> = {
@@ -36,7 +36,6 @@ const studyLinks: Record<string, string> = {
 export default function DentalPage() {
   const { user, profile, loading } = useAuth();
   const router = useRouter();
-  const [expandedSubject, setExpandedSubject] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && !user) router.replace('/login');
@@ -69,7 +68,7 @@ export default function DentalPage() {
       <div className="relative z-10 px-4 py-6 max-w-lg mx-auto">
         {/* Header */}
         <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="text-center mb-6">
-          <h1 className="text-2xl font-extrabold text-gradient">🦷 تخصصات طب الأسنان</h1>
+          <h1 className="text-2xl font-extrabold text-gradient">🦷 Dental Prometric</h1>
           <div className="mt-2 inline-block bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 text-sm font-bold px-4 py-1.5 rounded-full">
             {profile?.questionCount || 0} سؤال محلول
           </div>
@@ -85,70 +84,52 @@ export default function DentalPage() {
           whileTap={{ scale: 0.95 }}
           onClick={() => startExam()}
           disabled={isLimited}
-          className="w-full bg-gradient-to-l from-green-600 to-emerald-700 text-white font-bold py-4 rounded-2xl mb-6 shadow-lg hover:from-green-500 hover:to-emerald-600 transition disabled:opacity-40 disabled:cursor-not-allowed text-lg"
+          className="w-full bg-gradient-to-l from-green-600 to-emerald-700 text-white font-bold py-3.5 rounded-2xl mb-6 shadow-lg hover:from-green-500 hover:to-emerald-600 transition disabled:opacity-40 disabled:cursor-not-allowed text-base flex items-center justify-center gap-2"
         >
-          🧪 ادخل اختبار شامل الآن
+          <span>🧪</span>
+          <span>ادخل اختبار شامل الآن</span>
         </motion.button>
 
-        {/* Subject Cards */}
-        <div className="space-y-3">
+        {/* 2-Column Grid of Subject Cards */}
+        <div className="grid grid-cols-2 gap-3 mb-6">
           {subjects.map((subject, index) => (
             <motion.div
               key={subject.name}
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: index * 0.04 }}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.03 }}
+              className="glass rounded-2xl p-3.5 flex flex-col justify-between items-center text-center border border-white/10 hover:border-cyan-500/30 transition shadow-lg relative group"
             >
-              <button
-                onClick={() => setExpandedSubject(expandedSubject === subject.name ? null : subject.name)}
-                className="w-full glass glass-hover rounded-2xl p-4 text-right transition"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl w-11 h-11 flex items-center justify-center bg-white/5 rounded-xl border border-white/10 shrink-0">
-                    {subject.icon}
-                  </span>
-                  <div className="flex-1 text-right">
-                    <div className="font-bold text-white text-base leading-snug">{subject.name}</div>
-                    <div className="text-xs text-cyan-400/80 font-medium mt-0.5">{subject.arabicName}</div>
-                  </div>
-                  <motion.span
-                    animate={{ rotate: expandedSubject === subject.name ? 90 : 0 }}
-                    className="text-gray-400 text-xs"
-                  >
-                    ◄
-                  </motion.span>
-                </div>
-              </button>
+              {/* Icon */}
+              <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-2xl mb-2 group-hover:scale-110 group-hover:bg-cyan-500/10 group-hover:border-cyan-500/30 transition">
+                {subject.icon}
+              </div>
 
-              <AnimatePresence>
-                {expandedSubject === subject.name && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="overflow-hidden"
-                  >
-                    <div className="flex gap-2 pt-2 px-2">
-                      <a
-                        href={studyLinks[subject.name]}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-1 bg-blue-500/10 border border-blue-500/20 text-blue-400 py-3 rounded-xl text-center text-sm font-semibold hover:bg-blue-500/20 transition"
-                      >
-                        📖 ذاكر
-                      </a>
-                      <button
-                        onClick={() => startExam(subject.name, subject.startIndex)}
-                        disabled={isLimited}
-                        className="flex-1 bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 py-3 rounded-xl text-center text-sm font-semibold hover:bg-cyan-500/20 transition disabled:opacity-40"
-                      >
-                        📝 اختبار
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              {/* Title */}
+              <h2 className="font-bold text-white text-xs sm:text-sm leading-snug min-h-[2rem] flex items-center justify-center mb-3">
+                {subject.name}
+              </h2>
+
+              {/* Action Buttons */}
+              <div className="flex gap-1.5 w-full mt-auto">
+                <a
+                  href={studyLinks[subject.name]}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 bg-blue-500/15 hover:bg-blue-500/25 active:scale-95 border border-blue-500/30 text-blue-300 py-1.5 rounded-xl text-center text-xs font-bold transition flex items-center justify-center gap-1"
+                >
+                  <span>📖</span>
+                  <span>ذاكر</span>
+                </a>
+                <button
+                  onClick={() => startExam(subject.name, subject.startIndex)}
+                  disabled={isLimited}
+                  className="flex-1 bg-cyan-500/15 hover:bg-cyan-500/25 active:scale-95 border border-cyan-500/30 text-cyan-300 py-1.5 rounded-xl text-center text-xs font-bold transition disabled:opacity-40 flex items-center justify-center gap-1"
+                >
+                  <span>📝</span>
+                  <span>اختبار</span>
+                </button>
+              </div>
             </motion.div>
           ))}
         </div>
@@ -157,9 +138,9 @@ export default function DentalPage() {
         <motion.button
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
+          transition={{ delay: 0.4 }}
           onClick={() => router.push('/dashboard')}
-          className="w-full mt-6 glass glass-hover rounded-xl py-3 text-gray-400 hover:text-white text-sm transition font-semibold"
+          className="w-full glass glass-hover rounded-xl py-3 text-gray-400 hover:text-white text-sm transition font-semibold"
         >
           ← العودة للأقسام
         </motion.button>
