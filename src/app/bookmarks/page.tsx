@@ -1,15 +1,19 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
 import { getBookmarks, toggleBookmark, Bookmark } from '@/lib/firestore';
 import Link from 'next/link';
 
-export default function BookmarksPage() {
+import { useSearchParams } from 'next/navigation';
+
+function BookmarksContent() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const sectionFilter = searchParams.get('section');
   
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -24,11 +28,15 @@ export default function BookmarksPage() {
   useEffect(() => {
     if (user) {
       getBookmarks(user.uid).then(data => {
-        setBookmarks(data);
+        if (sectionFilter) {
+          setBookmarks(data.filter(b => b.section === sectionFilter));
+        } else {
+          setBookmarks(data);
+        }
         setIsLoading(false);
       });
     }
-  }, [user]);
+  }, [user, sectionFilter]);
 
   const handleRemove = async (bookmark: Bookmark) => {
     if (!user) return;
@@ -140,5 +148,17 @@ export default function BookmarksPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function BookmarksPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a]">
+        <div className="text-4xl text-cyan-500">⭐</div>
+      </div>
+    }>
+      <BookmarksContent />
+    </Suspense>
   );
 }

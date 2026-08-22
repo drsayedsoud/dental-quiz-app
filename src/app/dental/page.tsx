@@ -94,20 +94,67 @@ export default function DentalPage() {
           )}
         </motion.div>
 
-        {/* Random Exam Button */}
-        <motion.button
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => startExam()}
-          disabled={isLimited}
-          className="w-full bg-gradient-to-l from-green-600 to-emerald-700 text-white font-bold py-3.5 rounded-2xl mb-6 shadow-lg hover:from-green-500 hover:to-emerald-600 transition disabled:opacity-40 disabled:cursor-not-allowed text-base flex items-center justify-center gap-2"
-        >
-          <span>🧪</span>
-          <span>ادخل اختبار شامل الآن</span>
-        </motion.button>
+        {/* Action Buttons */}
+        <div className="grid grid-cols-2 gap-3 mb-6">
+          <motion.button
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => startExam()}
+            disabled={isLimited}
+            className="bg-gradient-to-l from-green-600 to-emerald-700 text-white font-bold p-4 rounded-2xl shadow-lg hover:from-green-500 hover:to-emerald-600 transition disabled:opacity-40 disabled:cursor-not-allowed text-center flex flex-col items-center justify-center gap-2"
+          >
+            <span className="text-2xl">🧪</span>
+            <span className="text-xs sm:text-sm">اختبار شامل</span>
+          </motion.button>
 
-        {/* 2-Column Square Grid */}
+          <motion.button
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => {
+              if (isLimited) {
+                alert('🚫 لقد تجاوزت الحد الأقصى.');
+                return;
+              }
+              router.push('/quiz?section=dental&mode=simulation');
+            }}
+            disabled={isLimited}
+            className="bg-purple-500/20 border border-purple-500/30 hover:bg-purple-500/30 text-purple-300 p-4 rounded-2xl transition disabled:opacity-40 disabled:cursor-not-allowed text-center flex flex-col items-center justify-center gap-2"
+          >
+            <span className="text-2xl">⏱️</span>
+            <span className="text-xs sm:text-sm font-bold">امتحان محاكاة</span>
+          </motion.button>
+
+          <motion.button
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => {
+              if (isLimited) {
+                alert('🚫 لقد تجاوزت الحد الأقصى.');
+                return;
+              }
+              router.push('/quiz?section=dental&mode=quick');
+            }}
+            disabled={isLimited}
+            className="bg-blue-500/20 border border-blue-500/30 hover:bg-blue-500/30 text-blue-300 p-4 rounded-2xl transition disabled:opacity-40 disabled:cursor-not-allowed text-center flex flex-col items-center justify-center gap-2"
+          >
+            <span className="text-2xl">🎯</span>
+            <span className="text-xs sm:text-sm font-bold">اختبار سريع (10)</span>
+          </motion.button>
+
+          <motion.button
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => router.push('/bookmarks?section=dental')}
+            className="bg-yellow-500/20 border border-yellow-500/30 hover:bg-yellow-500/30 text-yellow-300 p-4 rounded-2xl transition text-center flex flex-col items-center justify-center gap-2"
+          >
+            <span className="text-2xl">⭐</span>
+            <span className="text-xs sm:text-sm font-bold">الأسئلة المحفوظة</span>
+          </motion.button>
+        </div>
         <div className="grid grid-cols-2 gap-3.5 mb-6">
           {subjects.map((subject, index) => {
             const IconComp = DentalIconMap[subject.name];

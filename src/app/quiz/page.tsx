@@ -204,7 +204,8 @@ function QuizContent() {
 
   const handleBookmarkToggle = async () => {
     if (!user || !currentQuestion) return;
-    const isNowBookmarked = await toggleBookmark(user.uid, currentQuestion);
+    const bookmarkData = { ...currentQuestion, section };
+    const isNowBookmarked = await toggleBookmark(user.uid, bookmarkData);
     setIsCurrentBookmarked(isNowBookmarked);
   };
 

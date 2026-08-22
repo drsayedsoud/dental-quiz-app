@@ -128,6 +128,7 @@ export interface Bookmark {
   explanation: string;
   detailed: string;
   metadata: string;
+  section?: string | null;
   savedAt: Timestamp;
 }
 

@@ -10,11 +10,11 @@ const sections = [
   {
     id: 'medical',
     title: 'الطب البشري',
-    subtitle: 'Medical Prometric (قريباً)',
+    subtitle: 'Medical Prometric (متاح)',
     icon: '👨‍⚕️',
-    gradient: 'from-blue-600 to-indigo-700 opacity-60 cursor-not-allowed',
-    href: '#',
-    comingSoon: true,
+    gradient: 'from-blue-600 to-indigo-700',
+    href: '/medical',
+    comingSoon: false,
   },
   {
     id: 'dental',
@@ -221,31 +221,6 @@ export default function DashboardPage() {
           ))}
         </div>
 
-        {/* Action Buttons */}
-        <div className="grid grid-cols-2 gap-3 mb-10">
-          <motion.button
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            onClick={() => router.push('/quiz?section=dental&mode=simulation')}
-            className="bg-purple-500/10 border border-purple-500/20 hover:bg-purple-500/20 text-purple-400 p-4 rounded-2xl transition active:scale-95 text-center flex flex-col items-center justify-center gap-2"
-          >
-            <span className="text-2xl">⏱️</span>
-            <span className="text-xs sm:text-sm font-bold">امتحان محاكاة</span>
-          </motion.button>
-
-          <motion.button
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            onClick={() => router.push('/quiz?section=dental&mode=quick')}
-            className="bg-green-500/10 border border-green-500/20 hover:bg-green-500/20 text-green-400 p-4 rounded-2xl transition active:scale-95 text-center flex flex-col items-center justify-center gap-2"
-          >
-            <span className="text-2xl">🎯</span>
-            <span className="text-xs sm:text-sm font-bold">اختبار سريع (10)</span>
-          </motion.button>
-        </div>
-
         {/* Footer Links */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -253,12 +228,6 @@ export default function DashboardPage() {
           transition={{ delay: 0.5 }}
           className="space-y-3"
         >
-          <button
-            onClick={() => router.push('/bookmarks')}
-            className="w-full glass glass-hover rounded-xl py-3 text-yellow-400 hover:text-yellow-300 text-sm font-semibold transition flex items-center justify-center gap-2"
-          >
-            ⭐ الأسئلة المحفوظة
-          </button>
           <button
             onClick={() => router.push('/stats')}
             className="w-full glass glass-hover rounded-xl py-3 text-blue-400 hover:text-blue-300 text-sm font-semibold transition flex items-center justify-center gap-2"
