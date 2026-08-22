@@ -11,6 +11,8 @@ export interface UserProfile {
   isVip: boolean;
   questionCount: number;
   createdAt: Timestamp;
+  role?: string;
+  totalPoints?: number;
 }
 
 export async function createUserProfile(userId: string, email: string) {
@@ -88,4 +90,22 @@ export async function getLastSessionForSubject(
 export async function getAllUsers() {
   const snap = await getDocs(collection(db, 'users'));
   return snap.docs.map(d => ({ id: d.id, ...d.data() as UserProfile }));
+}
+
+export async function toggleUserVip(userId: string, currentStatus: boolean) {
+  try {
+    await updateDoc(doc(db, 'users', userId), { isVip: !currentStatus });
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+export async function resetUserQuestionCount(userId: string) {
+  try {
+    await updateDoc(doc(db, 'users', userId), { questionCount: 0 });
+    return true;
+  } catch (e) {
+    return false;
+  }
 }
