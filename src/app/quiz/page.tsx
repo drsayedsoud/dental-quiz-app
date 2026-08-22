@@ -140,8 +140,6 @@ function QuizContent() {
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [currentIndex, loadingQuestions, answered, questions.length, isSimulation, initialTime]);
 
-  const currentQuestion = questions[currentIndex];
-
   const handleAnswer = useCallback(async (choice: string) => {
     if (answered || !currentQuestion) return;
     setAnswered(true);
