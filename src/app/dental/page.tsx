@@ -1,22 +1,23 @@
 'use client';
 
-import { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
+import { DentalIconMap } from '@/components/DentalIcons';
 
 const subjects = [
-  { name: 'Endodontic', icon: '⚡', startIndex: 2270 },
-  { name: 'Operative', icon: '💎', startIndex: 5013 },
-  { name: 'Oral Surgery', icon: '✂️', startIndex: 2991 },
-  { name: 'Periodontic', icon: '🌿', startIndex: 4112 },
-  { name: 'Fixed Prosthodontic', icon: '👑', startIndex: 4601 },
-  { name: 'Pedodontic', icon: '🧸', startIndex: 3290 },
-  { name: 'Orthodontic', icon: '📐', startIndex: 3511 },
-  { name: 'Pathology', icon: '🔬', startIndex: 5223 },
-  { name: 'Radiology', icon: '🩻', startIndex: 3880 },
-  { name: 'Removable Prosthodontic', icon: '👄', startIndex: 4804 },
-  { name: 'Oral Medicine', icon: '💊', startIndex: 4368 },
+  { name: 'Endodontic', startIndex: 2270 },
+  { name: 'Operative', startIndex: 5013 },
+  { name: 'Oral Surgery', startIndex: 2991 },
+  { name: 'Periodontic', startIndex: 4112 },
+  { name: 'Fixed Prosthodontic', startIndex: 4601 },
+  { name: 'Pedodontic', startIndex: 3290 },
+  { name: 'Orthodontic', startIndex: 3511 },
+  { name: 'Pathology', startIndex: 5223 },
+  { name: 'Radiology', startIndex: 3880 },
+  { name: 'Removable Prosthodontic', startIndex: 4804 },
+  { name: 'Oral Medicine', startIndex: 4368 },
 ];
 
 const studyLinks: Record<string, string> = {
@@ -36,6 +37,7 @@ const studyLinks: Record<string, string> = {
 export default function DentalPage() {
   const { user, profile, loading } = useAuth();
   const router = useRouter();
+  const [selectedSubject, setSelectedSubject] = useState<{ name: string; startIndex: number } | null>(null);
 
   useEffect(() => {
     if (!loading && !user) router.replace('/login');
@@ -68,7 +70,7 @@ export default function DentalPage() {
       <div className="relative z-10 px-4 py-6 max-w-lg mx-auto">
         {/* Header */}
         <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="text-center mb-6">
-          <h1 className="text-2xl font-extrabold text-gradient">🦷 Dental Prometric</h1>
+          <h1 className="text-2xl md:text-3xl font-extrabold text-gradient">🦷 Dental Prometric</h1>
           <div className="mt-2 inline-block bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 text-sm font-bold px-4 py-1.5 rounded-full">
             {profile?.questionCount || 0} سؤال محلول
           </div>
@@ -90,49 +92,115 @@ export default function DentalPage() {
           <span>ادخل اختبار شامل الآن</span>
         </motion.button>
 
-        {/* 2-Column Grid of Subject Cards */}
-        <div className="grid grid-cols-2 gap-3 mb-6">
-          {subjects.map((subject, index) => (
-            <motion.div
-              key={subject.name}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.03 }}
-              className="glass rounded-2xl p-3.5 flex flex-col justify-between items-center text-center border border-white/10 hover:border-cyan-500/30 transition shadow-lg relative group"
-            >
-              {/* Icon */}
-              <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-2xl mb-2 group-hover:scale-110 group-hover:bg-cyan-500/10 group-hover:border-cyan-500/30 transition">
-                {subject.icon}
-              </div>
+        {/* 2-Column Square Grid */}
+        <div className="grid grid-cols-2 gap-3.5 mb-6">
+          {subjects.map((subject, index) => {
+            const IconComp = DentalIconMap[subject.name];
+            return (
+              <motion.button
+                key={subject.name}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.03 }}
+                whileTap={{ scale: 0.96 }}
+                onClick={() => setSelectedSubject(subject)}
+                className="glass rounded-3xl p-4 flex flex-col items-center justify-between text-center border border-white/10 hover:border-cyan-500/40 hover:bg-white/10 transition-all shadow-xl group aspect-square"
+              >
+                {/* Visual Dental Illustration */}
+                <div className="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center group-hover:scale-110 transition duration-300">
+                  {IconComp && <IconComp className="w-full h-full drop-shadow-md" />}
+                </div>
 
-              {/* Title */}
-              <h2 className="font-bold text-white text-xs sm:text-sm leading-snug min-h-[2rem] flex items-center justify-center mb-3">
-                {subject.name}
-              </h2>
+                {/* Specialty Title */}
+                <div className="w-full">
+                  <h2 className="font-extrabold text-white text-sm sm:text-base leading-tight tracking-wide group-hover:text-cyan-400 transition">
+                    {subject.name}
+                  </h2>
+                </div>
 
-              {/* Action Buttons */}
-              <div className="flex gap-1.5 w-full mt-auto">
-                <a
-                  href={studyLinks[subject.name]}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 bg-blue-500/15 hover:bg-blue-500/25 active:scale-95 border border-blue-500/30 text-blue-300 py-1.5 rounded-xl text-center text-xs font-bold transition flex items-center justify-center gap-1"
-                >
-                  <span>📖</span>
-                  <span>ذاكر</span>
-                </a>
-                <button
-                  onClick={() => startExam(subject.name, subject.startIndex)}
-                  disabled={isLimited}
-                  className="flex-1 bg-cyan-500/15 hover:bg-cyan-500/25 active:scale-95 border border-cyan-500/30 text-cyan-300 py-1.5 rounded-xl text-center text-xs font-bold transition disabled:opacity-40 flex items-center justify-center gap-1"
-                >
-                  <span>📝</span>
-                  <span>اختبار</span>
-                </button>
-              </div>
-            </motion.div>
-          ))}
+                {/* Subtle Tap Indicator */}
+                <div className="w-full flex items-center justify-center gap-1 text-[11px] text-cyan-400/80 font-medium py-1 px-2 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
+                  <span>اضغط للاختيار</span>
+                  <span>←</span>
+                </div>
+              </motion.button>
+            );
+          })}
         </div>
+
+        {/* Modal Popup for Study / Exam */}
+        <AnimatePresence>
+          {selectedSubject && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+              {/* Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setSelectedSubject(null)}
+                className="absolute inset-0 bg-black/80 backdrop-blur-md"
+              />
+
+              {/* Modal Box */}
+              <motion.div
+                initial={{ scale: 0.85, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.85, opacity: 0, y: 20 }}
+                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                className="relative z-10 w-full max-w-sm bg-[#0f172a] border-2 border-cyan-500/40 rounded-3xl p-6 shadow-[0_0_50px_rgba(6,182,212,0.25)] text-center"
+              >
+                {/* Close button */}
+                <button
+                  onClick={() => setSelectedSubject(null)}
+                  className="absolute top-4 left-4 w-8 h-8 rounded-full bg-white/10 text-gray-300 hover:text-white hover:bg-white/20 flex items-center justify-center transition"
+                >
+                  ✕
+                </button>
+
+                {/* Large Icon */}
+                <div className="w-24 h-24 mx-auto mb-4 flex items-center justify-center">
+                  {DentalIconMap[selectedSubject.name] && (
+                    React.createElement(DentalIconMap[selectedSubject.name], { className: "w-full h-full drop-shadow-xl" })
+                  )}
+                </div>
+
+                {/* Title */}
+                <h3 className="text-xl font-extrabold text-white mb-2">
+                  {selectedSubject.name}
+                </h3>
+                <p className="text-xs text-cyan-200/70 mb-6">
+                  اختر ما ترغب بالبدء به الآن:
+                </p>
+
+                {/* Action Buttons */}
+                <div className="space-y-3">
+                  <a
+                    href={studyLinks[selectedSubject.name]}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full bg-gradient-to-l from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-[0.98] text-white py-3.5 rounded-2xl font-bold shadow-lg shadow-blue-600/30 transition flex items-center justify-center gap-2 text-base"
+                  >
+                    <span>📖</span>
+                    <span>ذاكر المحتوى والشرح</span>
+                  </a>
+
+                  <button
+                    onClick={() => {
+                      const subj = selectedSubject;
+                      setSelectedSubject(null);
+                      startExam(subj.name, subj.startIndex);
+                    }}
+                    disabled={isLimited}
+                    className="w-full bg-gradient-to-l from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 active:scale-[0.98] text-white py-3.5 rounded-2xl font-bold shadow-lg shadow-cyan-600/30 transition flex items-center justify-center gap-2 text-base disabled:opacity-40"
+                  >
+                    <span>📝</span>
+                    <span>بدء الامتحان والتمرن</span>
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
 
         {/* Back button */}
         <motion.button
