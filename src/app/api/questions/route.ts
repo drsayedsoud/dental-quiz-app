@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+﻿import { NextRequest, NextResponse } from 'next/server';
 import { google } from 'googleapis';
 
 const SPREADSHEET_ID = process.env.GOOGLE_SHEETS_SPREADSHEET_ID;
@@ -85,7 +85,7 @@ export async function GET(request: NextRequest) {
         'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=7200',
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching questions:', error);
     return NextResponse.json(
       { error: 'Failed to fetch questions', details: error.message },
@@ -93,3 +93,4 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+

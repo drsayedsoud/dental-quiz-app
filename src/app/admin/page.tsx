@@ -25,16 +25,16 @@ export default function AdminPage() {
     }
   }, [user, profile, loading, router]);
 
-  useEffect(() => {
-    if (activeTab === 'users') fetchUsers();
-  }, [activeTab]);
-
   const fetchUsers = async () => {
     setIsLoadingUsers(true);
     const data = await getAllUsers();
     setUsersList(data);
     setIsLoadingUsers(false);
   };
+
+  useEffect(() => {
+    if (activeTab === 'users') fetchUsers();
+  }, [activeTab]);
 
   const handleToggleVip = async (uid: string, currentStatus: boolean) => {
     const success = await toggleUserVip(uid, currentStatus);
@@ -148,5 +148,6 @@ export default function AdminPage() {
           </div>
   );
 }
+
 
 
