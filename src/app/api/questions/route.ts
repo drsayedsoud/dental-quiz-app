@@ -85,7 +85,7 @@ export async function GET(request: NextRequest) {
         'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=7200',
       },
     });
-  } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any // eslint-disable-line @typescript-eslint/no-explicit-any {
+  } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
     console.error('Error fetching questions:', error);
     return NextResponse.json(
       { error: 'Failed to fetch questions', details: error.message },
@@ -93,5 +93,6 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
 
 
