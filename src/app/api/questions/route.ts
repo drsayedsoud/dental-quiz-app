@@ -127,49 +127,45 @@ export async function GET(request: NextRequest) {
       // Dental section
       try {
         let range = 'Sheet1!A2:K';
-        if (subject && subjectRanges[subject]) {
-          const { start, end } = subjectRanges[subject];
-          range = `Sheet1!A${start}:K${end}`;
-          const rows = await getSheetData(range);
-          const parsed = parseQuestions(rows, true);
-          questions = shuffleArray(parsed); // Shuffled all questions of this subject
+        const rows = await getSheetData(range);
+        const all = parseQuestions(rows, true);
+        let filtered = all;
+
+        if (subject) {
+          filtered = all.filter(q => q.metadata && q.metadata.toLowerCase() === subject.toLowerCase());
+        }
+
+        if (subject) {
+          questions = shuffleArray(filtered); // Shuffled all questions of this subject
         } else if (mode === 'exam') {
-          const rows = await getSheetData(range);
-          const all = parseQuestions(rows, true);
-          questions = shuffleArray(all).slice(0, 50);
+          questions = shuffleArray(filtered).slice(0, 50);
         } else if (mode === 'simulation') {
-          const rows = await getSheetData(range);
-          const all = parseQuestions(rows, true);
-          questions = shuffleArray(all).slice(0, 100);
+          questions = shuffleArray(filtered).slice(0, 100);
         } else if (mode === 'quick') {
-          const rows = await getSheetData(range);
-          const all = parseQuestions(rows, true);
-          questions = shuffleArray(all).slice(0, 10);
+          questions = shuffleArray(filtered).slice(0, 10);
         } else {
-          const rows = await getSheetData(range);
-          const all = parseQuestions(rows, true);
-          questions = shuffleArray(all);
+          questions = shuffleArray(filtered);
         }
       } catch (sheetErr) {
         console.warn('Falling back to local questions.csv:', sheetErr);
         const rows = await getLocalCsvData('questions.csv');
-        if (subject && subjectRanges[subject]) {
-          const { start, end } = subjectRanges[subject];
-          const sliceRows = rows.slice(Math.max(0, start - 2), end - 1);
-          const parsed = parseQuestions(sliceRows, true);
-          questions = shuffleArray(parsed); // Shuffled all questions of this subject
+        const all = parseQuestions(rows, true);
+        let filtered = all;
+        
+        if (subject) {
+          filtered = all.filter(q => q.metadata && q.metadata.toLowerCase() === subject.toLowerCase());
+        }
+
+        if (subject) {
+          questions = shuffleArray(filtered);
         } else if (mode === 'exam') {
-          const all = parseQuestions(rows, true);
-          questions = shuffleArray(all).slice(0, 50);
+          questions = shuffleArray(filtered).slice(0, 50);
         } else if (mode === 'simulation') {
-          const all = parseQuestions(rows, true);
-          questions = shuffleArray(all).slice(0, 100);
+          questions = shuffleArray(filtered).slice(0, 100);
         } else if (mode === 'quick') {
-          const all = parseQuestions(rows, true);
-          questions = shuffleArray(all).slice(0, 10);
+          questions = shuffleArray(filtered).slice(0, 10);
         } else {
-          const all = parseQuestions(rows, true);
-          questions = shuffleArray(all);
+          questions = shuffleArray(filtered);
         }
       }
     }
