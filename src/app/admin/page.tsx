@@ -312,14 +312,14 @@ export default function AdminPage() {
 
                   <h3 className="text-base sm:text-xl font-bold text-cyan-300 mb-1 sm:mb-2">Dental Prometric</h3>
                   <p className="text-[10px] sm:text-xs text-cyan-100/70 mb-4 sm:mb-6 leading-relaxed">
-                    الملف: <code className="bg-cyan-950/60 px-1.5 py-0.5 rounded text-cyan-200 border border-cyan-800/40 text-[10px]">questions.csv</code>
+                    الملف: <code className="bg-cyan-950/60 px-1.5 py-0.5 rounded text-cyan-200 border border-cyan-800/40 text-[10px]">dental_questions.csv</code>
                   </p>
                 </div>
 
                 <div className="space-y-2 sm:space-y-3 pt-3 sm:pt-4 border-t border-cyan-500/20">
                   <a 
-                    href="/questions.csv" 
-                    download="prometric_dental_questions.csv"
+                    href="/dental_questions.csv" 
+                    download="dental_questions.csv"
                     className="w-full bg-cyan-600 hover:bg-cyan-500 active:scale-[0.98] text-white py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-cyan-600/30 text-xs sm:text-sm"
                   >
                     <span>⬇️</span>
@@ -381,14 +381,14 @@ export default function AdminPage() {
 
                   <h3 className="text-base sm:text-xl font-bold text-emerald-300 mb-1 sm:mb-2">Medical Prometric</h3>
                   <p className="text-[10px] sm:text-xs text-emerald-100/70 mb-4 sm:mb-6 leading-relaxed">
-                    الملف: <code className="bg-emerald-950/60 px-1.5 py-0.5 rounded text-emerald-200 border border-emerald-800/40 text-[10px]">questions_medical.csv</code>
+                    الملف: <code className="bg-emerald-950/60 px-1.5 py-0.5 rounded text-emerald-200 border border-emerald-800/40 text-[10px]">medical_questions.csv</code>
                   </p>
                 </div>
 
                 <div className="space-y-2 sm:space-y-3 pt-3 sm:pt-4 border-t border-emerald-500/20">
                   <a 
-                    href="/questions_medical.csv" 
-                    download="prometric_medical_questions.csv"
+                    href="/medical_questions.csv" 
+                    download="medical_questions.csv"
                     className="w-full bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 text-xs sm:text-sm"
                   >
                     <span>⬇️</span>

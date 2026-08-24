@@ -112,7 +112,7 @@ export async function GET(request: NextRequest) {
     let questions;
 
     if (section === 'medical') {
-      const rows = await getLocalCsvData('questions_medical.csv');
+      const rows = await getLocalCsvData('medical_questions.csv');
       const all = parseQuestions(rows, true);
       let filtered = all;
       if (subject) {
@@ -125,7 +125,7 @@ export async function GET(request: NextRequest) {
       else questions = shuffleArray(filtered);
     } else {
       // Dental section
-      const rows = await getLocalCsvData('questions.csv');
+      const rows = await getLocalCsvData('dental_questions.csv');
       const all = parseQuestions(rows, true);
       let filtered = all;
       

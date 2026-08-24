@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const filename = section === 'medical' ? 'questions_medical.csv' : 'questions.csv';
+    const filename = section === 'medical' ? 'medical_questions.csv' : 'dental_questions.csv';
     const filePath = path.join(process.cwd(), 'public', filename);
 
     await fs.writeFile(filePath, buffer);
