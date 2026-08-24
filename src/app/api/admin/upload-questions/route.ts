@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import * as XLSX from 'xlsx';
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_OWNER = 'drsayedsoud';
@@ -20,12 +21,25 @@ export async function POST(request: NextRequest) {
 
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    const base64Content = buffer.toString('base64');
+    
+    let csvString = '';
+    const originalFilename = file.name.toLowerCase();
+    
+    if (originalFilename.endsWith('.xlsx') || originalFilename.endsWith('.xls')) {
+      const workbook = XLSX.read(buffer, { type: 'buffer' });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      csvString = XLSX.utils.sheet_to_csv(worksheet);
+    } else {
+      csvString = buffer.toString('utf-8');
+    }
+
+    const base64Content = Buffer.from(csvString, 'utf-8').toString('base64');
 
     const filename = section === 'medical' ? 'medical_questions.csv' : 'dental_questions.csv';
     const filePath = `public/${filename}`;
 
-    // 1. الحصول على الـ SHA الخاص بالملف الحالي (مطلوب لعمل تحديث لملف موجود في GitHub)
+    // 1. الحصول على الـ SHA الخاص بالملف الحالي
     let sha = '';
     const getRes = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${filePath}`, {
       headers: {
@@ -50,7 +64,7 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        message: `Admin Panel: Update ${filename}`,
+        message: `Admin Panel: Update ${filename} from Excel upload`,
         content: base64Content,
         sha: sha || undefined
       })
