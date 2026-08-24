@@ -19,6 +19,7 @@ const subjects = [
   { name: 'Radiology', startIndex: 3880 },
   { name: 'Removable Prosthodontic', startIndex: 4804 },
   { name: 'Oral Medicine', startIndex: 4368 },
+  { name: 'General Dentistry', startIndex: 0 },
 ];
 
 const studyLinks: Record<string, string> = {
