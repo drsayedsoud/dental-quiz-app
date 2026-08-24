@@ -317,6 +317,27 @@ export function OralMedicineIcon({ className = "w-16 h-16" }: { className?: stri
   );
 }
 
+export function GeneralDentistryIcon({ className = "w-16 h-16" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="46" fill="#14B8A6" fillOpacity="0.1" stroke="#14B8A6" strokeWidth="1.5" strokeDasharray="3 3" />
+      {/* Healthy Tooth Base */}
+      <path
+        d="M34 26 C22 26 18 36 20 48 C22 60 28 72 34 88 Q38 94 42 94 Q46 94 50 80 Q54 94 58 94 Q62 94 66 88 C72 72 78 60 80 48 C82 36 78 26 66 26 C58 26 53 30 50 30 C47 30 42 26 34 26 Z"
+        fill="#FFFFFF"
+        stroke="#94A3B8"
+        strokeWidth="2"
+      />
+      {/* Dental Mirror */}
+      <circle cx="65" cy="35" r="10" fill="#38BDF8" fillOpacity="0.3" stroke="#0284C7" strokeWidth="2" />
+      <line x1="72" y1="28" x2="85" y2="15" stroke="#475569" strokeWidth="3" strokeLinecap="round" />
+      {/* Sparkles */}
+      <path d="M25 20 L27 26 L33 28 L27 30 L25 36 L23 30 L17 28 L23 26 Z" fill="#FBBF24" />
+      <path d="M35 15 L36 19 L40 20 L36 21 L35 25 L34 21 L30 20 L34 19 Z" fill="#FBBF24" />
+    </svg>
+  );
+}
+
 export const DentalIconMap: Record<string, React.FC<{ className?: string }>> = {
   'Endodontic': EndodonticIcon,
   'Operative': OperativeIcon,
@@ -329,4 +350,5 @@ export const DentalIconMap: Record<string, React.FC<{ className?: string }>> = {
   'Radiology': RadiologyIcon,
   'Removable Prosthodontic': RemovableProsthodonticIcon,
   'Oral Medicine': OralMedicineIcon,
+  'General Dentistry': GeneralDentistryIcon,
 };
