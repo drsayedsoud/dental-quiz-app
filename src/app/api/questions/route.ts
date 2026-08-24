@@ -125,48 +125,24 @@ export async function GET(request: NextRequest) {
       else questions = shuffleArray(filtered);
     } else {
       // Dental section
-      try {
-        let range = 'Sheet1!A2:K';
-        const rows = await getSheetData(range);
-        const all = parseQuestions(rows, true);
-        let filtered = all;
+      const rows = await getLocalCsvData('questions.csv');
+      const all = parseQuestions(rows, true);
+      let filtered = all;
+      
+      if (subject) {
+        filtered = all.filter(q => q.metadata && q.metadata.toLowerCase() === subject.toLowerCase());
+      }
 
-        if (subject) {
-          filtered = all.filter(q => q.metadata && q.metadata.toLowerCase() === subject.toLowerCase());
-        }
-
-        if (subject) {
-          questions = shuffleArray(filtered); // Shuffled all questions of this subject
-        } else if (mode === 'exam') {
-          questions = shuffleArray(filtered).slice(0, 50);
-        } else if (mode === 'simulation') {
-          questions = shuffleArray(filtered).slice(0, 100);
-        } else if (mode === 'quick') {
-          questions = shuffleArray(filtered).slice(0, 10);
-        } else {
-          questions = shuffleArray(filtered);
-        }
-      } catch (sheetErr) {
-        console.warn('Falling back to local questions.csv:', sheetErr);
-        const rows = await getLocalCsvData('questions.csv');
-        const all = parseQuestions(rows, true);
-        let filtered = all;
-        
-        if (subject) {
-          filtered = all.filter(q => q.metadata && q.metadata.toLowerCase() === subject.toLowerCase());
-        }
-
-        if (subject) {
-          questions = shuffleArray(filtered);
-        } else if (mode === 'exam') {
-          questions = shuffleArray(filtered).slice(0, 50);
-        } else if (mode === 'simulation') {
-          questions = shuffleArray(filtered).slice(0, 100);
-        } else if (mode === 'quick') {
-          questions = shuffleArray(filtered).slice(0, 10);
-        } else {
-          questions = shuffleArray(filtered);
-        }
+      if (subject) {
+        questions = shuffleArray(filtered);
+      } else if (mode === 'exam') {
+        questions = shuffleArray(filtered).slice(0, 50);
+      } else if (mode === 'simulation') {
+        questions = shuffleArray(filtered).slice(0, 100);
+      } else if (mode === 'quick') {
+        questions = shuffleArray(filtered).slice(0, 10);
+      } else {
+        questions = shuffleArray(filtered);
       }
     }
 
