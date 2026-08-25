@@ -9,8 +9,8 @@ import { useAlert, usePrompt } from '@/components/Modals';
 const sections = [
   {
     id: 'medical',
-    title: 'الطب البشري',
-    subtitle: 'Medical Prometric (متاح)',
+    title: 'طب البشري',
+    subtitle: 'Medical Prometric (أطباء)',
     icon: '👨‍⚕️',
     gradient: 'from-blue-600 to-indigo-700',
     href: '/medical',
@@ -19,11 +19,20 @@ const sections = [
   {
     id: 'dental',
     title: 'طب الأسنان',
-    subtitle: 'Dental Prometric (جاهز)',
+    subtitle: 'Dental Prometric (أطباء)',
     icon: '🦷',
     gradient: 'from-cyan-600 to-blue-700',
     href: '/dental',
     comingSoon: false,
+  },
+  {
+    id: 'pharmacy',
+    title: 'قسم الصيدلة',
+    subtitle: 'Pharmacy Prometric (صيادلة)',
+    icon: '💊',
+    gradient: 'from-emerald-600 to-teal-700',
+    href: '#',
+    comingSoon: true,
   },
 ];
 
@@ -161,12 +170,12 @@ export default function DashboardPage() {
       {/* Background effects */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-cyan-500/5 rounded-full blur-[150px]" />
 
-      <div className="relative z-10 px-4 py-8 max-w-lg mx-auto">
+      <div className="relative z-10 px-4 py-4 md:py-8 max-w-lg mx-auto">
         {/* Header */}
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="text-center mb-10"
+          className="text-center mb-5 md:mb-10"
         >
           <h1 className="text-3xl font-extrabold text-gradient mb-2">Prometric</h1>
           <p className="text-gray-400 text-sm">
@@ -192,7 +201,7 @@ export default function DashboardPage() {
         </motion.div>
 
         {/* Section Cards */}
-        <div className="space-y-4 mb-10">
+        <div className="space-y-3 mb-6 md:mb-10">
           {sections.map((section, index) => (
             <motion.button
               key={section.id}
@@ -205,12 +214,12 @@ export default function DashboardPage() {
               onTouchStart={section.id === 'medical' ? handleMedicalPressStart : undefined}
               onTouchEnd={section.id === 'medical' ? handleMedicalPressEnd : undefined}
               onClick={() => handleSectionClick(section)}
-              className={`w-full bg-gradient-to-l ${section.gradient} rounded-2xl p-6 text-right hover:scale-[1.02] active:scale-[0.98] transition-transform shadow-lg text-white select-none`}
+              className={`w-full bg-gradient-to-l ${section.gradient} rounded-2xl p-4 md:p-6 text-right hover:scale-[1.02] active:scale-[0.98] transition-transform shadow-lg text-white select-none`}
             >
               <div className="flex items-center gap-4">
-                <span className="text-5xl">{section.icon}</span>
+                <span className="text-4xl md:text-5xl">{section.icon}</span>
                 <div className="flex-1">
-                  <h2 className="text-xl font-bold">{section.title}</h2>
+                  <h2 className="text-lg md:text-xl font-bold">{section.title}</h2>
                   <p className="text-white/60 text-sm mt-1">{section.subtitle}</p>
                 </div>
                 <span className="text-white/40 text-2xl">
