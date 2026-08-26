@@ -12,13 +12,13 @@ const cairo = Cairo({
 });
 
 export const metadata: Metadata = {
-  title: 'Prometric Dent Said',
+  title: 'Medical Prometric',
   description: 'تطبيق اختبارات طب الأسنان البرومترك',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'Prometric Dent',
+    title: 'Medical Prometric',
   },
 };
 

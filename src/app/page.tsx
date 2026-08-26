@@ -35,10 +35,11 @@ export default function SplashPage() {
           initial={{ y: -20 }}
           animate={{ y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
-          className="text-7xl mb-6 flex justify-center gap-4"
+          className="text-6xl md:text-7xl mb-6 flex justify-center items-center gap-5 md:gap-8"
         >
-          <span>🦷</span>
-          <span className="opacity-80">👨‍⚕️</span>
+          <span className="opacity-80 hover:scale-110 transition-transform">🦷</span>
+          <span className="text-7xl md:text-8xl drop-shadow-[0_0_15px_rgba(56,189,248,0.5)] z-10 hover:scale-110 transition-transform">👨‍⚕️</span>
+          <span className="opacity-80 hover:scale-110 transition-transform text-6xl">⚕️</span>
         </motion.div>
 
         {/* App Name */}
@@ -48,7 +49,7 @@ export default function SplashPage() {
           transition={{ delay: 0.5, duration: 0.6 }}
           className="text-4xl md:text-5xl font-extrabold text-gradient mb-3"
         >
-          Prometric Quiz
+          Medical Prometric
         </motion.h1>
 
         <motion.p
@@ -57,7 +58,7 @@ export default function SplashPage() {
           transition={{ delay: 0.7, duration: 0.6 }}
           className="text-gray-400 text-lg"
         >
-          المنصة الشاملة لأطباء الأسنان والطب البشري
+          المنصة الشاملة للأطباء وأطباء الأسنان والصيادلة
         </motion.p>
 
         {/* Loading dots */}
