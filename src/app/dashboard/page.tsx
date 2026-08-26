@@ -175,7 +175,7 @@ export default function DashboardPage() {
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="text-center mb-5 md:mb-10 pt-10"
+          className="text-center mb-5 md:mb-10 pt-7"
         >
           <h1 className="text-3xl font-extrabold text-gradient mb-2">Prometric</h1>
           <p className="text-gray-400 text-sm">
