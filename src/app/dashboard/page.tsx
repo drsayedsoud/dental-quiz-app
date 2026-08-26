@@ -243,18 +243,20 @@ export default function DashboardPage() {
           >
             📊 إحصائيات الأداء
           </button>
-          <button
-            onClick={() => router.push('/about')}
-            className="w-full glass glass-hover rounded-xl py-3 text-gray-400 hover:text-white text-sm transition"
-          >
-            من نحن
-          </button>
-          <button
-            onClick={() => router.push('/privacy')}
-            className="w-full glass glass-hover rounded-xl py-3 text-gray-400 hover:text-white text-sm transition"
-          >
-            سياسة الخصوصية
-          </button>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => router.push('/about')}
+              className="w-full glass glass-hover rounded-xl py-3 text-gray-400 hover:text-white text-sm transition"
+            >
+              من نحن
+            </button>
+            <button
+              onClick={() => router.push('/privacy')}
+              className="w-full glass glass-hover rounded-xl py-3 text-gray-400 hover:text-white text-sm transition"
+            >
+              سياسة الخصوصية
+            </button>
+          </div>
           <button
             onClick={logout}
             className="w-full bg-red-500/10 border border-red-500/20 rounded-xl py-3 text-red-400 hover:bg-red-500/20 text-sm font-semibold transition"
