@@ -27,7 +27,7 @@ const sections = [
   },
   {
     id: 'pharmacy',
-    title: 'قسم الصيدلة',
+    title: 'صيدلة',
     subtitle: 'Pharmacy Prometric (صيادلة)',
     icon: '💊',
     gradient: 'from-emerald-600 to-teal-700',
@@ -170,7 +170,7 @@ export default function DashboardPage() {
       {/* Background effects */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-cyan-500/5 rounded-full blur-[150px]" />
 
-      <div className="relative z-10 px-4 py-4 md:py-8 max-w-lg mx-auto">
+      <div className="relative z-10 px-4 py-6 md:py-8 w-full max-w-lg mx-auto">
         {/* Header */}
         <motion.div
           initial={{ y: -20, opacity: 0 }}
