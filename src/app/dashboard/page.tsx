@@ -9,7 +9,7 @@ import { useAlert, usePrompt } from '@/components/Modals';
 const sections = [
   {
     id: 'medical',
-    title: 'طب البشري',
+    title: 'الطب البشري',
     subtitle: 'Medical Prometric (أطباء)',
     icon: '👨‍⚕️',
     gradient: 'from-blue-600 to-indigo-700',
@@ -117,7 +117,7 @@ export default function DashboardPage() {
       return;
     }
     if (section.comingSoon) {
-      await showAlert('هذا القسم قيد التطوير\nوسيتم توفير أسئلة الطب البشري قريباً إن شاء الله!', '📚', 'info');
+      await showAlert('هذا القسم قيد التطوير\nوسيتم تجهيز أسئلة هذا القسم قريباً إن شاء الله!', '📚', 'info');
     } else {
       router.push(section.href);
     }
@@ -175,7 +175,7 @@ export default function DashboardPage() {
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="text-center mb-5 md:mb-10"
+          className="text-center mb-5 md:mb-10 pt-10"
         >
           <h1 className="text-3xl font-extrabold text-gradient mb-2">Prometric</h1>
           <p className="text-gray-400 text-sm">
