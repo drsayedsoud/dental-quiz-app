@@ -30,7 +30,40 @@ const subjects = [
   { name: 'General Practice', icon: '🏥' },
 ];
 
+
+const studentModules = [
+  // Year 1
+  { name: 'Basic Structure and Function', icon: '🧬' },
+  { name: 'Musculoskeletal & Integumentary', icon: '🦴' },
+  { name: 'Cardiopulmonary systems', icon: '🫀' },
+  { name: 'Digestive system & Nutrition', icon: '🍏' },
+  // Year 2
+  { name: 'Endocrine & Reproductive systems', icon: '🩸' },
+  { name: 'Nervous system & Special senses', icon: '🧠' },
+  { name: 'Urinary system', icon: '💧' },
+  { name: 'Principles of Diseases & Pharmacology', icon: '💊' },
+  { name: 'Systemic Pathology & Therapeutics I', icon: '🔬' },
+  // Year 3
+  { name: 'Infection & Immunity', icon: '🦠' },
+  { name: 'Systemic Pathology & Therapeutics II', icon: '🧪' },
+  { name: 'Community medicine', icon: '🌍' },
+  { name: 'Ophthalmology', icon: '👁️' },
+  { name: 'Forensic medicine & clinical toxicology', icon: '⚖️' },
+  // Year 4
+  { name: 'Paediatrics', icon: '👶' },
+  { name: 'Medicine I', icon: '🩺' },
+  { name: 'Medicine II', icon: '🩺' },
+  { name: 'Family medicine', icon: '👨‍👩‍👧‍👦' },
+  // Year 5
+  { name: 'Ear, Nose and throat (ENT)', icon: '👂' },
+  { name: 'Surgery I', icon: '🔪' },
+  { name: 'Surgery II & emergency', icon: '🚑' },
+  { name: 'Obstetrics & gynaecology', icon: '🤰' },
+  { name: 'Professional practice', icon: '👨‍⚕️' },
+];
+
 export default function MedicalPage() {
+  const [view, setView] = useState<'main' | 'students' | 'postgrad'>('main');
   const { user, profile, loading } = useAuth();
   const router = useRouter();
   const [sessions, setSessions] = useState<QuizSession[]>([]);
@@ -141,49 +174,78 @@ export default function MedicalPage() {
           </motion.button>
         </div>
 
-        {/* Subjects Grid */}
-        <div className="grid grid-cols-2 gap-3.5 mb-6">
-          {subjects.map((subject, index) => {
-            const accuracy = getSubjectStats(subject.name);
-            return (
-              <motion.button
-                key={subject.name}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.03 }}
-                whileTap={{ scale: 0.96 }}
-                onClick={() => startExam(subject.name)}
-                className="glass rounded-3xl p-4 flex flex-col items-center justify-between text-center border border-white/10 hover:border-blue-500/40 hover:bg-white/10 transition-all shadow-xl group aspect-square relative overflow-hidden"
-              >
-                {accuracy !== null && (
-                  <div className="absolute top-0 left-0 w-full h-1 bg-gray-800">
-                    <div 
-                      className={`h-full ${accuracy >= 75 ? 'bg-green-500' : accuracy >= 50 ? 'bg-yellow-500' : 'bg-red-500'}`}
-                      style={{ width: `${accuracy}%` }}
-                    />
-                  </div>
-                )}
-                
-                {accuracy !== null && (
-                  <div className={`absolute top-2 right-2 text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-black/50 ${accuracy >= 75 ? 'text-green-400' : accuracy >= 50 ? 'text-yellow-400' : 'text-red-400'}`}>
-                    {accuracy}%
-                  </div>
-                )}
+        {view === 'main' ? (
+          <div className="grid grid-cols-2 gap-4 mb-6 mt-4">
+            <motion.button
+              initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} whileTap={{ scale: 0.96 }}
+              onClick={() => setView('students')}
+              className="glass rounded-3xl p-6 flex flex-col items-center justify-center text-center border border-white/10 hover:border-cyan-500/40 hover:bg-white/10 transition-all shadow-xl group aspect-square relative"
+            >
+              <span className="text-6xl mb-4 group-hover:scale-110 transition-transform">👨‍🎓</span>
+              <h2 className="font-extrabold text-white text-lg tracking-wide group-hover:text-cyan-400 transition">طلبة</h2>
+              <p className="text-xs text-gray-400 mt-2">موديولات بكالوريوس الطب (نظام الزقازيق)</p>
+            </motion.button>
 
-                <div className="text-4xl group-hover:scale-110 transition duration-300 mt-2">
-                  {subject.icon}
-                </div>
+            <motion.button
+              initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} whileTap={{ scale: 0.96 }}
+              onClick={() => setView('postgrad')}
+              className="glass rounded-3xl p-6 flex flex-col items-center justify-center text-center border border-white/10 hover:border-blue-500/40 hover:bg-white/10 transition-all shadow-xl group aspect-square relative"
+            >
+              <span className="text-6xl mb-4 group-hover:scale-110 transition-transform">👨‍⚕️</span>
+              <h2 className="font-extrabold text-white text-lg tracking-wide group-hover:text-blue-400 transition">دراسات عليا</h2>
+              <p className="text-xs text-gray-400 mt-2">التخصصات الطبية للزمالة والبورد</p>
+            </motion.button>
+          </div>
+        ) : (
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-4 px-2">
+              <h2 className="text-white font-bold text-lg">{view === 'students' ? 'موديولات الطلبة' : 'تخصصات الدراسات العليا'}</h2>
+              <button onClick={() => setView('main')} className="text-blue-400 text-sm hover:text-blue-300">العودة للأقسام</button>
+            </div>
+            <div className="grid grid-cols-2 gap-3.5">
+              {(view === 'students' ? studentModules : subjects).map((subject, index) => {
+                const accuracy = getSubjectStats(subject.name);
+                return (
+                  <motion.button
+                    key={subject.name}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.03 }}
+                    whileTap={{ scale: 0.96 }}
+                    onClick={() => startExam(subject.name)}
+                    className="glass rounded-3xl p-4 flex flex-col items-center justify-between text-center border border-white/10 hover:border-blue-500/40 hover:bg-white/10 transition-all shadow-xl group aspect-square relative overflow-hidden"
+                  >
+                    {accuracy !== null && (
+                      <div className="absolute top-0 left-0 w-full h-1 bg-gray-800">
+                        <div 
+                          className={`h-full ${accuracy >= 75 ? 'bg-green-500' : accuracy >= 50 ? 'bg-yellow-500' : 'bg-red-500'}`}
+                          style={{ width: `${accuracy}%` }}
+                        />
+                      </div>
+                    )}
+                    
+                    {accuracy !== null && (
+                      <div className={`absolute top-2 right-2 text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-black/50 ${accuracy >= 75 ? 'text-green-400' : accuracy >= 50 ? 'text-yellow-400' : 'text-red-400'}`}>
+                        {accuracy}%
+                      </div>
+                    )}
 
-                <div className="w-full mt-2">
-                  <h2 className="font-extrabold text-white text-xs sm:text-sm leading-tight tracking-wide group-hover:text-blue-400 transition">
-                    {subject.name}
-                  </h2>
-                </div>
-              </motion.button>
-            );
-          })}
-        </div>
+                    <div className="text-4xl group-hover:scale-110 transition duration-300 mt-2">
+                      {subject.icon}
+                    </div>
 
+                    <div className="w-full mt-2">
+                      <h2 className="font-extrabold text-white text-xs sm:text-sm leading-tight tracking-wide group-hover:text-blue-400 transition">
+                        {subject.name}
+                      </h2>
+                    </div>
+                  </motion.button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+        
         <motion.button
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
