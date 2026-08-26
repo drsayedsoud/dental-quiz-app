@@ -7,12 +7,27 @@ import { useAuth } from '@/context/AuthContext';
 import { getAllUserSessions, QuizSession } from '@/lib/firestore';
 
 const subjects = [
-  { name: 'Anatomy', icon: '🦴' },
-  { name: 'Physiology', icon: '🧬' },
-  { name: 'Pathology', icon: '🦠' },
-  { name: 'Pharmacology', icon: '💊' },
-  { name: 'Surgery', icon: '🔪' },
   { name: 'Internal Medicine', icon: '🩺' },
+  { name: 'General Surgery', icon: '🔪' },
+  { name: 'Pediatrics', icon: '👶' },
+  { name: 'Obstetrics & Gynecology', icon: '🤰' },
+  { name: 'Family Medicine', icon: '👨‍👩‍👧‍👦' },
+  { name: 'Emergency Medicine', icon: '🚑' },
+  { name: 'Psychiatry', icon: '🧠' },
+  { name: 'Orthopedics', icon: '🦴' },
+  { name: 'Ophthalmology', icon: '👁️' },
+  { name: 'ENT', icon: '👂' },
+  { name: 'Dermatology', icon: '🧴' },
+  { name: 'Radiology', icon: '☢️' },
+  { name: 'Anatomy', icon: '💀' },
+  { name: 'Physiology', icon: '⚡' },
+  { name: 'Pathology', icon: '🔬' },
+  { name: 'Pharmacology', icon: '💊' },
+  { name: 'Microbiology', icon: '🦠' },
+  { name: 'Biochemistry', icon: '🧬' },
+  { name: 'Public Health', icon: '🌍' },
+  { name: 'Forensic Medicine', icon: '⚖️' },
+  { name: 'General Practice', icon: '🏥' },
 ];
 
 export default function MedicalPage() {
