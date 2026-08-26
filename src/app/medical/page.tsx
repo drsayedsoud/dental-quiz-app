@@ -183,7 +183,7 @@ export default function MedicalPage() {
             >
               <span className="text-6xl mb-4 group-hover:scale-110 transition-transform">👨‍🎓</span>
               <h2 className="font-extrabold text-white text-lg tracking-wide group-hover:text-cyan-400 transition">طلبة</h2>
-              <p className="text-xs text-gray-400 mt-2">موديولات بكالوريوس الطب (نظام الزقازيق)</p>
+              <p className="text-xs text-gray-400 mt-2">موديولات بكالوريوس الطب (النظام التكاملي)</p>
             </motion.button>
 
             <motion.button
