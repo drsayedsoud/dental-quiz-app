@@ -27,10 +27,19 @@ const sections = [
   },
   {
     id: 'pharmacy',
-    title: 'صيدلة',
+    title: 'الصيدلة',
     subtitle: 'Pharmacy Prometric (صيادلة)',
     icon: '💊',
     gradient: 'from-emerald-600 to-teal-700',
+    href: '#',
+    comingSoon: true,
+  },
+  {
+    id: 'nursing',
+    title: 'التمريض',
+    subtitle: 'Nursing Prometric (تمريض)',
+    icon: '💉',
+    gradient: 'from-fuchsia-600 to-purple-700',
     href: '#',
     comingSoon: true,
   },
@@ -175,9 +184,9 @@ export default function DashboardPage() {
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="text-center mb-5 md:mb-10 pt-5"
+          className="text-center mb-3 pt-2"
         >
-          <h1 className="text-3xl font-extrabold text-gradient mb-2">Medical Prometric</h1>
+          <h1 className="text-2xl font-extrabold text-gradient mb-1">Medical Prometric</h1>
           <p className="text-gray-400 text-sm">
             مرحباً {profile?.email?.split('@')[0] || 'بك'} 👋
           </p>
@@ -201,7 +210,7 @@ export default function DashboardPage() {
         </motion.div>
 
         {/* Section Cards */}
-        <div className="space-y-3 mb-6 md:mb-10">
+        <div className="space-y-2 mb-4">
           {sections.map((section, index) => (
             <motion.button
               key={section.id}
@@ -214,13 +223,13 @@ export default function DashboardPage() {
               onTouchStart={section.id === 'medical' ? handleMedicalPressStart : undefined}
               onTouchEnd={section.id === 'medical' ? handleMedicalPressEnd : undefined}
               onClick={() => handleSectionClick(section)}
-              className={`w-full bg-gradient-to-l ${section.gradient} rounded-2xl p-4 md:p-6 text-right hover:scale-[1.02] active:scale-[0.98] transition-transform shadow-lg text-white select-none`}
+              className={`w-full bg-gradient-to-l ${section.gradient} rounded-2xl p-3 md:p-5 text-right hover:scale-[1.02] active:scale-[0.98] transition-transform shadow-lg text-white select-none`}
             >
-              <div className="flex items-center gap-4">
-                <span className="text-4xl md:text-5xl">{section.icon}</span>
+              <div className="flex items-center gap-3">
+                <span className="text-3xl md:text-4xl">{section.icon}</span>
                 <div className="flex-1">
-                  <h2 className="text-lg md:text-xl font-bold">{section.title}</h2>
-                  <p className="text-white/60 text-sm mt-1">{section.subtitle}</p>
+                  <h2 className="text-base md:text-lg font-bold">{section.title}</h2>
+                  <p className="text-white/60 text-xs md:text-sm">{section.subtitle}</p>
                 </div>
                 <span className="text-white/40 text-2xl">
                   {section.comingSoon ? '🔒' : '←'}
@@ -235,31 +244,31 @@ export default function DashboardPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="space-y-3"
+          className="space-y-2"
         >
           <button
             onClick={() => router.push('/stats')}
-            className="w-full glass glass-hover rounded-xl py-3 text-blue-400 hover:text-blue-300 text-sm font-semibold transition flex items-center justify-center gap-2"
+            className="w-full glass glass-hover rounded-xl py-2.5 text-blue-400 hover:text-blue-300 text-sm font-semibold transition flex items-center justify-center gap-2"
           >
             📊 إحصائيات الأداء
           </button>
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={() => router.push('/about')}
-              className="w-full glass glass-hover rounded-xl py-3 text-gray-400 hover:text-white text-sm transition"
+              className="w-full glass glass-hover rounded-xl py-2.5 text-gray-400 hover:text-white text-sm transition"
             >
               من نحن
             </button>
             <button
               onClick={() => router.push('/privacy')}
-              className="w-full glass glass-hover rounded-xl py-3 text-gray-400 hover:text-white text-sm transition"
+              className="w-full glass glass-hover rounded-xl py-2.5 text-gray-400 hover:text-white text-sm transition"
             >
               سياسة الخصوصية
             </button>
           </div>
           <button
             onClick={logout}
-            className="w-full bg-red-500/10 border border-red-500/20 rounded-xl py-3 text-red-400 hover:bg-red-500/20 text-sm font-semibold transition"
+            className="w-full bg-red-500/10 border border-red-500/20 rounded-xl py-2.5 text-red-400 hover:bg-red-500/20 text-sm font-semibold transition"
           >
             تسجيل خروج
           </button>
