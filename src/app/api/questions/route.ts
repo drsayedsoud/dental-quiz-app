@@ -121,7 +121,9 @@ export async function GET(request: NextRequest) {
         // subject is stored in row[10] which parseQuestions maps to 'metadata'
         filtered = all.filter(q => q.metadata && q.metadata.toLowerCase() === subject.toLowerCase());
       }
-      if (mode === 'exam') questions = shuffleArray(filtered).slice(0, 50);
+      if (subject) {
+        questions = filtered;
+      } else if (mode === 'exam') questions = shuffleArray(filtered).slice(0, 50);
       else if (mode === 'simulation') questions = shuffleArray(filtered).slice(0, 100);
       else if (mode === 'quick') questions = shuffleArray(filtered).slice(0, 10);
       else questions = shuffleArray(filtered);
@@ -136,7 +138,7 @@ export async function GET(request: NextRequest) {
       }
 
       if (subject) {
-        questions = shuffleArray(filtered);
+        questions = filtered;
       } else if (mode === 'exam') {
         questions = shuffleArray(filtered).slice(0, 50);
       } else if (mode === 'simulation') {

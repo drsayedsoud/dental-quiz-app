@@ -71,7 +71,19 @@ function QuizContent() {
         const res = await fetch(`/api/questions?${params.toString()}`);
         if (!res.ok) throw new Error('Failed to fetch questions');
         const data = await res.json();
-        setQuestions(data.questions || []);
+        
+        const fetchedQuestions = data.questions || [];
+        setQuestions(fetchedQuestions);
+
+        if (subject && mode !== 'exam' && mode !== 'simulation' && fetchedQuestions.length > 0) {
+          const saved = localStorage.getItem('progress_' + subject);
+          if (saved) {
+            const parsed = parseInt(saved);
+            if (!isNaN(parsed)) {
+              setCurrentIndex(parsed % fetchedQuestions.length);
+            }
+          }
+        }
       } catch (err) {
         setError('حدث خطأ في تحميل الأسئلة. حاول مرة أخرى.');
       } finally {
@@ -91,6 +103,10 @@ function QuizContent() {
 
   // Timer
   const handleNext = useCallback(() => {
+    if (subject && mode !== 'exam' && mode !== 'simulation') {
+      localStorage.setItem('progress_' + subject, String(currentIndex + 1));
+    }
+
     if (currentIndex >= questions.length - 1) {
       if (user) {
         saveQuizSession(user.uid, {
