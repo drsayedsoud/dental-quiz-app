@@ -38,7 +38,7 @@ const sections = [
     id: 'nursing',
     title: 'التمريض',
     subtitle: 'Nursing Prometric (تمريض)',
-    icon: '💉',
+    icon: '👩‍⚕️',
     gradient: 'from-fuchsia-600 to-purple-700',
     href: '#',
     comingSoon: true,
