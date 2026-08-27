@@ -30,9 +30,19 @@ function QuizContent() {
   const [score, setScore] = useState(0);
   const [attempted, setAttempted] = useState(0);
   const [answered, setAnswered] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
   const [timeLeft, setTimeLeft] = useState(30);
+  const [isTimerPaused, setIsTimerPaused] = useState(false);
+  const isTimerPausedRef = useRef(false);
+  useEffect(() => {
+    isTimerPausedRef.current = isTimerPaused;
+  }, [isTimerPaused]);
   const [isMuted, setIsMuted] = useState(false);
   const [loadingQuestions, setLoadingQuestions] = useState(true);
   const [error, setError] = useState('');
@@ -127,6 +137,7 @@ function QuizContent() {
     }
     
     timerRef.current = setInterval(() => {
+      if (isTimerPausedRef.current) return;
       setTimeLeft(prev => {
         if (prev <= 1) {
           clearInterval(timerRef.current!);
@@ -209,6 +220,10 @@ function QuizContent() {
     setIsCurrentBookmarked(isNowBookmarked);
   };
 
+  if (!isMounted) {
+    return <div className="min-h-screen bg-[#0a0a0a]"></div>;
+  }
+
   // Loading state
   if (loadingQuestions) {
     return (
@@ -247,6 +262,15 @@ function QuizContent() {
           <span className="text-gray-500 mr-2"> ({percentage}%)</span>
         </div>
         <div className="flex items-center gap-2">
+            {mode !== 'simulation' && mode !== 'exam' && (
+              <button 
+                onClick={() => setIsTimerPaused(!isTimerPaused)} 
+                className={`text-xl transition-transform ${isTimerPaused ? 'scale-110' : 'opacity-70 hover:opacity-100'}`}
+                title={isTimerPaused ? 'استئناف' : 'إيقاف'}
+              >
+                {isTimerPaused ? '▶️' : '⏸️'}
+              </button>
+            )}
           <button onClick={toggleMute} className="text-xl">{isMuted ? '🔇' : '🔊'}</button>
           <span className={`font-mono font-bold text-lg ${timeLeft <= (isSimulation ? 60 : 10) ? 'text-red-400' : 'text-cyan-400'}`}>
             {formatTime(timeLeft)}
