@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 
 export default function AboutPage() {
-  const phoneNumber = '+201019028987';
-  const whatsappUrl = `https://wa.me/${phoneNumber.replace('+', '')}?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D9%85%D9%86%D8%B5%D8%A9%20Medical%20Prometric`;
+  const displayPhone = '01066415005';
+  const whatsappUrl = `https://wa.me/201066415005?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D9%85%D9%86%D8%B5%D8%A9%20Medical%20Prometric`;
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] relative overflow-hidden pb-10">
@@ -119,17 +119,17 @@ export default function AboutPage() {
             <div className="border-t border-white/10 pt-6 mt-6">
               <div className="text-center mb-4">
                 <p className="text-gray-400 text-xs font-medium">المنصة تحت إشراف وتطوير</p>
-                <p className="text-white font-extrabold text-lg mt-1">د/ السيد أبوالسعود شحاتة</p>
+                <p className="text-white font-extrabold text-lg mt-1">د/ السيد أبوالسعود</p>
               </div>
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                 <a
-                  href={`tel:${phoneNumber}`}
+                  href={`tel:${displayPhone}`}
                   className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2.5 bg-white/5 border border-white/20 text-white px-5 py-3 rounded-2xl text-sm font-bold hover:bg-white/10 transition"
                   dir="ltr"
                 >
                   <span className="text-lg">📞</span>
-                  <span>{phoneNumber}</span>
+                  <span>{displayPhone}</span>
                 </a>
 
                 <a
