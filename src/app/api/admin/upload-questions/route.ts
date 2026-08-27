@@ -36,8 +36,16 @@ export async function POST(request: NextRequest) {
 
     const base64Content = Buffer.from(csvString, 'utf-8').toString('base64');
 
-    const filename = section === 'medical' ? 'medical_questions.csv' : 'dental_questions.csv';
-    const filePath = `public/${filename}`;
+    let filename = 'dental_questions.csv';
+    let filePath = 'public/dental_questions.csv';
+    
+    if (section === 'medical') {
+      filename = 'medical_questions.csv';
+      filePath = 'public/medical_questions.csv';
+    } else if (section === 'nursing') {
+      filename = 'nursing_questions.csv';
+      filePath = 'public/nursing_questions.csv';
+    }
 
     // 1. الحصول على الـ SHA الخاص بالملف الحالي
     let sha = '';

@@ -127,9 +127,30 @@ export async function GET(request: NextRequest) {
       else if (mode === 'simulation') questions = shuffleArray(filtered).slice(0, 100);
       else if (mode === 'quick') questions = shuffleArray(filtered).slice(0, 10);
       else questions = shuffleArray(filtered);
-    } else {
+    } else if (section === 'dental') {
       // Dental section
       const rows = await getLocalCsvData('dental_questions.csv');
+      const all = parseQuestions(rows, true);
+      let filtered = all;
+      
+      if (subject) {
+        filtered = all.filter(q => q.metadata && q.metadata.toLowerCase() === subject.toLowerCase());
+      }
+
+      if (subject) {
+        questions = filtered;
+      } else if (mode === 'exam') {
+        questions = shuffleArray(filtered).slice(0, 50);
+      } else if (mode === 'simulation') {
+        questions = shuffleArray(filtered).slice(0, 100);
+      } else if (mode === 'quick') {
+        questions = shuffleArray(filtered).slice(0, 10);
+      } else {
+        questions = shuffleArray(filtered);
+      }
+    } else if (section === 'nursing') {
+      // Nursing section
+      const rows = await getLocalCsvData('nursing_questions.csv');
       const all = parseQuestions(rows, true);
       let filtered = all;
       

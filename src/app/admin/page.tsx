@@ -29,6 +29,9 @@ export default function AdminPage() {
   // Upload states
   const [uploadingDental, setUploadingDental] = useState(false);
   const [uploadingMedical, setUploadingMedical] = useState(false);
+  const [uploadingNursing, setUploadingNursing] = useState(false);
+  const [nursingStatus, setNursingStatus] = useState<{success: boolean; message: string} | null>(null);
+  const nursingFileInputRef = useRef<HTMLInputElement>(null);
   const [dentalStatus, setDentalStatus] = useState<string | null>(null);
   const [medicalStatus, setMedicalStatus] = useState<string | null>(null);
 
@@ -77,14 +80,17 @@ export default function AdminPage() {
     setConfirmModal({ open: false, uid: '', email: '' });
   };
 
-  const handleFileUpload = async (file: File, section: 'dental' | 'medical') => {
+  const handleFileUpload = async (file: File, section: 'dental' | 'medical' | 'nursing') => {
     const isDental = section === 'dental';
     if (isDental) {
       setUploadingDental(true);
       setDentalStatus(null);
-    } else {
+    } else if (section === 'medical') {
       setUploadingMedical(true);
       setMedicalStatus(null);
+    } else {
+      setUploadingNursing(true);
+      setNursingStatus(null);
     }
 
     try {
@@ -102,22 +108,27 @@ export default function AdminPage() {
         throw new Error(data.error || 'فشل في رفع الملف');
       }
 
-      const msg = `✅ تم رفع وتحديث ملف أسئلة ${isDental ? 'طب الأسنان' : 'الطب البشري'} بنجاح!`;
+      const msg = `✅ تم رفع وتحديث ملف أسئلة ${isDental ? 'طب الأسنان' : section === 'medical' ? 'الطب البشري' : 'التمريض'} بنجاح!`;
       if (isDental) setDentalStatus(msg);
-      else setMedicalStatus(msg);
+      else if (section === 'medical') setMedicalStatus(msg);
+      else setNursingStatus({ success: true, message: msg });
       await showAlert(msg, '📁', 'success');
     } catch (err: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
       const errMsg = `خطأ: ${err.message}`;
       if (isDental) setDentalStatus(`❌ ${errMsg}`);
-      else setMedicalStatus(`❌ ${errMsg}`);
+      else if (section === 'medical') setMedicalStatus(`❌ ${errMsg}`);
+      else setNursingStatus({ success: false, message: `❌ ${errMsg}` });
       await showAlert(errMsg, '❌', 'error');
     } finally {
       if (isDental) {
         setUploadingDental(false);
         if (dentalFileInputRef.current) dentalFileInputRef.current.value = '';
-      } else {
+      } else if (section === 'medical') {
         setUploadingMedical(false);
         if (medicalFileInputRef.current) medicalFileInputRef.current.value = '';
+      } else {
+        setUploadingNursing(false);
+        if (nursingFileInputRef.current) nursingFileInputRef.current.value = '';
       }
     }
   };
@@ -603,6 +614,63 @@ export default function AdminPage() {
                     <span className="font-mono text-white">Google Sheets + CSV</span>
                   </div>
                 </div>
+
+            {/* Nursing Upload Card */}
+            <div className="bg-[#0f172a]/80 backdrop-blur border border-purple-500/20 rounded-3xl overflow-hidden shadow-2xl relative">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-fuchsia-400" />
+              
+              <div className="p-4 sm:p-8 flex flex-col h-full">
+                <div className="flex-1">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl mb-4 sm:mb-6 border border-purple-500/20 shadow-inner">
+                    👩‍⚕️
+                  </div>
+                  
+                  <h3 className="text-base sm:text-xl font-bold text-purple-300 mb-1 sm:mb-2">Nursing Prometric</h3>
+                  <p className="text-[10px] sm:text-xs text-purple-100/70 mb-4 sm:mb-6 leading-relaxed">
+                    الملف: <code className="bg-purple-950/60 px-1.5 py-0.5 rounded text-purple-200 border border-purple-800/40 text-[10px]">nursing_questions.csv</code>
+                  </p>
+                </div>
+
+                <div className="space-y-2 sm:space-y-3 pt-3 sm:pt-4 border-t border-purple-500/20">
+                  <a 
+                    href="/nursing_questions.csv" 
+                    download="nursing_questions.csv"
+                    className="w-full bg-purple-600 hover:bg-purple-500 active:scale-[0.98] text-white py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-purple-600/30 text-xs sm:text-sm"
+                  >
+                    <span>⬇️</span>
+                    <span>تنزيل ملف التمريض</span>
+                  </a>
+
+                  <input
+                    ref={nursingFileInputRef}
+                    type="file"
+                    accept=".csv,.xlsx,.xls"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleFileUpload(file, 'nursing');
+                    }}
+                  />
+
+                  <button
+                    onClick={() => nursingFileInputRef.current?.click()}
+                    disabled={uploadingNursing}
+                    className="w-full bg-purple-500/10 hover:bg-purple-500/20 active:scale-[0.98] border border-purple-500/40 text-purple-300 py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl font-bold transition flex items-center justify-center gap-2 disabled:opacity-50 text-xs sm:text-sm"
+                  >
+                    <span>⬆️</span>
+                    <span>{uploadingNursing ? '⏳ جاري الرفع...' : 'رفع ملف جديد'}</span>
+                  </button>
+                </div>
+
+                {nursingStatus && (
+                  <div className={`mt-3 sm:mt-4 p-2.5 sm:p-3 rounded-xl text-xs sm:text-sm ${
+                    nursingStatus.success ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'
+                  }`}>
+                    {nursingStatus.message}
+                  </div>
+                )}
+              </div>
+            </div>
               </div>
             </div>
           </motion.div>
