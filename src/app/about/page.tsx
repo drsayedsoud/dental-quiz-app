@@ -119,7 +119,7 @@ export default function AboutPage() {
             <div className="border-t border-white/10 pt-6 mt-6">
               <div className="text-center mb-4">
                 <p className="text-gray-400 text-xs font-medium">المنصة تحت إشراف وتطوير</p>
-                <p className="text-white font-extrabold text-lg mt-1">د/ سيد سعيد إسماعيل</p>
+                <p className="text-white font-extrabold text-lg mt-1">د/ السيد أبوالسعود شحاتة</p>
               </div>
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
