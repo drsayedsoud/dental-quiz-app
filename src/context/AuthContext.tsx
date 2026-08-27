@@ -30,6 +30,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Auto clear cache on session start
+  useEffect(() => {
+    if (typeof window !== 'undefined' && !sessionStorage.getItem('cache_cleared_auto')) {
+      sessionStorage.setItem('cache_cleared_auto', 'true');
+      if ('caches' in window) {
+        window.caches.keys().then(keys => {
+          Promise.all(keys.map(key => window.caches.delete(key))).catch(() => {});
+        }).catch(() => {});
+      }
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(regs => {
+          regs.forEach(reg => reg.unregister());
+        }).catch(() => {});
+      }
+    }
+  }, []);
+
   const refreshProfile = async () => {
     if (user) {
       const p = await getUserProfile(user.uid);
