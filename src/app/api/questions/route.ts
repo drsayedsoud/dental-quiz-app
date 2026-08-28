@@ -100,6 +100,7 @@ function parseQuestions(rows: string[][], shuffleChoices = true) {
         explanation: (row[6] || '').trim(),
         detailed: (row[9] || '').trim(),
         metadata: (row[10] || '').trim(),
+        source: (row[11] || '').trim(),
       };
     });
 }
