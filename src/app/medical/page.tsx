@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -17,44 +18,38 @@ const subjects = [
   { name: 'Orthopedics', icon: '🦴' },
   { name: 'Ophthalmology', icon: '👁️' },
   { name: 'ENT', icon: '👂' },
-  { name: 'Dermatology', icon: '🧴' },
+  { name: 'Dermatology', icon: ' छा' },
   { name: 'Radiology', icon: '☢️' },
   { name: 'Anatomy', icon: '💀' },
   { name: 'Physiology', icon: '⚡' },
   { name: 'Pathology', icon: '🔬' },
   { name: 'Pharmacology', icon: '💊' },
   { name: 'Microbiology', icon: '🦠' },
-  { name: 'Biochemistry', icon: '🧬' },
+  { name: 'Biochemistry', icon: '🧪' },
   { name: 'Public Health', icon: '🌍' },
   { name: 'Forensic Medicine', icon: '⚖️' },
-  { name: 'General Practice', icon: '🏥' },
+  { name: 'General Practice', icon: '🩺' },
 ];
 
-
 const studentModules = [
-  // Year 1
   { name: 'Basic Structure and Function', icon: '🧬' },
   { name: 'Musculoskeletal & Integumentary', icon: '🦴' },
   { name: 'Cardiopulmonary systems', icon: '🫀' },
   { name: 'Digestive system & Nutrition', icon: '🍏' },
-  // Year 2
   { name: 'Endocrine & Reproductive systems', icon: '🩸' },
   { name: 'Nervous system & Special senses', icon: '🧠' },
   { name: 'Urinary system', icon: '💧' },
   { name: 'Principles of Diseases & Pharmacology', icon: '💊' },
   { name: 'Systemic Pathology & Therapeutics I', icon: '🔬' },
-  // Year 3
   { name: 'Infection & Immunity', icon: '🦠' },
   { name: 'Systemic Pathology & Therapeutics II', icon: '🧪' },
   { name: 'Community medicine', icon: '🌍' },
   { name: 'Ophthalmology', icon: '👁️' },
   { name: 'Forensic medicine & clinical toxicology', icon: '⚖️' },
-  // Year 4
   { name: 'Paediatrics', icon: '👶' },
   { name: 'Medicine I', icon: '🩺' },
   { name: 'Medicine II', icon: '🩺' },
   { name: 'Family medicine', icon: '👨‍👩‍👧‍👦' },
-  // Year 5
   { name: 'Ear, Nose and throat (ENT)', icon: '👂' },
   { name: 'Surgery I', icon: '🔪' },
   { name: 'Surgery II & emergency', icon: '🚑' },
@@ -64,17 +59,13 @@ const studentModules = [
 
 export default function MedicalPage() {
   const [selectedTrack, setSelectedTrack] = useState<'undergrad' | 'grad' | null>(null);
-  const [view, setView] = useState<'main' | 'students' | 'postgrad'>('main');
   const { user, profile, loading } = useAuth();
   const router = useRouter();
   const [sessions, setSessions] = useState<QuizSession[]>([]);
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.replace('/login');
-    } else if (user) {
-      getAllUserSessions(user.uid).then(setSessions);
-    }
+    if (!loading && !user) router.replace('/login');
+    else if (user) getAllUserSessions(user.uid).then(setSessions);
   }, [user, loading, router]);
 
   if (loading || !user) return null;
@@ -82,17 +73,14 @@ export default function MedicalPage() {
   const FREE_LIMIT = 100;
   const isLimited = !profile?.isVip && (profile?.questionCount || 0) >= FREE_LIMIT;
 
-  const startExam = (subject?: string) => {
+  const startExam = (subject?: string, mode: string = 'exam') => {
     if (isLimited) {
-      alert('🚫 لقد تجاوزت الحد الأقصى للأسئلة المجانية (100 سؤال). تواصل مع الإدارة للحصول على وصول VIP.');
+      alert('لقد وصلت للحد الأقصى للأسئلة المجانية.');
       return;
     }
-    const params = new URLSearchParams({ section: 'medical' });
-    if (subject) {
-      params.set('subject', subject);
-    } else {
-      params.set('mode', 'exam');
-    }
+    const params = new URLSearchParams({ section: 'medical', track: selectedTrack || '' });
+    if (subject) params.set('subject', subject);
+    else params.set('mode', mode);
     router.push(`/quiz?${params.toString()}`);
   };
 
@@ -104,159 +92,105 @@ export default function MedicalPage() {
     return totalAttempted > 0 ? Math.round((totalScore / totalAttempted) * 100) : 0;
   };
 
-  return (
-    <div className="min-h-screen bg-[#0a0a0a] relative">
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-blue-500/5 rounded-full blur-[150px]" />
-
-      <div className="relative z-10 px-4 py-6 max-w-lg mx-auto">
-        <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="text-center mb-6">
-          <h1 className="text-2xl md:text-3xl font-extrabold text-gradient">👨‍⚕️ Medical Prometric</h1>
-          <div className="mt-2 inline-block bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 text-sm font-bold px-4 py-1.5 rounded-full">
-            {profile?.questionCount || 0} سؤال محلول
-          </div>
-          {isLimited && (
-            <p className="text-red-400 text-xs mt-2">🚫 وصلت للحد الأقصى المجاني</p>
-          )}
+  if (!selectedTrack) {
+    return (
+      <div className="min-h-screen pt-24 pb-10 px-4 sm:px-6 max-w-3xl mx-auto">
+        <motion.div initial={{opacity: 0, y: 20}} animate={{opacity: 1, y: 0}} className="text-center mb-10">
+          <span className="text-5xl mb-4 block">🩺</span>
+          <h1 className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4 tracking-wide drop-shadow-md">
+            الطب البشري
+          </h1>
+          <p className="text-gray-300 text-base sm:text-lg">الرجاء اختيار المسار الخاص بك للبدء</p>
         </motion.div>
 
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <button onClick={() => setSelectedTrack('undergrad')} className="group relative overflow-hidden bg-white/5 border border-white/10 hover:bg-cyan-500/10 hover:border-cyan-500/50 transition-all rounded-3xl p-8 flex flex-col items-center justify-center gap-4 active:scale-95">
+            <span className="text-6xl group-hover:scale-110 transition-transform">🎓</span>
+            <h2 className="text-2xl font-bold text-white group-hover:text-cyan-300 transition-colors">الطلبة</h2>
+            <p className="text-gray-400 text-sm text-center">أسئلة وتجميعات مخصصة لطلبة البكالوريوس (الموديولات)</p>
+          </button>
+          
+          <button onClick={() => setSelectedTrack('grad')} className="group relative overflow-hidden bg-white/5 border border-white/10 hover:bg-yellow-500/10 hover:border-yellow-500/50 transition-all rounded-3xl p-8 flex flex-col items-center justify-center gap-4 active:scale-95">
+            <span className="text-6xl group-hover:scale-110 transition-transform">👨‍⚕️</span>
+            <h2 className="text-2xl font-bold text-white group-hover:text-yellow-300 transition-colors">الخريجون والدراسات العليا</h2>
+            <p className="text-gray-400 text-sm text-center">أطباء الامتياز، التكليف، الماجستير، والزمالة</p>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const currentSubjects = selectedTrack === 'undergrad' ? studentModules : subjects;
+
+  return (
+    <div className="min-h-screen pt-24 pb-10 px-4 sm:px-6 max-w-7xl mx-auto">
+      <div className="mb-6 flex justify-between items-center bg-white/5 p-4 rounded-2xl border border-white/10">
+        <h2 className="text-xl font-bold text-white flex items-center gap-2">
+          {selectedTrack === 'undergrad' ? '🎓 مسار الطلبة' : '👨‍⚕️ مسار الخريجين'}
+        </h2>
+        <button onClick={() => setSelectedTrack(null)} className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-sm font-bold transition">
+          ↩️ تغيير المسار
+        </button>
+      </div>
+
+      <motion.div initial={{opacity: 0, y: 10}} animate={{opacity: 1, y: 0}}>
         {/* Action Buttons */}
         <div className="grid grid-cols-2 gap-3 mb-6">
-          <motion.button
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => startExam()}
-            disabled={isLimited}
-            className="bg-gradient-to-l from-blue-600 to-indigo-700 text-white font-bold p-4 rounded-2xl shadow-lg hover:from-blue-500 hover:to-indigo-600 transition disabled:opacity-40 disabled:cursor-not-allowed text-center flex flex-col items-center justify-center gap-2"
-          >
-            <span className="text-2xl">🧪</span>
-            <span className="text-xs sm:text-sm">اختبار شامل</span>
+          <motion.button onClick={() => startExam(undefined, 'exam')} disabled={isLimited} className="bg-gradient-to-l from-blue-600 to-indigo-700 text-white font-bold p-4 rounded-2xl shadow-lg hover:from-blue-500 hover:to-indigo-600 transition disabled:opacity-40 flex flex-col items-center justify-center gap-2">
+            <span className="text-2xl">📝</span>
+            <span className="text-xs sm:text-sm">امتحان شامل</span>
           </motion.button>
 
-          <motion.button
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => {
-              if (isLimited) { alert('🚫 لقد تجاوزت الحد الأقصى.'); return; }
-              router.push('/quiz?section=medical&mode=simulation');
-            }}
-            disabled={isLimited}
-            className="bg-purple-500/20 border border-purple-500/30 hover:bg-purple-500/30 text-purple-300 p-4 rounded-2xl transition disabled:opacity-40 disabled:cursor-not-allowed text-center flex flex-col items-center justify-center gap-2"
-          >
+          <motion.button onClick={() => startExam(undefined, 'simulation')} disabled={isLimited} className="bg-purple-500/20 border border-purple-500/30 hover:bg-purple-500/30 text-purple-300 p-4 rounded-2xl transition disabled:opacity-40 flex flex-col items-center justify-center gap-2">
             <span className="text-2xl">⏱️</span>
             <span className="text-xs sm:text-sm font-bold">امتحان محاكاة</span>
           </motion.button>
 
-          <motion.button
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => {
-              if (isLimited) { alert('🚫 لقد تجاوزت الحد الأقصى.'); return; }
-              router.push('/quiz?section=medical&mode=quick');
-            }}
-            disabled={isLimited}
-            className="bg-emerald-500/20 border border-emerald-500/30 hover:bg-emerald-500/30 text-emerald-300 p-4 rounded-2xl transition disabled:opacity-40 disabled:cursor-not-allowed text-center flex flex-col items-center justify-center gap-2"
-          >
-            <span className="text-2xl">🎯</span>
-            <span className="text-xs sm:text-sm font-bold">اختبار سريع (10)</span>
+          <motion.button onClick={() => startExam(undefined, 'quick')} disabled={isLimited} className="bg-emerald-500/20 border border-emerald-500/30 hover:bg-emerald-500/30 text-emerald-300 p-4 rounded-2xl transition disabled:opacity-40 flex flex-col items-center justify-center gap-2">
+            <span className="text-2xl">⚡</span>
+            <span className="text-xs sm:text-sm font-bold">اختبار سريع</span>
           </motion.button>
 
-          <motion.button
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => router.push(`/bookmarks?section=medical&track=${selectedTrack}`)}
-            className="bg-yellow-500/20 border border-yellow-500/30 hover:bg-yellow-500/30 text-yellow-300 p-4 rounded-2xl transition text-center flex flex-col items-center justify-center gap-2"
-          >
+          <motion.button onClick={() => router.push(`/bookmarks?section=medical&track=${selectedTrack}`)} className="bg-yellow-500/20 border border-yellow-500/30 hover:bg-yellow-500/30 text-yellow-300 p-4 rounded-2xl transition flex flex-col items-center justify-center gap-2">
             <span className="text-2xl">⭐</span>
             <span className="text-xs sm:text-sm font-bold">الأسئلة المحفوظة</span>
           </motion.button>
         </div>
 
-        {view === 'main' ? (
-          <div className="grid grid-cols-2 gap-4 mb-6 mt-4">
-            <motion.button
-              initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} whileTap={{ scale: 0.96 }}
-              onClick={() => setView('students')}
-              className="glass rounded-3xl p-6 flex flex-col items-center justify-center text-center border border-white/10 hover:border-cyan-500/40 hover:bg-white/10 transition-all shadow-xl group aspect-square relative"
-            >
-              <span className="text-6xl mb-4 group-hover:scale-110 transition-transform">👨‍🎓</span>
-              <h2 className="font-extrabold text-white text-lg tracking-wide group-hover:text-cyan-400 transition">طلبة</h2>
-              <p className="text-xs text-gray-400 mt-2">موديولات بكالوريوس الطب (النظام التكاملي)</p>
-            </motion.button>
+        <h2 className="text-2xl sm:text-3xl font-black text-white mb-6 flex items-center gap-3">
+          <span className={selectedTrack === 'undergrad' ? 'text-cyan-400' : 'text-yellow-400'}>📚</span> 
+          المواد الدراسية
+        </h2>
 
-            <motion.button
-              initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} whileTap={{ scale: 0.96 }}
-              onClick={() => setView('postgrad')}
-              className="glass rounded-3xl p-6 flex flex-col items-center justify-center text-center border border-white/10 hover:border-blue-500/40 hover:bg-white/10 transition-all shadow-xl group aspect-square relative"
-            >
-              <span className="text-6xl mb-4 group-hover:scale-110 transition-transform">👨‍⚕️</span>
-              <h2 className="font-extrabold text-white text-lg tracking-wide group-hover:text-blue-400 transition">دراسات عليا</h2>
-              <p className="text-xs text-gray-400 mt-2">التخصصات الطبية للزمالة والبورد</p>
-            </motion.button>
-          </div>
-        ) : (
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-4 px-2">
-              <h2 className="text-white font-bold text-lg">{view === 'students' ? 'موديولات الطلبة' : 'تخصصات الدراسات العليا'}</h2>
-              <button onClick={() => setView('main')} className="text-blue-400 text-sm hover:text-blue-300">العودة للأقسام</button>
-            </div>
-            <div className="grid grid-cols-2 gap-3.5">
-              {(view === 'students' ? studentModules : subjects).map((subject, index) => {
-                const accuracy = getSubjectStats(subject.name);
-                return (
-                  <motion.button
-                    key={subject.name}
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.03 }}
-                    whileTap={{ scale: 0.96 }}
-                    onClick={() => startExam(subject.name)}
-                    className="glass rounded-3xl p-4 flex flex-col items-center justify-between text-center border border-white/10 hover:border-blue-500/40 hover:bg-white/10 transition-all shadow-xl group aspect-square relative overflow-hidden"
-                  >
-                    {accuracy !== null && (
-                      <div className="absolute top-0 left-0 w-full h-1 bg-gray-800">
-                        <div 
-                          className={`h-full ${accuracy >= 75 ? 'bg-green-500' : accuracy >= 50 ? 'bg-yellow-500' : 'bg-red-500'}`}
-                          style={{ width: `${accuracy}%` }}
-                        />
-                      </div>
-                    )}
-                    
-                    {accuracy !== null && (
-                      <div className={`absolute top-2 right-2 text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-black/50 ${accuracy >= 75 ? 'text-green-400' : accuracy >= 50 ? 'text-yellow-400' : 'text-red-400'}`}>
-                        {accuracy}%
-                      </div>
-                    )}
-
-                    <div className="text-4xl group-hover:scale-110 transition duration-300 mt-2">
-                      {subject.icon}
-                    </div>
-
-                    <div className="w-full mt-2">
-                      <h2 className="font-extrabold text-white text-xs sm:text-sm leading-tight tracking-wide group-hover:text-blue-400 transition">
-                        {subject.name}
-                      </h2>
-                    </div>
-                  </motion.button>
-                );
-              })}
-            </div>
-          </div>
-        )}
-        
-        <motion.button
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          onClick={() => router.push('/dashboard')}
-          className="w-full glass glass-hover rounded-xl py-3 text-gray-400 hover:text-white text-sm transition font-semibold"
-        >
-          ← العودة للأقسام
-        </motion.button>
-      </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
+          {currentSubjects.map((subject, index) => {
+            const accuracy = getSubjectStats(subject.name);
+            return (
+              <motion.button
+                key={subject.name}
+                initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.03 }}
+                whileTap={{ scale: 0.96 }}
+                onClick={() => startExam(subject.name, 'standard')}
+                className="glass rounded-3xl p-4 flex flex-col items-center justify-between text-center border border-white/10 hover:border-blue-500/40 hover:bg-white/10 transition-all shadow-xl group aspect-square relative overflow-hidden"
+              >
+                {accuracy !== null && (
+                  <div className="absolute top-2 left-2 text-[10px] font-bold bg-white/10 px-2 py-0.5 rounded-full flex items-center gap-1 text-white">
+                    <span className={accuracy >= 80 ? 'text-green-400' : accuracy >= 50 ? 'text-yellow-400' : 'text-red-400'}>
+                      {accuracy}%
+                    </span>
+                  </div>
+                )}
+                <div className="text-3xl sm:text-4xl mb-2 sm:mb-3 mt-4 group-hover:scale-110 transition-transform">
+                  {subject.icon}
+                </div>
+                <h3 className="font-bold text-white text-xs sm:text-sm leading-tight group-hover:text-blue-300 transition-colors line-clamp-3">
+                  {subject.name}
+                </h3>
+              </motion.button>
+            );
+          })}
+        </div>
+      </motion.div>
     </div>
   );
 }
