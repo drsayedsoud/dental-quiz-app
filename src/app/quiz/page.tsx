@@ -245,7 +245,7 @@ function QuizContent() {
     switch(section) {
       case 'medical': return '👨‍⚕️';
       case 'pharmacy': return '💊';
-      case 'nursing': return '🩺';
+      case 'nursing': return '👩‍⚕️';
       case 'dental':
       default: return '🦷';
     }
