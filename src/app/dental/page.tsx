@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
 import { getAllUserSessions, QuizSession } from '@/lib/firestore';
+import { DentalIconMap } from '@/components/DentalIcons';
 
 const subjects = [
   { name: 'Endodontic', icon: '🦷' },
@@ -155,7 +156,7 @@ export default function DentalPage() {
                     </div>
                   )}
                   <div className="text-3xl sm:text-4xl mb-2 sm:mb-3 mt-4 group-hover:scale-110 transition-transform">
-                    {subject.icon}
+                    {DentalIconMap[subject.name] || '🦷'}
                   </div>
                   <h3 className="font-bold text-white text-xs sm:text-sm leading-tight group-hover:text-teal-300 transition-colors line-clamp-3">
                     {subject.name}
