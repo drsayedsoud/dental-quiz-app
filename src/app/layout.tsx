@@ -36,7 +36,30 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
+      
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var currentVersion = '1787889510918';
+                  var cachedVersion = localStorage.getItem('app_version');
+                  if (cachedVersion !== currentVersion) {
+                    console.log('New version detected! Clearing cache...');
+                    localStorage.setItem('app_version', currentVersion);
+                    
+                    // Clear specific cached items or force reload if it's not the very first visit
+                    if (cachedVersion) {
+                       window.location.reload(true);
+                    }
+                  }
+                } catch (e) {}
+              })();
+            `
+          }}
+        />
       </head>
+
       <body className="min-h-screen">
         <AuthProvider>
           <WakeLock />

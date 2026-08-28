@@ -240,11 +240,25 @@ function QuizContent() {
     return <div className="min-h-screen bg-[#0a0a0a]"></div>;
   }
 
+  
+  const getSectionIcon = () => {
+    switch(section) {
+      case 'medical': return '👨‍⚕️';
+      case 'pharmacy': return '💊';
+      case 'nursing': return '🩺';
+      case 'dental':
+      default: return '🦷';
+    }
+  };
+
   // Loading state
+
   if (loadingQuestions) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#0a0a0a]">
-        <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }} className="text-4xl mb-4">🦷</motion.div>
+        <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }} className="text-4xl mb-4">
+          {getSectionIcon()}
+        </motion.div>
         <p className="text-gray-400">جارٍ تحميل الأسئلة...</p>
       </div>
     );
