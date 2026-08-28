@@ -104,7 +104,7 @@ function QuizContent() {
   }, []);
 
   // Timer
-  useEffect(() => { latestHandleNext.current = handleNext; }, [handleNext]);
+
 
   const handleNext = useCallback(() => {
     if (subject && mode !== 'exam' && mode !== 'simulation') {
@@ -133,6 +133,8 @@ function QuizContent() {
       setShowExplanation(false);
     }
   }, [currentIndex, questions.length, score, attempted, subject, section, router, user, wrongAnswers, mode]);
+
+  useEffect(() => { latestHandleNext.current = handleNext; }, [handleNext]);
 
   const currentQuestion = questions[currentIndex];
 
