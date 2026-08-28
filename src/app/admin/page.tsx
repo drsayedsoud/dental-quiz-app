@@ -25,6 +25,7 @@ export default function AdminPage() {
   const [usersList, setUsersList] = useState<(UserProfile & { id: string })[]>([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
 
   // Upload states
   const [uploadingDental, setUploadingDental] = useState(false);
@@ -81,7 +82,7 @@ export default function AdminPage() {
     setConfirmModal({ open: false, uid: '', email: '' });
   };
 
-  const handleFileUpload = async (file: File, section: 'dental' | 'medical' | 'nursing') => {
+    const handleFileUpload = async (file: File, section: 'dental' | 'medical' | 'nursing') => {
     const isDental = section === 'dental';
     if (isDental) {
       setUploadingDental(true);
@@ -94,26 +95,43 @@ export default function AdminPage() {
       setNursingStatus(null);
     }
 
+    setUploadProgress(prev => ({ ...prev, [section]: 0 }));
+
     try {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('section', section);
 
-      const res = await fetch('/api/admin/upload-questions', {
-        method: 'POST',
-        body: formData,
+      const data = await new Promise<any>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '/api/admin/upload-questions', true);
+        
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable) {
+            const percentComplete = Math.round((e.loaded / e.total) * 100);
+            setUploadProgress(prev => ({ ...prev, [section]: percentComplete }));
+          }
+        };
+
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve(JSON.parse(xhr.responseText));
+          } else {
+            let errMsg = 'فشل في رفع الملف';
+            try { errMsg = JSON.parse(xhr.responseText).error || errMsg; } catch(e){}
+            reject(new Error(errMsg));
+          }
+        };
+
+        xhr.onerror = () => reject(new Error('خطأ في الاتصال بالخادم'));
+        xhr.send(formData);
       });
 
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'فشل في رفع الملف');
-      }
-
-      const msg = `✅ تم رفع وتحديث ملف أسئلة ${isDental ? 'طب الأسنان' : section === 'medical' ? 'الطب البشري' : 'التمريض'} بنجاح!`;
+      const msg = `✅ تم رفع ملف ${isDental ? 'طب الأسنان' : section === 'medical' ? 'الطب البشري' : 'التمريض'} بنجاح! السيرفر يحتاج إلى دقيقتين لنشر التحديثات للطلاب.`;
       if (isDental) setDentalStatus(msg);
       else if (section === 'medical') setMedicalStatus(msg);
       else setNursingStatus({ success: true, message: msg });
-      await showAlert(msg, '📁', 'success');
+      await showAlert(msg, '🚀', 'success');
     } catch (err: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
       const errMsg = `خطأ: ${err.message}`;
       if (isDental) setDentalStatus(`❌ ${errMsg}`);
@@ -131,6 +149,7 @@ export default function AdminPage() {
         setUploadingNursing(false);
         if (nursingFileInputRef.current) nursingFileInputRef.current.value = '';
       }
+      setTimeout(() => setUploadProgress(prev => ({ ...prev, [section]: 0 })), 3000);
     }
   };
 
@@ -362,7 +381,14 @@ export default function AdminPage() {
                     className="w-full bg-cyan-500/10 hover:bg-cyan-500/20 active:scale-[0.98] border border-cyan-500/40 text-cyan-300 py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl font-bold transition flex items-center justify-center gap-2 disabled:opacity-50 text-xs sm:text-sm"
                   >
                     <span>⬆️</span>
-                    <span>{uploadingDental ? '⏳ جاري الرفع...' : 'رفع ملف جديد'}</span>
+                    <span>{uploadingDental ? `⏳ جاري الرفع (${uploadProgress['dental'] || 0}%)` : 'رفع ملف جديد'}</span>
+                  </button>
+
+                  {uploadingDental && uploadProgress['dental'] > 0 && (
+                    <div className="w-full bg-white/10 rounded-full h-1.5 mt-2 overflow-hidden">
+                      <div className="bg-cyan-500 h-1.5 rounded-full transition-all duration-300" style={{ width: `${uploadProgress['dental']}%` }}></div>
+                    </div>
+                  )}
                   </button>
 
                   {dentalStatus && (
@@ -431,7 +457,14 @@ export default function AdminPage() {
                     className="w-full bg-emerald-500/10 hover:bg-emerald-500/20 active:scale-[0.98] border border-emerald-500/40 text-emerald-300 py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl font-bold transition flex items-center justify-center gap-2 disabled:opacity-50 text-xs sm:text-sm"
                   >
                     <span>⬆️</span>
-                    <span>{uploadingMedical ? '⏳ جاري الرفع...' : 'رفع ملف جديد'}</span>
+                    <span>{uploadingMedical ? `⏳ جاري الرفع (${uploadProgress['medical'] || 0}%)` : 'رفع ملف جديد'}</span>
+                  </button>
+
+                  {uploadingMedical && uploadProgress['medical'] > 0 && (
+                    <div className="w-full bg-white/10 rounded-full h-1.5 mt-2 overflow-hidden">
+                      <div className="bg-emerald-500 h-1.5 rounded-full transition-all duration-300" style={{ width: `${uploadProgress['medical']}%` }}></div>
+                    </div>
+                  )}
                   </button>
 
                   {medicalStatus && (
@@ -495,7 +528,14 @@ export default function AdminPage() {
                     className="w-full bg-purple-500/10 hover:bg-purple-500/20 active:scale-[0.98] border border-purple-500/40 text-purple-300 py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl font-bold transition flex items-center justify-center gap-2 disabled:opacity-50 text-xs sm:text-sm"
                   >
                     <span>⬆️</span>
-                    <span>{uploadingNursing ? '⏳ جاري الرفع...' : 'رفع ملف جديد'}</span>
+                    <span>{uploadingNursing ? `⏳ جاري الرفع (${uploadProgress['nursing'] || 0}%)` : 'رفع ملف جديد'}</span>
+                  </button>
+
+                  {uploadingNursing && uploadProgress['nursing'] > 0 && (
+                    <div className="w-full bg-white/10 rounded-full h-1.5 mt-2 overflow-hidden">
+                      <div className="bg-purple-500 h-1.5 rounded-full transition-all duration-300" style={{ width: `${uploadProgress['nursing']}%` }}></div>
+                    </div>
+                  )}
                   </button>
                 </div>
 
