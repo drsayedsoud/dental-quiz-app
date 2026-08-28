@@ -62,7 +62,7 @@ export default function AdminPage() {
   }, []);
 
   const handleToggleVip = async (uid: string, currentStatus: boolean) => {
-    if (!window.confirm('هل أنت متأكد من ' + (currentStatus ? 'إلغاء' : 'تفعيل') + ' اشتراك ה- VIP لهذا المستخدم؟')) return;
+    if (!window.confirm('هل أنت متأكد من ' + (currentStatus ? 'إلغاء' : 'تفعيل') + ' اشتراك الـ VIP لهذا المستخدم؟')) return;
     const success = await toggleUserVip(uid, currentStatus);
     if (success) setUsersList(prev => prev.map(u => u.id === uid ? { ...u, isVip: !currentStatus } : u));
   };
