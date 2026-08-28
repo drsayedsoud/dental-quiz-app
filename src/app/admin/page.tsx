@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
+import { getUnresolvedReports, resolveReport, QuestionReport } from '@/lib/firestore';
 import { useAlert } from '@/components/Modals';
 import { ConfirmModal } from '@/components/Modals';
 import { 
@@ -25,6 +26,8 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<TabType>('stats');
   const [usersList, setUsersList] = useState<(UserProfile & { id: string })[]>([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(true);
+  const [reportsList, setReportsList] = useState<QuestionReport[]>([]);
+  const [loadingReports, setLoadingReports] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
 
