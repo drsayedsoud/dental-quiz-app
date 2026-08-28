@@ -37,6 +37,7 @@ const studyLinks: Record<string, string> = {
 };
 
 export default function DentalPage() {
+  const [selectedTrack, setSelectedTrack] = useState<'undergrad' | 'grad' | null>(null);
   const { user, profile, loading } = useAuth();
   const router = useRouter();
   const [selectedSubject, setSelectedSubject] = useState<{ name: string; startIndex: number } | null>(null);
@@ -204,7 +205,7 @@ export default function DentalPage() {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => router.push('/bookmarks?section=dental')}
+            onClick={() => router.push(`/bookmarks?section=dental&track=${selectedTrack}`)}
             className="bg-yellow-500/20 border border-yellow-500/30 hover:bg-yellow-500/30 text-yellow-300 p-4 rounded-2xl transition text-center flex flex-col items-center justify-center gap-2"
           >
             <span className="text-2xl">⭐</span>

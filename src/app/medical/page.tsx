@@ -63,6 +63,7 @@ const studentModules = [
 ];
 
 export default function MedicalPage() {
+  const [selectedTrack, setSelectedTrack] = useState<'undergrad' | 'grad' | null>(null);
   const [view, setView] = useState<'main' | 'students' | 'postgrad'>('main');
   const { user, profile, loading } = useAuth();
   const router = useRouter();
@@ -166,7 +167,7 @@ export default function MedicalPage() {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => router.push('/bookmarks?section=medical')}
+            onClick={() => router.push(`/bookmarks?section=medical&track=${selectedTrack}`)}
             className="bg-yellow-500/20 border border-yellow-500/30 hover:bg-yellow-500/30 text-yellow-300 p-4 rounded-2xl transition text-center flex flex-col items-center justify-center gap-2"
           >
             <span className="text-2xl">⭐</span>

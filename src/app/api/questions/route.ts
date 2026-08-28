@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { MEDICAL_GRAD_SUBJECTS, MEDICAL_UNDERGRAD_SUBJECTS, DENTAL_GRAD_SUBJECTS, DENTAL_UNDERGRAD_SUBJECTS } from '@/lib/subjects';
 import { google } from 'googleapis';
 import fs from 'fs/promises';
 import path from 'path';
