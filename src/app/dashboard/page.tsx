@@ -223,7 +223,7 @@ export default function DashboardPage() {
               onTouchStart={section.id === 'medical' ? handleMedicalPressStart : undefined}
               onTouchEnd={section.id === 'medical' ? handleMedicalPressEnd : undefined}
               onClick={() => handleSectionClick(section)}
-              className={`w-full bg-gradient-to-l ${section.gradient} rounded-2xl p-4 sm:p-5 md:p-6 text-right hover:scale-[1.02] active:scale-[0.98] transition-transform shadow-lg text-white select-none`}
+              className={`w-full bg-gradient-to-l ${section.gradient} rounded-2xl py-6 px-4 sm:py-7 sm:px-5 md:py-8 md:px-6 text-right hover:scale-[1.02] active:scale-[0.98] transition-transform shadow-lg text-white select-none`}
             >
               <div className="flex items-center gap-3">
                 <span className="text-3xl md:text-4xl">{section.icon}</span>
