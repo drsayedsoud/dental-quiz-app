@@ -95,6 +95,21 @@ export default function DentalPage() {
           )}
         </motion.div>
 
+                {/* Study First Button */}
+        <motion.button
+          initial={{ scale: 0.95, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => {
+            alert('تجميعات الملفات المختلفة وبعض الكتب مفيدة جدا في المذاكرة والمراجعة');
+            window.open('https://drive.google.com/drive/folders/1Qzi9frP8Ha7kYdVmbXzUJPG7H_R6jdVN?sort=13&direction=a', '_blank');
+          }}
+          className="w-full mb-4 bg-gradient-to-r from-blue-700 to-cyan-700 border border-blue-500/50 text-white font-bold p-4 rounded-2xl shadow-[0_0_20px_rgba(14,165,233,0.2)] hover:from-blue-600 hover:to-cyan-600 transition flex items-center justify-center gap-3"
+        >
+          <span className="text-2xl">📚</span>
+          <span className="text-sm sm:text-base">ذاكر أولاً (ملفات ومراجع هامة)</span>
+        </motion.button>
+
         {/* Action Buttons */}
         <div className="grid grid-cols-2 gap-3 mb-6">
           <motion.button
@@ -246,7 +261,22 @@ export default function DentalPage() {
                   اختر ما ترغب بالبدء به الآن:
                 </p>
 
-                {/* Action Buttons */}
+                        {/* Study First Button */}
+        <motion.button
+          initial={{ scale: 0.95, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => {
+            alert('تجميعات الملفات المختلفة وبعض الكتب مفيدة جدا في المذاكرة والمراجعة');
+            window.open('https://drive.google.com/drive/folders/1Qzi9frP8Ha7kYdVmbXzUJPG7H_R6jdVN?sort=13&direction=a', '_blank');
+          }}
+          className="w-full mb-4 bg-gradient-to-r from-blue-700 to-cyan-700 border border-blue-500/50 text-white font-bold p-4 rounded-2xl shadow-[0_0_20px_rgba(14,165,233,0.2)] hover:from-blue-600 hover:to-cyan-600 transition flex items-center justify-center gap-3"
+        >
+          <span className="text-2xl">📚</span>
+          <span className="text-sm sm:text-base">ذاكر أولاً (ملفات ومراجع هامة)</span>
+        </motion.button>
+
+        {/* Action Buttons */}
                 <div className="space-y-3">
                   <a
                     href={studyLinks[selectedSubject.name]}
