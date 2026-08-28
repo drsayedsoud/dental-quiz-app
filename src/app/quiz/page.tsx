@@ -197,6 +197,15 @@ function QuizContent() {
     if (user) {
       try { await incrementQuestionCount(user.uid); } catch {}
     }
+
+    // Auto-advance logic
+    if (isCorrect) {
+      setTimeout(() => {
+        if (latestHandleNext.current) {
+          latestHandleNext.current();
+        }
+      }, 1200);
+    }
   }, [answered, currentQuestion, isMuted, user]);
 
   const handleFinish = async () => {
