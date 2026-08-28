@@ -13,6 +13,7 @@ export interface UserProfile {
   createdAt: Timestamp;
   role?: string;
   totalPoints?: number;
+  devices?: string[];
 }
 
 export async function createUserProfile(userId: string, email: string) {
@@ -164,4 +165,37 @@ export async function isBookmarked(userId: string, questionText: string): Promis
   const docRef = doc(db, 'users', userId, 'bookmarks', hash);
   const snap = await getDoc(docRef);
   return snap.exists();
+}
+
+
+// ===== Device Binding =====
+export async function checkAndRegisterDevice(uid: string, deviceId: string): Promise<boolean> {
+  const userRef = doc(db, 'users', uid);
+  const snap = await getDoc(userRef);
+  if (!snap.exists()) return true;
+
+  const data = snap.data() as UserProfile;
+  // Admin bypass
+  if (data.email === 'drsayedsoudnew@gmail.com' || data.role === 'admin') return true;
+
+  const devices = data.devices || [];
+  
+  if (devices.includes(deviceId)) {
+    return true; // Already registered
+  }
+
+  // Max 2 devices allowed
+  if (devices.length >= 2) {
+    return false; // Limit reached!
+  }
+
+  await updateDoc(userRef, {
+    devices: [...devices, deviceId]
+  });
+  return true;
+}
+
+export async function resetUserDevices(uid: string) {
+  const userRef = doc(db, 'users', uid);
+  await updateDoc(userRef, { devices: [] });
 }

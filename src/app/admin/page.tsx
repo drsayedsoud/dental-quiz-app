@@ -11,6 +11,7 @@ import {
   getAllUsers, 
   toggleUserVip, 
   resetUserQuestionCount,
+  resetUserDevices,
   UserProfile
 } from '@/lib/firestore';
 

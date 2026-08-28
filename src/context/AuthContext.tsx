@@ -10,7 +10,7 @@ import {
   signOut,
 } from 'firebase/auth';
 import { auth, googleProvider } from '@/lib/firebase';
-import { createUserProfile, getUserProfile, UserProfile } from '@/lib/firestore';
+import { createUserProfile, getUserProfile, UserProfile, checkAndRegisterDevice } from '@/lib/firestore';
 
 interface AuthContextType {
   user: User | null;
