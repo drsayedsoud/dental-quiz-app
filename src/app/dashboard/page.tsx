@@ -145,7 +145,15 @@ export default function DashboardPage() {
   const isAdmin = user.email === 'drsayedsoudnew@gmail.com' || profile?.role === 'admin';
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] relative">
+    
+      <div className="min-h-screen bg-[#0a0a0a] relative">
+        {/* Deploy Version (Admin Only) */}
+        {isAdmin && (
+          <div className="absolute top-2 left-2 z-50 bg-white/5 text-white/40 px-2 py-0.5 rounded text-[10px] font-mono border border-white/10 shadow-lg">
+            v1
+          </div>
+        )}
+
       {/* Custom Modals */}
       {AlertComponent}
       {PromptComponent}
