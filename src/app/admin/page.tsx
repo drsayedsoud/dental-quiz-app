@@ -389,7 +389,6 @@ export default function AdminPage() {
                       <div className="bg-cyan-500 h-1.5 rounded-full transition-all duration-300" style={{ width: `${uploadProgress['dental']}%` }}></div>
                     </div>
                   )}
-                  </button>
 
                   {dentalStatus && (
                     <motion.div
@@ -465,7 +464,6 @@ export default function AdminPage() {
                       <div className="bg-emerald-500 h-1.5 rounded-full transition-all duration-300" style={{ width: `${uploadProgress['medical']}%` }}></div>
                     </div>
                   )}
-                  </button>
 
                   {medicalStatus && (
                     <motion.div
@@ -536,7 +534,6 @@ export default function AdminPage() {
                       <div className="bg-purple-500 h-1.5 rounded-full transition-all duration-300" style={{ width: `${uploadProgress['nursing']}%` }}></div>
                     </div>
                   )}
-                  </button>
                 </div>
 
                 {nursingStatus && (
