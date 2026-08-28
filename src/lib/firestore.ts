@@ -199,3 +199,62 @@ export async function resetUserDevices(uid: string) {
   const userRef = doc(db, 'users', uid);
   await updateDoc(userRef, { devices: [] });
 }
+
+// ==========================================
+// REPORTS (بلاغات الأخطاء)
+// ==========================================
+
+export interface QuestionReport {
+  id?: string;
+  userId: string;
+  userEmail: string;
+  section: string;
+  track: string;
+  subject: string;
+  questionIndex: number;
+  questionText: string;
+  createdAt: any;
+  resolved: boolean;
+}
+
+export const reportQuestionError = async (data: Omit<QuestionReport, 'id' | 'createdAt' | 'resolved'>) => {
+  try {
+    const reportsRef = collection(db, 'reports');
+    await addDoc(reportsRef, {
+      ...data,
+      resolved: false,
+      createdAt: serverTimestamp()
+    });
+    return true;
+  } catch (error) {
+    console.error('Error reporting question:', error);
+    return false;
+  }
+};
+
+export const getUnresolvedReports = async (): Promise<QuestionReport[]> => {
+  try {
+    const q = query(collection(db, 'reports'), where('resolved', '==', false));
+    const snapshot = await getDocs(q);
+    const reports: QuestionReport[] = [];
+    snapshot.forEach(doc => {
+      reports.push({ id: doc.id, ...doc.data() } as QuestionReport);
+    });
+    // Sort manually if needed, or we can just return
+    return reports.sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
+  } catch (error) {
+    console.error('Error fetching reports:', error);
+    return [];
+  }
+};
+
+export const resolveReport = async (reportId: string) => {
+  try {
+    const reportRef = doc(db, 'reports', reportId);
+    await updateDoc(reportRef, { resolved: true });
+    return true;
+  } catch (error) {
+    console.error('Error resolving report:', error);
+    return false;
+  }
+};

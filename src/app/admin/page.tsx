@@ -52,6 +52,21 @@ export default function AdminPage() {
     }
   }, [user, profile, loading, router]);
 
+  const fetchReports = async () => {
+    setLoadingReports(true);
+    const rep = await getUnresolvedReports();
+    setReportsList(rep);
+    setLoadingReports(false);
+  };
+  
+  const handleResolveReport = async (reportId: string) => {
+    const success = await resolveReport(reportId);
+    if (success) {
+      setReportsList(prev => prev.filter(r => r.id !== reportId));
+      await showAlert('تم حل البلاغ وإخفاؤه', '✅', 'success');
+    }
+  };
+
   const fetchUsers = async () => {
     setIsLoadingUsers(true);
     const data = await getAllUsers();
