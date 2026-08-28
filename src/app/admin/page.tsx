@@ -62,7 +62,7 @@ export default function AdminPage() {
   const handleResolveReport = async (reportId: string) => {
     const success = await resolveReport(reportId);
     if (success) {
-      setReportsList(prev => prev.filter(r => r.id !== reportId));
+      setReportsList((prev: QuestionReport[]) => prev.filter((r: QuestionReport) => r.id !== reportId));
       await showAlert('تم حل البلاغ وإخفاؤه', '✅', 'success');
     }
   };

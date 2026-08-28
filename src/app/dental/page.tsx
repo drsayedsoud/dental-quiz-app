@@ -155,9 +155,13 @@ export default function DentalPage() {
                       </span>
                     </div>
                   )}
-                  <div className="text-3xl sm:text-4xl mb-2 sm:mb-3 mt-4 group-hover:scale-110 transition-transform">
-                    {DentalIconMap[subject.name] || '🦷'}
-                  </div>
+                  
+                <div className="text-3xl sm:text-4xl mb-2 sm:mb-3 mt-4 group-hover:scale-110 transition-transform flex items-center justify-center">
+                  {(() => {
+                    const IconComponent = DentalIconMap[subject.name as keyof typeof DentalIconMap];
+                    return IconComponent ? <IconComponent className="w-10 h-10 sm:w-12 sm:h-12 text-teal-200 group-hover:text-teal-400 transition-colors" /> : <span>🦷</span>;
+                  })()}
+                </div>
                   <h3 className="font-bold text-white text-xs sm:text-sm leading-tight group-hover:text-teal-300 transition-colors line-clamp-3">
                     {subject.name}
                   </h3>
