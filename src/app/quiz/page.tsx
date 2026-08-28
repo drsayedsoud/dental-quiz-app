@@ -53,6 +53,7 @@ function QuizContent() {
   const [wrongAnswers, setWrongAnswers] = useState<Question[]>([]);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const latestHandleNext = useRef<() => void>(() => {});
   const correctSoundRef = useRef<HTMLAudioElement | null>(null);
   const wrongSoundRef = useRef<HTMLAudioElement | null>(null);
   const sessionSavedRef = useRef(false);
@@ -103,6 +104,8 @@ function QuizContent() {
   }, []);
 
   // Timer
+  useEffect(() => { latestHandleNext.current = handleNext; }, [handleNext]);
+
   const handleNext = useCallback(() => {
     if (subject && mode !== 'exam' && mode !== 'simulation') {
       localStorage.setItem('progress_' + subject, String(currentIndex + 1));
