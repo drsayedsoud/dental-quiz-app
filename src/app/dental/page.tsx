@@ -42,6 +42,7 @@ export default function DentalPage() {
   const [selectedSubject, setSelectedSubject] = useState<{ name: string; startIndex: number } | null>(null);
 
   const [sessions, setSessions] = useState<QuizSession[]>([]);
+  const [showStudyModal, setShowStudyModal] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -81,6 +82,48 @@ export default function DentalPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] relative">
+      
+      {/* Beautiful Study Modal */}
+      <AnimatePresence>
+        {showStudyModal && (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center px-4">
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setShowStudyModal(false)} />
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="relative z-10 w-full max-w-sm bg-[#0f172a] border border-cyan-500/30 rounded-3xl p-6 shadow-[0_0_40px_rgba(6,182,212,0.15)] text-center"
+            >
+              <div className="w-16 h-16 bg-cyan-500/10 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4 border border-cyan-500/20">
+                📚
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">تجميعات ومراجع هامة</h3>
+              <p className="text-gray-300 text-sm leading-relaxed mb-6">
+                هذه الملفات والكتب تم تجميعها بعناية، وهي مفيدة جداً في المذاكرة والمراجعة الشاملة لضمان التفوق.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowStudyModal(false)}
+                  className="flex-1 bg-white/5 hover:bg-white/10 text-gray-300 font-bold py-3 rounded-xl transition border border-white/10"
+                >
+                  إلغاء
+                </button>
+                <button
+                  onClick={() => {
+                    setShowStudyModal(false);
+                    window.open('https://drive.google.com/drive/folders/1Qzi9frP8Ha7kYdVmbXzUJPG7H_R6jdVN?sort=13&direction=a', '_blank');
+                  }}
+                  className="flex-[1.5] bg-gradient-to-l from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-cyan-900/30 flex items-center justify-center gap-2"
+                >
+                  <span>الذهاب للملفات</span>
+                  <span>↗️</span>
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-cyan-500/5 rounded-full blur-[150px]" />
 
       <div className="relative z-10 px-4 py-6 max-w-lg mx-auto">
@@ -100,10 +143,7 @@ export default function DentalPage() {
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           whileTap={{ scale: 0.98 }}
-          onClick={() => {
-            alert('تجميعات الملفات المختلفة وبعض الكتب مفيدة جدا في المذاكرة والمراجعة');
-            window.open('https://drive.google.com/drive/folders/1Qzi9frP8Ha7kYdVmbXzUJPG7H_R6jdVN?sort=13&direction=a', '_blank');
-          }}
+          onClick={() => setShowStudyModal(true)}
           className="w-full mb-4 bg-gradient-to-r from-blue-700 to-cyan-700 border border-blue-500/50 text-white font-bold p-4 rounded-2xl shadow-[0_0_20px_rgba(14,165,233,0.2)] hover:from-blue-600 hover:to-cyan-600 transition flex items-center justify-center gap-3"
         >
           <span className="text-2xl">📚</span>
@@ -266,10 +306,7 @@ export default function DentalPage() {
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           whileTap={{ scale: 0.98 }}
-          onClick={() => {
-            alert('تجميعات الملفات المختلفة وبعض الكتب مفيدة جدا في المذاكرة والمراجعة');
-            window.open('https://drive.google.com/drive/folders/1Qzi9frP8Ha7kYdVmbXzUJPG7H_R6jdVN?sort=13&direction=a', '_blank');
-          }}
+          onClick={() => setShowStudyModal(true)}
           className="w-full mb-4 bg-gradient-to-r from-blue-700 to-cyan-700 border border-blue-500/50 text-white font-bold p-4 rounded-2xl shadow-[0_0_20px_rgba(14,165,233,0.2)] hover:from-blue-600 hover:to-cyan-600 transition flex items-center justify-center gap-3"
         >
           <span className="text-2xl">📚</span>
