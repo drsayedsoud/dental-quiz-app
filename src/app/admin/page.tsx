@@ -618,12 +618,22 @@ export default function AdminPage() {
                         <span>📝 <span className="text-white font-bold">{u.questionCount || 0}</span> سؤال</span>
                         <span>🏆 <span className="text-yellow-400 font-bold">{u.totalPoints || 0}</span> نقطة</span>
                       </div>
-                      <button 
-                        onClick={() => handleResetCount(u.id, u.email)}
-                        className="w-full px-3 py-2 bg-red-500/10 text-red-400 border border-red-500/30 rounded-xl hover:bg-red-500/20 transition text-xs font-semibold active:scale-95"
-                      >
-                        🔄 تصفير عداد الأسئلة
-                      </button>
+                      <div className="flex gap-2 w-full mt-2">
+                        <button 
+                          onClick={() => handleResetCount(u.id, u.email)}
+                          className="flex-1 px-2 py-2.5 bg-red-500/10 text-red-400 border border-red-500/30 rounded-xl hover:bg-red-500/20 transition text-xs font-bold active:scale-95 flex items-center justify-center gap-1"
+                        >
+                          <span>🔄</span>
+                          <span>تصفير الأسئلة</span>
+                        </button>
+                        <button 
+                          onClick={() => handleResetDevices(u.id, u.email)}
+                          className="flex-1 px-2 py-2.5 bg-blue-500/10 text-blue-400 border border-blue-500/30 rounded-xl hover:bg-blue-500/20 transition text-xs font-bold active:scale-95 flex items-center justify-center gap-1"
+                        >
+                          <span>📱</span>
+                          <span>تصفير الأجهزة</span>
+                        </button>
+                      </div>
                     </motion.div>
                   ))}
                 </div>
@@ -655,12 +665,22 @@ export default function AdminPage() {
                             </button>
                           </td>
                           <td className="py-4 text-center">
-                            <button 
-                              onClick={() => handleResetCount(u.id, u.email)}
-                              className="px-3 py-1 bg-red-500/10 text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/20 transition text-xs"
-                            >
-                              تصفير الأسئلة
-                            </button>
+                            <div className="flex items-center justify-center gap-2">
+                                <button 
+                                  onClick={() => handleResetCount(u.id, u.email)}
+                                  className="px-3 py-1.5 bg-red-500/10 text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/20 transition text-xs font-bold flex items-center gap-1 active:scale-95"
+                                  title="تصفير عداد الأسئلة"
+                                >
+                                  <span>🔄</span> الأسئلة
+                                </button>
+                                <button 
+                                  onClick={() => handleResetDevices(u.id, u.email)}
+                                  className="px-3 py-1.5 bg-blue-500/10 text-blue-400 border border-blue-500/30 rounded-lg hover:bg-blue-500/20 transition text-xs font-bold flex items-center gap-1 active:scale-95"
+                                  title="تصفير الأجهزة المسجلة للحساب"
+                                >
+                                  <span>📱</span> الأجهزة
+                                </button>
+                              </div>
                           </td>
                         </tr>
                       ))}
