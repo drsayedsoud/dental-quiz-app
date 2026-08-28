@@ -360,7 +360,7 @@ function QuizContent() {
           </div>
         )}
         {currentQuestion.metadata && currentQuestion.metadata !== 'nan' && (
-          <p className="text-gray-500 text-xs mt-2">{currentQuestion.metadata}</p>
+          <p className="text-gray-300 text-sm sm:text-base font-bold mt-2 tracking-wide">{currentQuestion.metadata}</p>
         )}
       </motion.div>
 
