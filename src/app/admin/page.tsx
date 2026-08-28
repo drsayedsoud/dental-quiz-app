@@ -160,7 +160,6 @@ export default function AdminPage() {
       const q = searchQuery.toLowerCase();
       result = result.filter(u => u.email?.toLowerCase().includes(q));
     }
-    // Sort by createdAt descending (newest first)
     return result.sort((a, b) => {
       const timeA = a.createdAt?.seconds ? a.createdAt.seconds : 0;
       const timeB = b.createdAt?.seconds ? b.createdAt.seconds : 0;
@@ -555,7 +554,7 @@ export default function AdminPage() {
                       key={u.id}
                       initial={{ opacity: 0, y: 5 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="bg-white/5 hover:bg-white/10 transition border border-white/10 rounded-xl p-3 flex flex-col gap-2.5"
+                      className="bg-white/5 hover:bg-white/10 transition border border-white/10 rounded-xl p-3 flex flex-col gap-2"
                     >
                       <div className="flex items-center justify-between gap-2">
                         <p className="text-xs sm:text-sm text-white font-bold font-mono truncate flex-1 min-w-0" dir="ltr">{u.email}</p>
@@ -572,10 +571,47 @@ export default function AdminPage() {
                       </div>
                       <button 
                         onClick={() => handleResetCount(u.id, u.email)}
-                        className="self-end px-3 py-1.5 bg-red-500/10 text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/20 transition text-[10px] font-semibold active:scale-95 flex items-center gap-1.5"
-                        >
-                          <span>🔄</span> تصفير الأسئلة
-                        </button>
+                        className="w-full px-3 py-2 bg-red-500/10 text-red-400 border border-red-500/30 rounded-xl hover:bg-red-500/20 transition text-xs font-semibold active:scale-95"
+                      >
+                        🔄 تصفير عداد الأسئلة
+                      </button>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Desktop: Table Layout */}
+                <div className="hidden lg:block bg-white/5 border border-white/10 rounded-2xl p-5 backdrop-blur-xl overflow-x-auto">
+                  <table className="w-full text-right text-sm">
+                    <thead>
+                      <tr className="border-b border-white/20 text-gray-400">
+                        <th className="pb-3">الإيميل</th>
+                        <th className="pb-3 text-center">الأسئلة المحلولة</th>
+                        <th className="pb-3 text-center">النقاط</th>
+                        <th className="pb-3 text-center">الحالة</th>
+                        <th className="pb-3 text-center">إجراءات</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredUsers.map((u) => (
+                        <tr key={u.id} className="border-b border-white/5 hover:bg-white/5 transition">
+                          <td className="py-4 font-mono text-xs">{u.email}</td>
+                          <td className="py-4 text-center font-mono">{u.questionCount || 0}</td>
+                          <td className="py-4 text-center font-mono text-yellow-400">{u.totalPoints || 0}</td>
+                          <td className="py-4 text-center">
+                            <button 
+                              onClick={() => handleToggleVip(u.id, u.isVip || false)}
+                              className={`px-3 py-1 rounded-full text-xs font-bold border ${u.isVip ? 'bg-yellow-500/20 text-yellow-500 border-yellow-500/50' : 'bg-gray-500/20 text-gray-400 border-gray-500/50 hover:bg-gray-500/40'}`}
+                            >
+                              {u.isVip ? '⭐ VIP' : 'عادي'}
+                            </button>
+                          </td>
+                          <td className="py-4 text-center">
+                            <button 
+                              onClick={() => handleResetCount(u.id, u.email)}
+                              className="px-3 py-1 bg-red-500/10 text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/20 transition text-xs"
+                            >
+                              تصفير الأسئلة
+                            </button>
                           </td>
                         </tr>
                       ))}
