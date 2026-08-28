@@ -69,6 +69,17 @@ export default function AdminPage() {
     if (success) setUsersList(prev => prev.map(u => u.id === uid ? { ...u, isVip: !currentStatus } : u));
   };
 
+  const handleResetDevices = async (uid: string, email: string) => {
+    if (window.confirm(`هل أنت متأكد من تصفير الأجهزة المتصلة بحساب ${email} ليتمكن من الدخول من هاتف جديد؟`)) {
+      try {
+        await resetUserDevices(uid);
+        await showAlert('تم تصفير الأجهزة بنجاح!', '📱', 'success');
+      } catch (err) {
+        await showAlert('حدث خطأ أثناء تصفير الأجهزة', '❌', 'error');
+      }
+    }
+  };
+
   const handleResetCount = async (uid: string, email: string) => {
     setConfirmModal({ open: true, uid, email });
   };
