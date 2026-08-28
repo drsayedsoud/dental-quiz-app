@@ -39,7 +39,7 @@ const sections = [
     title: 'التمريض',
     subtitle: 'Nursing Prometric (تمريض)',
     icon: '👩‍⚕️',
-    gradient: 'from-fuchsia-600 to-purple-700',
+    gradient: 'from-pink-500 to-rose-500',
     href: '/nursing',
     comingSoon: false,
   },
@@ -229,7 +229,7 @@ export default function DashboardPage() {
                 <span className="text-3xl md:text-4xl">{section.icon}</span>
                 <div className="flex-1">
                   <h2 className="text-base md:text-lg font-bold">{section.title}</h2>
-                  <p className="text-white/60 text-xs md:text-sm">{section.subtitle}</p>
+                  <p className="text-white/80 text-xs md:text-sm font-medium">{section.subtitle}</p>
                 </div>
                 <span className="text-white/40 text-2xl">
                   {section.comingSoon ? '🔒' : '←'}
