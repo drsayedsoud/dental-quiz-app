@@ -13,6 +13,7 @@ interface Question {
   explanation: string;
   detailed: string;
   metadata: string;
+  source?: string;
 }
 
 function QuizContent() {
@@ -338,6 +339,12 @@ function QuizContent() {
         className="glass rounded-2xl p-5 mb-4"
       >
         <p className="text-white text-base leading-relaxed font-medium">{currentQuestion.question}</p>
+        {currentQuestion.source && currentQuestion.source !== 'nan' && (
+          <div className="mt-3 flex items-start gap-1.5 text-cyan-400 bg-cyan-950/30 p-2 rounded-lg border border-cyan-500/20 inline-flex">
+            <span className="text-xs">📌</span>
+            <span className="text-[10px] sm:text-xs font-semibold leading-relaxed font-mono" dir="ltr">{currentQuestion.source}</span>
+          </div>
+        )}
         {currentQuestion.metadata && currentQuestion.metadata !== 'nan' && (
           <p className="text-gray-500 text-xs mt-2">{currentQuestion.metadata}</p>
         )}
