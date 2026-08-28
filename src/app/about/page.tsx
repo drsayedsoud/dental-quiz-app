@@ -9,7 +9,7 @@ export default function AboutPage() {
   const whatsappUrl = `https://wa.me/201066415005?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D9%85%D9%86%D8%B5%D8%A9%20Medical%20Prometric`;
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] relative overflow-hidden pb-10">
+    <div className="min-h-screen bg-[#0a0a0a] relative overflow-hidden pb-10" dir="rtl">
       {/* Background Effects */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-cyan-500/5 rounded-full blur-[150px] pointer-events-none" />
       
@@ -25,7 +25,7 @@ export default function AboutPage() {
               من نحن؟
             </h1>
             <p className="text-gray-400 text-sm">
-              تعرف على رؤيتنا ومميزات منصة Medical Prometric
+              منصة تعليمية وتدريبية متخصصة للقطاع الطبي
             </p>
           </div>
 
@@ -33,59 +33,56 @@ export default function AboutPage() {
             {/* Intro */}
             <div className="mb-8">
               <h2 className="text-white font-bold text-lg mb-3 flex items-center gap-2">
-                <span className="text-cyan-400">💡</span> منصة احترافية متكاملة
+                <span className="text-cyan-400">💡</span> الرؤية والهدف
               </h2>
               <p className="text-gray-300 text-sm leading-relaxed text-justify">
-                نحن منصة تعليمية وتدريبية متخصصة تهدف إلى توفير بيئة محاكاة دقيقة وشاملة لطلاب وخريجي القطاع الطبي. نقدم بنوك أسئلة متطورة لمساعدتك في الاستعداد لاجتياز امتحانات الزمالة، البورد، والتراخيص الطبية محلياً ودولياً.
+                نهدف إلى دعم الكوادر الطبية من أطباء، أطباء أسنان، صيادلة، وتمريض، من خلال توفير بيئة محاكاة دقيقة للاختبارات المهنية. نضع بين يديك بنوك أسئلة مدروسة بعناية ومحدثة باستمرار لمساعدتك في الاستعداد لامتحانات الزمالة، البورد، وتراخيص مزاولة المهنة بكل ثقة واحترافية.
               </p>
             </div>
 
             {/* Tracks */}
             <div className="space-y-4">
               <h3 className="font-bold text-white text-base border-b border-white/10 pb-2 mb-4">
-                المسارات التدريبية المتوفرة:
+                المسارات التدريبية المتاحة:
               </h3>
               
               {/* Human Medicine Track */}
-              <div className="p-4 rounded-2xl bg-blue-950/30 border border-blue-500/30 shadow-sm">
+              <div className="p-4 rounded-2xl bg-blue-950/30 border border-blue-500/30 shadow-sm transition hover:bg-blue-900/40">
                 <h4 className="font-bold text-blue-300 text-sm mb-2 flex items-center gap-2">
                   <span>👨‍⚕️</span> مسار الطب البشري
                 </h4>
                 <p className="text-xs text-gray-300 leading-relaxed mb-3">
-                  ينقسم مسار الطب البشري إلى قسمين رئيسيين:
-                  <br/>
-                  <span className="text-blue-400 font-bold">• قسم الطلبة:</span> نغطي فيه <strong>جميع الموديولات</strong> الأكاديمية والسريرية (النظام التكاملي) لتدريب الطالب وتسهيل مراجعته طوال سنوات الكلية.
-                  <br/>
-                  <span className="text-blue-400 font-bold">• قسم الدراسات العليا:</span> نغطي فيه كافة التخصصات الطبية للتحضير بقوة لاجتياز امتحانات الزمالة والبورد وتراخيص مزاولة المهنة.
+                  تغطية شاملة لجميع الموديولات الأكاديمية والسريرية (النظام التكاملي) للطلبة، بالإضافة إلى محتوى متخصص لطلاب الدراسات العليا للتحضير لامتحانات الزمالة وتراخيص مزاولة المهنة.
                 </p>
-                <div className="grid grid-cols-2 gap-2 text-[11px] text-blue-100/80">
-                  <div className="bg-black/30 p-2 rounded-lg border border-blue-500/20 text-center">موديولات العلوم الأساسية</div>
-                  <div className="bg-black/30 p-2 rounded-lg border border-blue-500/20 text-center">موديولات الطب السريري</div>
-                  <div className="bg-black/30 p-2 rounded-lg border border-blue-500/20 text-center">أكثر من 20 تخصص طبي</div>
-                  <div className="bg-black/30 p-2 rounded-lg border border-blue-500/20 text-center">تحديثات مستمرة للأسئلة</div>
-                </div>
               </div>
 
               {/* Dental Track */}
-              <div className="p-4 rounded-2xl bg-cyan-950/30 border border-cyan-500/30 shadow-sm">
+              <div className="p-4 rounded-2xl bg-cyan-950/30 border border-cyan-500/30 shadow-sm transition hover:bg-cyan-900/40">
                 <h4 className="font-bold text-cyan-300 text-sm mb-2 flex items-center gap-2">
                   <span>🦷</span> مسار طب الأسنان
                 </h4>
-                <div className="grid grid-cols-2 gap-2 text-[11px] text-cyan-100/80 mt-2">
-                  <div className="bg-black/30 p-2 rounded-lg border border-cyan-500/20 text-center">علاج الجذور (Endodontics)</div>
-                  <div className="bg-black/30 p-2 rounded-lg border border-cyan-500/20 text-center">طب أسنان الأطفال (Pedodontics)</div>
-                  <div className="bg-black/30 p-2 rounded-lg border border-cyan-500/20 text-center">الجراحة (Oral Surgery)</div>
-                  <div className="bg-black/30 p-2 rounded-lg border border-cyan-500/20 text-center">والعديد من التخصصات الدقيقة</div>
-                </div>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  يضم تخصصات دقيقة وشاملة تشمل علاج الجذور (Endodontics)، طب أسنان الأطفال (Pedodontics)، الجراحة (Oral Surgery)، وتخصصات أخرى لتدريب أطباء الأسنان بأعلى المعايير.
+                </p>
+              </div>
+
+              {/* Nursing Track */}
+              <div className="p-4 rounded-2xl bg-pink-950/30 border border-pink-500/30 shadow-sm transition hover:bg-pink-900/40">
+                <h4 className="font-bold text-pink-300 text-sm mb-2 flex items-center gap-2">
+                  <span>👩‍⚕️</span> مسار التمريض
+                </h4>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  بنية تدريبية متخصصة للكوادر التمريضية، توفر أسئلة محدثة ومحاكاة دقيقة لامتحانات البرومترك والتراخيص المهنية لضمان التفوق واجتياز الاختبارات.
+                </p>
               </div>
 
               {/* Pharmacy Track */}
-              <div className="p-4 rounded-2xl bg-emerald-950/30 border border-emerald-500/30 shadow-sm">
+              <div className="p-4 rounded-2xl bg-emerald-950/30 border border-emerald-500/30 shadow-sm transition hover:bg-emerald-900/40">
                 <h4 className="font-bold text-emerald-300 text-sm mb-2 flex items-center gap-2">
                   <span>💊</span> مسار الصيدلة
                 </h4>
                 <p className="text-xs text-gray-300 leading-relaxed">
-                  يتم حالياً تجهيز بنك أسئلة ضخم ومحدث للصيادلة لاجتياز امتحانات البرومترك بكل ثقة وسهولة. (قريباً جداً).
+                  يتم حالياً إعداد محتوى علمي دقيق وموثوق للصيادلة، لتوفير بنك أسئلة متكامل يسهم في اجتياز الامتحانات المهنية بيسر وسهولة. (قريباً)
                 </p>
               </div>
             </div>
@@ -98,7 +95,7 @@ export default function AboutPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
                 <div className="flex items-center gap-2 bg-white/5 p-3 rounded-xl border border-white/10">
                   <span className="text-cyan-400 font-bold">✓</span>
-                  <span>أسئلة متجددة ومطابقة لأحدث امتحانات الهيئات</span>
+                  <span>أسئلة متجددة تواكب أحدث المعايير المهنية</span>
                 </div>
                 <div className="flex items-center gap-2 bg-white/5 p-3 rounded-xl border border-white/10">
                   <span className="text-cyan-400 font-bold">✓</span>
@@ -106,11 +103,11 @@ export default function AboutPage() {
                 </div>
                 <div className="flex items-center gap-2 bg-white/5 p-3 rounded-xl border border-white/10">
                   <span className="text-cyan-400 font-bold">✓</span>
-                  <span>إحصائيات دقيقة لمتابعة تطور مستواك</span>
+                  <span>إحصائيات تفصيلية لتتبع الأداء ومستوى التقدم</span>
                 </div>
                 <div className="flex items-center gap-2 bg-white/5 p-3 rounded-xl border border-white/10">
                   <span className="text-cyan-400 font-bold">✓</span>
-                  <span>نظام عشوائي ذكي (Shuffle) في كل اختبار عام</span>
+                  <span>نظام عشوائي ذكي (Shuffle) لمحاكاة الاختبار الحقيقي</span>
                 </div>
               </div>
             </div>
