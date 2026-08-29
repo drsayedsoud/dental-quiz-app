@@ -14,6 +14,8 @@ export interface UserProfile {
   role?: string;
   totalPoints?: number;
   devices?: string[];
+  displayName?: string;
+  photoURL?: string;
 }
 
 export async function createUserProfile(userId: string, email: string) {
