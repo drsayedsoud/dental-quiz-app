@@ -16,15 +16,22 @@ export interface UserProfile {
   devices?: string[];
   displayName?: string;
   photoURL?: string;
+  major?: string; // 'dental', 'medical', 'pharmacy', 'nursing'
 }
 
 export async function createUserProfile(userId: string, email: string) {
-  await setDoc(doc(db, 'users', userId), {
+  const profileRef = doc(db, 'users', userId);
+  await setDoc(profileRef, {
     email,
     isVip: false,
     questionCount: 0,
     createdAt: serverTimestamp(),
-  });
+  }, { merge: true });
+}
+
+export async function updateUserMajor(userId: string, major: string) {
+  const profileRef = doc(db, 'users', userId);
+  await setDoc(profileRef, { major }, { merge: true });
 }
 
 export async function getUserProfile(userId: string): Promise<UserProfile | null> {

@@ -4,14 +4,14 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
-import { getUnresolvedReports } from '@/lib/firestore';
+import { getUnresolvedReports, updateUserMajor } from '@/lib/firestore';
 import { useAlert, usePrompt } from '@/components/Modals';
 
 const sections = [
   {
     id: 'medical',
     title: 'الطب البشري',
-    subtitle: 'Medical Prometric (أطباء)',
+    subtitle: 'Medical Prometric (بشري)',
     icon: '👨‍⚕️',
     gradient: 'from-blue-600 to-indigo-700',
     href: '/medical',
@@ -20,7 +20,7 @@ const sections = [
   {
     id: 'dental',
     title: 'طب الأسنان',
-    subtitle: 'Dental Prometric (أطباء)',
+    subtitle: 'Dental Prometric (أسنان)',
     icon: '🦷',
     gradient: 'from-cyan-600 to-blue-700',
     href: '/dental',
@@ -29,7 +29,7 @@ const sections = [
   {
     id: 'pharmacy',
     title: 'الصيدلة',
-    subtitle: 'Pharmacy Prometric (صيادلة)',
+    subtitle: 'Pharmacy Prometric (صيدلة)',
     icon: '💊',
     gradient: 'from-emerald-600 to-teal-700',
     href: '#',
@@ -61,6 +61,10 @@ export default function DashboardPage() {
   const [showCacheSuccess, setShowCacheSuccess] = useState(false);
   const [reportsCount, setReportsCount] = useState(0);
 
+  // Major selection state
+  const [isSelectingMajor, setIsSelectingMajor] = useState(false);
+  const [isUpdatingMajor, setIsUpdatingMajor] = useState(false);
+
   const isAdmin = user?.email === 'drsayedsoudnew@gmail.com' || profile?.role === 'admin';
 
   useEffect(() => {
@@ -74,6 +78,22 @@ export default function DashboardPage() {
       router.replace('/login');
     }
   }, [user, loading, router]);
+
+  useEffect(() => {
+    if (!loading && profile && profile.major === undefined) {
+      setIsSelectingMajor(true);
+    } else if (profile?.major) {
+      setIsSelectingMajor(false);
+    }
+  }, [profile, loading]);
+
+  const handleSelectMajor = async (majorId: string) => {
+    if (!user) return;
+    setIsUpdatingMajor(true);
+    await updateUserMajor(user.uid, majorId);
+    setIsUpdatingMajor(false);
+    setIsSelectingMajor(false);
+  };
 
   const handlePressStart = () => {
     pressTimer.current = setTimeout(async () => {
@@ -152,15 +172,16 @@ export default function DashboardPage() {
 
   if (!user) return null;
 
+  const displayedSections = (isSelectingMajor || isAdmin) ? sections : sections.filter(s => s.id === profile?.major);
+
   return (
-    
-      <div className="min-h-screen bg-[#0a0a0a] relative">
-        {/* Deploy Version (Admin Only) */}
-        {isAdmin && (
-          <div className="absolute top-2 left-2 z-50 bg-white/5 text-white/40 px-2 py-0.5 rounded text-[10px] font-mono border border-white/10 shadow-lg">
-            v16
-          </div>
-        )}
+    <div className="min-h-screen bg-[#0a0a0a] relative">
+      {/* Deploy Version (Admin Only) */}
+      {isAdmin && (
+        <div className="absolute top-2 left-2 z-50 bg-white/5 text-white/40 px-2 py-0.5 rounded text-[10px] font-mono border border-white/10 shadow-lg">
+          v17
+        </div>
+      )}
 
       {/* Custom Modals */}
       {AlertComponent}
@@ -175,18 +196,18 @@ export default function DashboardPage() {
             animate={{ scale: 1, opacity: 1 }}
             className="relative z-10 w-full max-w-sm bg-[#0f172a] border-2 border-green-500/50 rounded-3xl p-6 shadow-[0_0_40px_rgba(34,197,94,0.3)] text-center"
           >
-            <div className="text-5xl mb-4">🧹</div>
+            <div className="text-5xl mb-4">🚀</div>
             <p className="text-green-300 text-sm sm:text-base leading-relaxed font-semibold">
-              تم مسح الكاش والملفات المؤقتة بنجاح!
+              تم مسح الذاكرة المؤقتة بنجاح!
             </p>
-            <p className="text-gray-400 text-xs mt-2">جاري إعادة تشغيل التطبيق...</p>
+            <p className="text-gray-400 text-xs mt-2">جاري إعادة تحميل التطبيق...</p>
             <button
               onClick={() => {
                 window.location.href = window.location.origin + window.location.pathname + '?reload=' + Date.now();
               }}
               className="mt-5 w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold py-3 rounded-2xl transition active:scale-95 text-sm"
             >
-              إعادة التشغيل الآن
+              إعادة التحميل الآن
             </button>
           </motion.div>
         </div>
@@ -200,46 +221,67 @@ export default function DashboardPage() {
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="text-center mb-3 pt-2"
+          className="text-center mb-6 pt-2"
         >
-          <h1 className="text-2xl font-extrabold text-gradient mb-1">Medical Prometric</h1>
-          <p className="text-gray-400 text-sm">
-            مرحباً {profile?.email?.split('@')[0] || 'بك'} 👋
-          </p>
-          {isAdmin ? (
-            <motion.div
-              animate={{ opacity: [0.85, 1, 0.85], scale: [0.98, 1.02, 0.98] }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-              className="inline-flex items-center gap-2 mt-2.5 bg-gradient-to-r from-red-600/30 via-red-500/20 to-red-600/30 border-2 border-red-500 text-red-300 text-xs font-black px-4 py-1.5 rounded-full shadow-[0_0_25px_rgba(239,68,68,0.5)] backdrop-blur-md"
-            >
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-80"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-              </span>
-              <span>🛡️ مدير النظام</span>
-            </motion.div>
-          ) : profile?.isVip ? (
-            <span className="inline-block mt-2 bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 text-xs font-bold px-3 py-1 rounded-full">
-              ⭐ VIP
-            </span>
-          ) : null}
+          {isSelectingMajor ? (
+            <>
+              <h1 className="text-3xl font-extrabold text-white mb-2">أهلاً بك! 👋</h1>
+              <p className="text-cyan-400 text-lg font-bold">يرجى اختيار تخصصك للمتابعة</p>
+              <p className="text-gray-400 text-xs mt-1">ستختفي باقي الأقسام بعد اختيارك</p>
+            </>
+          ) : (
+            <>
+              <h1 className="text-2xl font-extrabold text-gradient mb-1">Medical Prometric</h1>
+              <p className="text-gray-400 text-sm">
+                مرحباً {profile?.email?.split('@')[0] || 'بكم'} 👋
+              </p>
+              {isAdmin ? (
+                <motion.div
+                  animate={{ opacity: [0.85, 1, 0.85], scale: [0.98, 1.02, 0.98] }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                  className="inline-flex items-center gap-2 mt-2.5 bg-gradient-to-r from-red-600/30 via-red-500/20 to-red-600/30 border-2 border-red-500 text-red-300 text-xs font-black px-4 py-1.5 rounded-full shadow-[0_0_25px_rgba(239,68,68,0.5)] backdrop-blur-md"
+                >
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-80"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                  </span>
+                  <span>⚙️ لوحة الإدارة</span>
+                </motion.div>
+              ) : profile?.isVip ? (
+                <span className="inline-block mt-2 bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 text-xs font-bold px-3 py-1 rounded-full">
+                  ⭐ VIP
+                </span>
+              ) : null}
+            </>
+          )}
         </motion.div>
 
         {/* Section Cards */}
-        <div className="space-y-3 mb-5 md:mb-8">
-          {sections.map((section, index) => (
+        <div className="space-y-3 mb-5 md:mb-8 relative">
+          {isUpdatingMajor && (
+            <div className="absolute inset-0 z-50 bg-black/50 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+              <p className="text-white font-bold animate-pulse">جاري تحديث التخصص...</p>
+            </div>
+          )}
+          {displayedSections.map((section, index) => (
             <motion.button
               key={section.id}
               initial={{ x: -30, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: index * 0.15 }}
-              onMouseDown={section.id === 'medical' ? handleMedicalPressStart : undefined}
-              onMouseUp={section.id === 'medical' ? handleMedicalPressEnd : undefined}
-              onMouseLeave={section.id === 'medical' ? handleMedicalPressEnd : undefined}
-              onTouchStart={section.id === 'medical' ? handleMedicalPressStart : undefined}
-              onTouchEnd={section.id === 'medical' ? handleMedicalPressEnd : undefined}
-              onClick={() => handleSectionClick(section)}
-              className={`w-full bg-gradient-to-l ${section.gradient} rounded-2xl py-6 px-4 sm:py-7 sm:px-5 md:py-8 md:px-6 text-right hover:scale-[1.02] active:scale-[0.98] transition-transform shadow-lg text-white select-none`}
+              onMouseDown={section.id === 'medical' && !isSelectingMajor ? handleMedicalPressStart : undefined}
+              onMouseUp={section.id === 'medical' && !isSelectingMajor ? handleMedicalPressEnd : undefined}
+              onMouseLeave={section.id === 'medical' && !isSelectingMajor ? handleMedicalPressEnd : undefined}
+              onTouchStart={section.id === 'medical' && !isSelectingMajor ? handleMedicalPressStart : undefined}
+              onTouchEnd={section.id === 'medical' && !isSelectingMajor ? handleMedicalPressEnd : undefined}
+              onClick={() => {
+                if (isSelectingMajor) {
+                  handleSelectMajor(section.id);
+                } else {
+                  handleSectionClick(section);
+                }
+              }}
+              className={`w-full bg-gradient-to-l ${section.gradient} rounded-2xl py-6 px-4 sm:py-7 sm:px-5 md:py-8 md:px-6 text-right hover:scale-[1.02] active:scale-[0.98] transition-transform shadow-lg text-white select-none ${section.comingSoon && !isSelectingMajor ? 'opacity-80' : ''}`}
             >
               <div className="flex items-center gap-3">
                 <span className="text-3xl md:text-4xl">{section.icon}</span>
@@ -247,96 +289,109 @@ export default function DashboardPage() {
                   <h2 className="text-base md:text-lg font-bold">{section.title}</h2>
                   <p className="text-white/80 text-xs md:text-sm font-medium">{section.subtitle}</p>
                 </div>
-                <span className="text-white/40 text-2xl">
-                  {section.comingSoon ? '🔒' : '←'}
-                </span>
+                {!isSelectingMajor && (
+                  <span className="text-white/40 text-2xl">
+                    {section.comingSoon ? '🔒' : '👉'}
+                  </span>
+                )}
               </div>
             </motion.button>
           ))}
         </div>
 
-        {/* Footer Links */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="space-y-3"
-        >
-          <button
-            onClick={() => router.push('/stats')}
-            className="w-full glass glass-hover rounded-xl py-3 text-blue-400 hover:text-blue-300 text-sm font-semibold transition flex items-center justify-center gap-2"
+        {/* Footer Links (Only show when NOT selecting major) */}
+        {!isSelectingMajor && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="space-y-3"
           >
-            📊 إحصائيات الأداء
-          </button>
-          <div className="grid grid-cols-2 gap-3">
             <button
-              onClick={() => router.push('/about')}
-              className="w-full glass glass-hover rounded-xl py-3 text-gray-400 hover:text-white text-sm transition"
+              onClick={() => router.push('/stats')}
+              className="w-full glass glass-hover rounded-xl py-3 text-blue-400 hover:text-blue-300 text-sm font-semibold transition flex items-center justify-center gap-2"
             >
-              من نحن
+              📊 الإحصائيات والأداء
             </button>
-            <button
-              onClick={() => router.push('/privacy')}
-              className="w-full glass glass-hover rounded-xl py-3 text-gray-400 hover:text-white text-sm transition"
-            >
-              سياسة الخصوصية
-            </button>
-          </div>
-          <button
-            onClick={logout}
-            className="w-full bg-red-500/10 border border-red-500/20 rounded-xl py-3 text-red-400 hover:bg-red-500/20 text-sm font-semibold transition"
-          >
-            تسجيل خروج
-          </button>
-
-          {/* Admin settings & Share buttons */}
-          <div className="pt-2 flex items-center justify-between">
-            {isAdmin ? (
+            <div className="grid grid-cols-2 gap-3">
               <button
-                onClick={() => router.push('/admin')}
-                className="relative text-xs text-gray-500 hover:text-cyan-400 transition flex items-center gap-1.5 py-1 px-2.5 rounded-lg hover:bg-white/5"
+                onClick={() => router.push('/about')}
+                className="w-full glass glass-hover rounded-xl py-3 text-gray-400 hover:text-white text-sm transition"
               >
-                <span>⚙️</span>
-                <span>خاص بالإدارة</span>
-                {reportsCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold min-w-[16px] h-[16px] flex items-center justify-center rounded-full shadow-lg shadow-red-500/50 animate-pulse">
-                    {reportsCount}
-                  </span>
-                )}
+                عن التطبيق
               </button>
-            ) : (
               <button
-                onMouseDown={handlePressStart}
-                onMouseUp={handlePressEnd}
-                onMouseLeave={handlePressEnd}
-                onTouchStart={handlePressStart}
-                onTouchEnd={handlePressEnd}
-                onClick={(e) => {
-                  e.preventDefault();
+                onClick={() => router.push('/privacy')}
+                className="w-full glass glass-hover rounded-xl py-3 text-gray-400 hover:text-white text-sm transition"
+              >
+                سياسة الخصوصية
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => setIsSelectingMajor(true)}
+                className="w-full bg-cyan-500/10 border border-cyan-500/20 rounded-xl py-3 text-cyan-400 hover:bg-cyan-500/20 text-sm font-semibold transition"
+              >
+                تغيير التخصص 🔄
+              </button>
+              <button
+                onClick={logout}
+                className="w-full bg-red-500/10 border border-red-500/20 rounded-xl py-3 text-red-400 hover:bg-red-500/20 text-sm font-semibold transition"
+              >
+                تسجيل خروج
+              </button>
+            </div>
+
+            {/* Admin settings & Share buttons */}
+            <div className="pt-2 flex items-center justify-between">
+              {isAdmin ? (
+                <button
+                  onClick={() => router.push('/admin')}
+                  className="relative text-xs text-gray-500 hover:text-cyan-400 transition flex items-center gap-1.5 py-1 px-2.5 rounded-lg hover:bg-white/5"
+                >
+                  <span>⚙️</span>
+                  <span>لوحة التحكم</span>
+                  {reportsCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold min-w-[16px] h-[16px] flex items-center justify-center rounded-full shadow-lg shadow-red-500/50 animate-pulse">
+                      {reportsCount}
+                    </span>
+                  )}
+                </button>
+              ) : (
+                <button
+                  onMouseDown={handlePressStart}
+                  onMouseUp={handlePressEnd}
+                  onMouseLeave={handlePressEnd}
+                  onTouchStart={handlePressStart}
+                  onTouchEnd={handlePressEnd}
+                  onClick={(e) => {
+                    e.preventDefault();
+                  }}
+                  className="text-xs text-gray-600 hover:text-gray-500 transition p-1 rounded-md hover:bg-white/5 select-none cursor-default flex items-center justify-center w-8 h-8"
+                  title="إعدادات المطور"
+                >
+                  ⚙️
+                </button>
+              )}
+
+              {/* Share Button */}
+              <button
+                onClick={() => {
+                  const message = "تطبيق Prometric لمراجعة وتدريب الأطباء 🚀\nيضم آلاف الأسئلة المشروحة والمقسمة بنظام الذكاء الاصطناعي لطلاب وتجهيز لاختبارات الهيئة (SCFHS, DHA, MOH) في السعودية والإمارات ودول الخليج.\n\n✨ مميزات التطبيق:\n• تدريب بأسئلة حقيقية شاملة\n• وضع محاكاة للامتحان الفعلي\n• إحصائيات دقيقة لمعرفة نقاط ضعفك\n\nحمل التطبيق الآن وابدأ التدريب من الرابط:\n" + window.location.origin;
+                  window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
                 }}
-                className="text-xs text-gray-600 hover:text-gray-500 transition p-1 rounded-md hover:bg-white/5 select-none cursor-default flex items-center justify-center w-8 h-8"
-                title="إعدادات النظام"
+                className="text-xs text-green-400 hover:text-green-300 transition flex items-center gap-2 py-1.5 px-3 rounded-lg border border-green-500/20 bg-green-500/10 hover:bg-green-500/20"
+                title="شارك التطبيق مع أصدقائك"
               >
-                ⚙️
+                <span className="font-bold">شارك التطبيق</span>
+                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                  <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" />
+                </svg>
               </button>
-            )}
-
-            {/* Share Button */}
-            <button
-              onClick={() => {
-                const message = "منصة Prometric الطبية المتخصصة 🩺🦷\nأفضل منظومة أكاديمية للتحضير لاختبارات مزاولة المهنة والترخيص الطبي (SCFHS, DHA, MOH) في طب الأسنان والطب البشري.\n\n✨ مميزات المنصة:\n✅ محاكاة للامتحانات الفعلية بنفس التوقيت\n✅ بنك أسئلة إكلينيكي متجدد\n✅ تفسيرات علمية دقيقة لكل إجابة\n\nجرب المنصة الآن وشاركها مع زملائك:\n" + window.location.origin;
-                window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
-              }}
-              className="text-xs text-green-400 hover:text-green-300 transition flex items-center gap-2 py-1.5 px-3 rounded-lg border border-green-500/20 bg-green-500/10 hover:bg-green-500/20"
-              title="مشاركة عبر واتساب"
-            >
-              <span className="font-bold">مشاركة التطبيق</span>
-              <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" />
-              </svg>
-            </button>
-          </div>
-        </motion.div>
+            </div>
+          </motion.div>
+        )}
       </div>
     </div>
   );
