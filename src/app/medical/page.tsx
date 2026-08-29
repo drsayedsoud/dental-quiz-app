@@ -157,16 +157,12 @@ export default function MedicalPage() {
           </motion.button>
 
           <motion.button 
-            onClick={() => alert('قريباً جداً! جاري برمجة هذه الميزة الرائعة 🔥')} 
-            className="col-span-2 relative overflow-hidden bg-gradient-to-r from-orange-500/20 via-red-500/20 to-orange-500/20 border border-orange-500/50 hover:border-orange-400 p-4 rounded-2xl transition-all flex flex-col items-center justify-center gap-2 group"
+            onClick={() => router.push(`/challenge/create?section=medical&track=${selectedTrack}`)} 
+            className="col-span-2 relative overflow-hidden bg-gradient-to-r from-red-700 via-red-600 to-red-800 border-2 border-red-500 hover:border-red-400 py-6 sm:py-8 rounded-3xl transition-all flex flex-row items-center justify-center gap-4 group shadow-[0_0_20px_rgba(220,38,38,0.4)] animate-heartbeat hover:animate-none hover:scale-[1.02] active:scale-95"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
-            <div className="absolute -top-1 -right-1 flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-orange-500"></span>
-            </div>
-            <span className="text-2xl group-hover:scale-110 transition-transform">⚔️</span>
-            <span className="text-sm sm:text-base font-black text-orange-400 drop-shadow-md">تحدي الأصدقاء (Live)</span>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
+            <span className="text-3xl sm:text-4xl group-hover:scale-110 transition-transform drop-shadow-lg">⚔️</span>
+            <span className="text-lg sm:text-2xl font-black text-white drop-shadow-md tracking-wide">تحدي الأصدقاء (Live)</span>
           </motion.button>
         </div>
 

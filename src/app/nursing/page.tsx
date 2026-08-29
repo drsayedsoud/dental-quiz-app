@@ -141,21 +141,17 @@ export default function NursingPage() {
 
               <motion.button
                 initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}
-                onClick={() => alert('قريباً جداً! جاري برمجة هذه الميزة الرائعة 🔥')}
-                className="w-full relative overflow-hidden group bg-gradient-to-r from-orange-500/20 via-red-500/20 to-orange-500/20 border border-orange-500/50 rounded-3xl p-6 text-right hover:border-orange-400 active:scale-[0.98] transition-all"
+                onClick={() => router.push(`/challenge/create?section=nursing&track=undergrad`)}
+                className="w-full relative overflow-hidden group bg-gradient-to-r from-red-700 via-red-600 to-red-800 border-2 border-red-500 rounded-3xl p-6 sm:p-8 text-right hover:border-red-400 active:scale-95 hover:scale-[1.02] transition-all shadow-[0_0_20px_rgba(220,38,38,0.4)] animate-heartbeat hover:animate-none"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
-                <div className="flex items-center gap-4 relative z-10">
-                  <div className="relative bg-orange-500/20 p-3 rounded-2xl border border-orange-500/30">
-                    <div className="absolute -top-1 -right-1 flex h-3 w-3">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-orange-500"></span>
-                    </div>
-                    <span className="text-3xl group-hover:scale-110 transition-transform">⚔️</span>
-                  </div>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
+                <div className="flex items-center justify-center sm:justify-start gap-4 relative z-10 flex-row-reverse sm:flex-row">
                   <div>
-                    <h2 className="text-xl font-black text-orange-400 mb-1 drop-shadow-md">تحدي الأصدقاء (Live)</h2>
-                    <p className="text-orange-200/80 text-sm">غرفة مسابقة حية في الوقت الفعلي</p>
+                    <h2 className="text-2xl sm:text-3xl font-black text-white mb-1 drop-shadow-md">تحدي الأصدقاء (Live)</h2>
+                    <p className="text-red-200/90 text-sm sm:text-base font-bold">غرفة مسابقة حية في الوقت الفعلي</p>
+                  </div>
+                  <div className="relative p-2">
+                    <span className="text-4xl sm:text-5xl group-hover:scale-110 transition-transform drop-shadow-lg">⚔️</span>
                   </div>
                 </div>
               </motion.button>
