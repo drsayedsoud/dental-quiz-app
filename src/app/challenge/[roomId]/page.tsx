@@ -111,10 +111,11 @@ export default function ChallengeRoomPage() {
   const playersList = Object.values(room.players).sort((a, b) => b.score - a.score); // Sorted by score
 
   // ==========================================
-  // VIEW 1: LOBBY (غرفة الانتظار)
+  // VIEW 1: LOBBY (شاشة الانتظار)
   // ==========================================
   if (room.status === 'waiting') {
-    const shareText = encodeURIComponent(`أتحداك في مسابقة ${room.section === 'dental' ? 'طب الأسنان' : room.section === 'medical' ? 'الطب البشري' : 'التمريض'} المباشرة! 🦷🔥\nالكود الخاص بالغرفة هو: *${roomId}*\nاضغط على الرابط للدخول فوراً:\nhttps://dental-quiz-app.vercel.app/challenge/join?code=${roomId}`);
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://dental-quiz-app.vercel.app';
+    const shareText = encodeURIComponent(`تحداني في مسابقة ${room.section === 'dental' ? 'طب الأسنان' : room.section === 'medical' ? 'الطب البشري' : 'التمريض'} المباشرة! ⚔️🔥\nاستخدم كود الغرفة هذا: *${roomId}*\nأو ادخل من الرابط مباشرة:\n${origin}/challenge/join?code=${roomId}`);
     
     return (
       <div className="min-h-screen bg-[#0a0a0a] p-4 sm:p-6" dir="rtl">
