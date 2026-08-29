@@ -37,10 +37,10 @@ export default function SplashPage() {
           transition={{ delay: 0.3, duration: 0.5 }}
           className="text-5xl md:text-6xl mb-6 flex justify-center items-center gap-4 md:gap-6"
         >
-          <span className="hover:scale-110 transition-transform drop-shadow-[0_0_10px_rgba(56,189,248,0.3)]">🦷</span>
+          <span className="hover:scale-110 transition-transform drop-shadow-[0_0_10px_rgba(56,189,248,0.3)]">🩺</span>
           <span className="text-6xl md:text-7xl hover:scale-110 transition-transform drop-shadow-[0_0_15px_rgba(56,189,248,0.5)] z-10">👨‍⚕️</span>
           <span className="hover:scale-110 transition-transform drop-shadow-[0_0_10px_rgba(56,189,248,0.3)]">💊</span>
-          <span className="hover:scale-110 transition-transform drop-shadow-[0_0_10px_rgba(56,189,248,0.3)]">👩‍⚕️</span>
+          <span className="hover:scale-110 transition-transform drop-shadow-[0_0_10px_rgba(56,189,248,0.3)]">⚕️</span>
         </motion.div>
 
         {/* App Name */}
