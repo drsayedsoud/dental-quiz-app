@@ -258,3 +258,98 @@ export const resolveReport = async (reportId: string) => {
     return false;
   }
 };
+
+// ==========================================
+// MULTIPLAYER LIVE CHALLENGE (تحدي الأصدقاء)
+// ==========================================
+
+export interface ChallengePlayer {
+  uid: string;
+  name: string;
+  photoURL: string;
+  score: number;
+  isReady: boolean;
+  hasFinished: boolean;
+}
+
+export interface ChallengeRoom {
+  roomId: string;
+  hostId: string;
+  status: 'waiting' | 'playing' | 'finished';
+  section: string;
+  track: string;
+  questions: any[]; 
+  players: Record<string, ChallengePlayer>;
+  createdAt: any;
+}
+
+// إنشاء غرفة جديدة
+export const createChallengeRoom = async (roomId: string, host: ChallengePlayer, section: string, track: string, questions: any[]) => {
+  try {
+    const roomRef = doc(db, 'rooms', roomId);
+    await setDoc(roomRef, {
+      roomId,
+      hostId: host.uid,
+      status: 'waiting',
+      section,
+      track,
+      questions,
+      players: {
+        [host.uid]: host
+      },
+      createdAt: serverTimestamp()
+    });
+    return true;
+  } catch (error) {
+    console.error('Error creating room:', error);
+    return false;
+  }
+};
+
+// الانضمام لغرفة
+export const joinChallengeRoom = async (roomId: string, player: ChallengePlayer) => {
+  try {
+    const roomRef = doc(db, 'rooms', roomId);
+    const roomSnap = await getDoc(roomRef);
+    if (!roomSnap.exists()) return { success: false, message: 'الغرفة غير موجودة' };
+    
+    const roomData = roomSnap.data() as ChallengeRoom;
+    if (roomData.status !== 'waiting') return { success: false, message: 'المسابقة بدأت بالفعل!' };
+
+    await updateDoc(roomRef, {
+      [`players.${player.uid}`]: player
+    });
+    return { success: true };
+  } catch (error) {
+    console.error('Error joining room:', error);
+    return { success: false, message: 'حدث خطأ أثناء الانضمام' };
+  }
+};
+
+// تحديث حالة الغرفة (بدء اللعب)
+export const updateRoomStatus = async (roomId: string, status: 'playing' | 'finished') => {
+  try {
+    const roomRef = doc(db, 'rooms', roomId);
+    await updateDoc(roomRef, { status });
+    return true;
+  } catch (error) {
+    console.error('Error updating status:', error);
+    return false;
+  }
+};
+
+// تحديث سكور اللاعب
+export const updatePlayerScore = async (roomId: string, uid: string, newScore: number, hasFinished: boolean = false) => {
+  try {
+    const roomRef = doc(db, 'rooms', roomId);
+    await updateDoc(roomRef, {
+      [`players.${uid}.score`]: newScore,
+      [`players.${uid}.hasFinished`]: hasFinished
+    });
+    return true;
+  } catch (error) {
+    console.error('Error updating score:', error);
+    return false;
+  }
+};
+
