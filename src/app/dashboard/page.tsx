@@ -64,6 +64,7 @@ export default function DashboardPage() {
   // Major selection state
   const [isSelectingMajor, setIsSelectingMajor] = useState(false);
   const [isUpdatingMajor, setIsUpdatingMajor] = useState(false);
+  const [localMajor, setLocalMajor] = useState<string | null>(null);
 
   const isAdmin = user?.email === 'drsayedsoudnew@gmail.com' || profile?.role === 'admin';
 
@@ -80,15 +81,16 @@ export default function DashboardPage() {
   }, [user, loading, router]);
 
   useEffect(() => {
-    if (!loading && profile && profile.major === undefined) {
+    if (!loading && profile && profile.major === undefined && !localMajor) {
       setIsSelectingMajor(true);
-    } else if (profile?.major) {
+    } else if (profile?.major || localMajor) {
       setIsSelectingMajor(false);
     }
-  }, [profile, loading]);
+  }, [profile, loading, localMajor]);
 
   const handleSelectMajor = async (majorId: string) => {
     if (!user) return;
+    setLocalMajor(majorId);
     setIsUpdatingMajor(true);
     await updateUserMajor(user.uid, majorId);
     setIsUpdatingMajor(false);
@@ -98,8 +100,8 @@ export default function DashboardPage() {
   const handlePressStart = () => {
     pressTimer.current = setTimeout(async () => {
       const pin = await showPrompt('لوحة تحكم الإدارة', {
-        subtitle: 'أدخل الرقم السري للدخول',
-        icon: '🔐',
+        subtitle: 'أدخل الرقم السري للوصول',
+        icon: '🔒',
         placeholder: '••••',
         inputType: 'password',
       });
@@ -107,7 +109,7 @@ export default function DashboardPage() {
         sessionStorage.setItem('admin_pin_auth', 'true');
         router.push('/admin');
       } else if (pin !== null) {
-        await showAlert('الرقم السري غير صحيح!', '🚫', 'error');
+        await showAlert('الرقم السري غير صحيح!', '❌', 'error');
       }
     }, 1500);
   };
@@ -156,7 +158,7 @@ export default function DashboardPage() {
       return;
     }
     if (section.comingSoon) {
-      await showAlert('هذا القسم قيد التطوير\nوسيتم تجهيز أسئلة هذا القسم قريباً إن شاء الله!', '📚', 'info');
+      await showAlert('هذا القسم قيد التطوير\nسيتم إضافة آلاف الأسئلة في التحديث القادم إن شاء الله!', '🚧', 'info');
     } else {
       router.push(section.href);
     }
@@ -172,14 +174,15 @@ export default function DashboardPage() {
 
   if (!user) return null;
 
-  const displayedSections = (isSelectingMajor || isAdmin) ? sections : sections.filter(s => s.id === profile?.major);
+  const activeMajor = localMajor || profile?.major;
+  const displayedSections = (isSelectingMajor || isAdmin) ? sections : sections.filter(s => s.id === activeMajor);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] relative">
+    <div className="min-h-screen bg-[#0a0a0a] relative flex flex-col items-center justify-center">
       {/* Deploy Version (Admin Only) */}
       {isAdmin && (
         <div className="absolute top-2 left-2 z-50 bg-white/5 text-white/40 px-2 py-0.5 rounded text-[10px] font-mono border border-white/10 shadow-lg">
-          v19
+          v20
         </div>
       )}
 
