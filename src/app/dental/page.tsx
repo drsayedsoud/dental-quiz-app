@@ -123,6 +123,19 @@ export default function DentalPage() {
             <span className="text-2xl">⭐</span>
             <span className="text-xs sm:text-sm font-bold">الأسئلة المحفوظة</span>
           </motion.button>
+
+          <motion.button 
+            onClick={() => alert('قريباً جداً! جاري برمجة هذه الميزة الرائعة 🔥')} 
+            className="col-span-2 relative overflow-hidden bg-gradient-to-r from-orange-500/20 via-red-500/20 to-orange-500/20 border border-orange-500/50 hover:border-orange-400 p-4 rounded-2xl transition-all flex flex-col items-center justify-center gap-2 group"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
+            <div className="absolute -top-1 -right-1 flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-orange-500"></span>
+            </div>
+            <span className="text-2xl group-hover:scale-110 transition-transform">⚔️</span>
+            <span className="text-sm sm:text-base font-black text-orange-400 drop-shadow-md">تحدي الأصدقاء (Live)</span>
+          </motion.button>
         </div>
 
         <h2 className="text-2xl sm:text-3xl font-black text-white mb-6 flex items-center gap-3">

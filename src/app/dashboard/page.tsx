@@ -158,7 +158,7 @@ export default function DashboardPage() {
         {/* Deploy Version (Admin Only) */}
         {isAdmin && (
           <div className="absolute top-2 left-2 z-50 bg-white/5 text-white/40 px-2 py-0.5 rounded text-[10px] font-mono border border-white/10 shadow-lg">
-            v5
+            v6
           </div>
         )}
 
