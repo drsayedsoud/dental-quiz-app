@@ -773,7 +773,7 @@ export default function AdminPage() {
                           </span>
                           {report.track && (
                             <span className="bg-purple-500/10 text-purple-400 border border-purple-500/20 text-[10px] font-bold px-2 py-0.5 rounded-full">
-                              🎓 {report.track}
+                              🎓 {report.track === 'grad' ? 'خريجين' : report.track === 'undergrad' ? 'طلاب' : report.track}
                             </span>
                           )}
                           {report.subject && (

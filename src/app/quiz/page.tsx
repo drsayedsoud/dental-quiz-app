@@ -487,7 +487,7 @@ function QuizContent() {
                 <p>سيتم إرسال بلاغ بالمعلومات التالية:</p>
                 <div className="bg-white/5 rounded-xl p-3 space-y-1 text-xs">
                   <p>📌 القسم: <span className="text-cyan-400 font-bold">{section === 'dental' ? 'طب الأسنان' : section === 'medical' ? 'الطب البشري' : section === 'nursing' ? 'التمريض' : section === 'pharmacy' ? 'الصيدلة' : section}</span></p>
-                  {track && <p>🎓 المسار: <span className="text-cyan-400 font-bold">{track}</span></p>}
+                  {track && <p>🎓 المسار: <span className="text-cyan-400 font-bold">{track === 'grad' ? 'خريجين' : track === 'undergrad' ? 'طلاب' : track}</span></p>}
                   {subject && <p>📘 المادة: <span className="text-cyan-400 font-bold">{subject}</span></p>}
                   <p>🔢 رقم السؤال: <span className="text-cyan-400 font-bold">{currentIndex + 1}</span></p>
                 </div>
