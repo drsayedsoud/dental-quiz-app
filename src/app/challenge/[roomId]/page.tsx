@@ -1,17 +1,19 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { db } from '@/lib/firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { joinChallengeRoom, updateRoomStatus, updatePlayerScore, ChallengeRoom, ChallengePlayer } from '@/lib/firestore';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function ChallengeRoomPage({ params }: { params: { roomId: string } }) {
+export default function ChallengeRoomPage() {
   const router = useRouter();
+  const params = useParams();
+  const roomId = params.roomId as string;
+  
   const { user, profile, loading: authLoading } = useAuth();
-  const roomId = params.roomId;
 
   const [room, setRoom] = useState<ChallengeRoom | null>(null);
   const [loading, setLoading] = useState(true);
