@@ -179,7 +179,7 @@ export default function DashboardPage() {
       {/* Deploy Version (Admin Only) */}
       {isAdmin && (
         <div className="absolute top-2 left-2 z-50 bg-white/5 text-white/40 px-2 py-0.5 rounded text-[10px] font-mono border border-white/10 shadow-lg">
-          v18
+          v19
         </div>
       )}
 
@@ -224,11 +224,13 @@ export default function DashboardPage() {
           className="text-center mb-6 pt-2"
         >
           {isSelectingMajor ? (
-            <>
-              <h1 className="text-3xl font-extrabold text-white mb-2">أهلاً بك! 👋</h1>
-              <p className="text-cyan-400 text-lg font-bold">يرجى اختيار تخصصك للمتابعة</p>
-              <p className="text-gray-400 text-xs mt-1">ستختفي باقي الأقسام بعد اختيارك</p>
-            </>
+            <div className="mb-4">
+              <h1 className="text-4xl sm:text-5xl font-extrabold text-white mb-3">أهلاً بك! 👋</h1>
+              <div className="bg-cyan-500/10 border border-cyan-500/30 rounded-2xl p-4 inline-block shadow-[0_0_20px_rgba(6,182,212,0.15)]">
+                <p className="text-cyan-400 text-xl sm:text-2xl font-black tracking-wide mb-1">يرجى اختيار تخصصك للمتابعة</p>
+                <p className="text-gray-400 text-xs sm:text-sm">ستختفي باقي الأقسام تلقائياً بعد اختيارك</p>
+              </div>
+            </div>
           ) : (
             <>
               <h1 className="text-2xl font-extrabold text-gradient mb-1">Medical Prometric</h1>
@@ -257,10 +259,10 @@ export default function DashboardPage() {
         </motion.div>
 
         {/* Section Cards */}
-        <div className="space-y-3 mb-5 md:mb-8 relative">
+        <div className={`relative ${isSelectingMajor ? 'grid grid-cols-2 gap-3' : 'space-y-3'} mb-5 md:mb-8`}>
           {isUpdatingMajor && (
             <div className="absolute inset-0 z-50 bg-black/50 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-              <p className="text-white font-bold animate-pulse">جاري تحديث التخصص...</p>
+              <p className="text-white font-bold animate-pulse text-lg">جاري تحديث التخصص...</p>
             </div>
           )}
           {displayedSections.map((section, index) => (
@@ -281,20 +283,26 @@ export default function DashboardPage() {
                   handleSectionClick(section);
                 }
               }}
-              className={`w-full bg-gradient-to-l ${section.gradient} rounded-2xl py-6 px-4 sm:py-7 sm:px-5 md:py-8 md:px-6 text-right hover:scale-[1.02] active:scale-[0.98] transition-transform shadow-lg text-white select-none ${section.comingSoon && !isSelectingMajor ? 'opacity-80' : ''}`}
+              className={`w-full ${isSelectingMajor ? 'bg-gradient-to-br py-4 px-3 flex flex-col items-center justify-center text-center gap-2 aspect-square' : 'bg-gradient-to-l py-6 px-4 sm:py-7 sm:px-5 md:py-8 md:px-6 text-right'} ${section.gradient} rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-transform shadow-lg text-white select-none ${section.comingSoon && !isSelectingMajor ? 'opacity-80' : ''}`}
             >
-              <div className="flex items-center gap-3">
-                <span className="text-3xl md:text-4xl">{section.icon}</span>
-                <div className="flex-1">
-                  <h2 className="text-base md:text-lg font-bold">{section.title}</h2>
-                  <p className="text-white/80 text-xs md:text-sm font-medium">{section.subtitle}</p>
-                </div>
-                {!isSelectingMajor && (
+              {isSelectingMajor ? (
+                <>
+                  <span className="text-4xl mb-1">{section.icon}</span>
+                  <h2 className="text-lg font-black">{section.title}</h2>
+                  <p className="text-white/80 text-[10px] font-medium leading-tight">{section.subtitle}</p>
+                </>
+              ) : (
+                <div className="flex items-center gap-3">
+                  <span className="text-3xl md:text-4xl">{section.icon}</span>
+                  <div className="flex-1">
+                    <h2 className="text-base md:text-lg font-bold">{section.title}</h2>
+                    <p className="text-white/80 text-xs md:text-sm font-medium">{section.subtitle}</p>
+                  </div>
                   <span className="text-white/40 text-2xl">
                     {section.comingSoon ? '🔒' : '👉'}
                   </span>
-                )}
-              </div>
+                </div>
+              )}
             </motion.button>
           ))}
         </div>
