@@ -67,6 +67,11 @@ export default function AdminPage() {
       fetchReports();
     }
   }, [activeTab]);
+
+  // Fetch reports count on page load for badge
+  useEffect(() => {
+    fetchReports();
+  }, []);
   
   const handleResolveReport = async (reportId: string) => {
     const success = await resolveReport(reportId);
@@ -282,10 +287,10 @@ export default function AdminPage() {
         {/* Tabs - Mobile Scrollable */}
         <div className="flex gap-2 mb-5 sm:mb-8 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-hide">
           {tabs.map((tab) => (
-            <button
+          <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`shrink-0 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm transition font-bold flex items-center gap-1.5 ${
+              className={`shrink-0 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm transition font-bold flex items-center gap-1.5 relative ${
                 activeTab === tab.id 
                   ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-600/30' 
                   : 'bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10'
@@ -293,6 +298,11 @@ export default function AdminPage() {
             >
               <span>{tab.icon}</span>
               <span>{tab.label}</span>
+              {tab.id === 'reports' && reportsList.length > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center rounded-full shadow-lg shadow-red-500/50 animate-pulse">
+                  {reportsList.length}
+                </span>
+              )}
             </button>
           ))}
         </div>
