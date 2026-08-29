@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
-import { incrementQuestionCount, saveQuizSession, toggleBookmark, isBookmarked } from '@/lib/firestore';
+import { incrementQuestionCount, saveQuizSession, toggleBookmark, isBookmarked, reportQuestionError } from '@/lib/firestore';
 
 interface Question {
   question: string;
@@ -23,6 +23,7 @@ function QuizContent() {
 
   const subject = searchParams.get('subject');
   const section = searchParams.get('section') || 'dental';
+  const track = searchParams.get('track') || '';
   const mode = searchParams.get('mode');
   const startIndex = parseInt(searchParams.get('startIndex') || '0');
 
@@ -51,6 +52,8 @@ function QuizContent() {
   // Bookmarks and Wrong answers tracking
   const [isCurrentBookmarked, setIsCurrentBookmarked] = useState(false);
   const [wrongAnswers, setWrongAnswers] = useState<Question[]>([]);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportSending, setReportSending] = useState(false);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const latestHandleNext = useRef<() => void>(() => {});
@@ -251,6 +254,25 @@ function QuizContent() {
     setIsCurrentBookmarked(isNowBookmarked);
   };
 
+  const handleReport = async () => {
+    if (!user || !currentQuestion) return;
+    setReportSending(true);
+    const success = await reportQuestionError({
+      userId: user.uid,
+      userEmail: user.email || '',
+      section: section,
+      track: track,
+      subject: subject || '',
+      questionIndex: currentIndex + 1,
+      questionText: currentQuestion.question.substring(0, 200),
+    });
+    setReportSending(false);
+    setShowReportModal(false);
+    if (success) {
+      // brief visual feedback - no external dependency needed
+    }
+  };
+
   if (!isMounted) {
     return <div className="min-h-screen bg-[#0a0a0a]"></div>;
   }
@@ -439,6 +461,55 @@ function QuizContent() {
             {isCurrentBookmarked ? '⭐ محفوظ' : '☆ حفظ السؤال'}
           </button>
         </div>
+
+        <button 
+          onClick={() => setShowReportModal(true)} 
+          className="w-full bg-orange-500/10 border border-orange-500/20 text-orange-400 py-3 rounded-xl text-sm font-semibold hover:bg-orange-500/20 transition flex items-center justify-center gap-2"
+        >
+          🚩 إبلاغ عن خطأ في السؤال
+        </button>
+
+        {showReportModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center px-4"
+            onClick={() => setShowReportModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="bg-[#1a1a2e] border border-orange-500/30 rounded-2xl p-6 max-w-sm w-full space-y-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-white font-bold text-center text-lg">🚩 إبلاغ عن خطأ</h3>
+              <div className="space-y-2 text-sm text-gray-300" dir="rtl">
+                <p>سيتم إرسال بلاغ بالمعلومات التالية:</p>
+                <div className="bg-white/5 rounded-xl p-3 space-y-1 text-xs">
+                  <p>📌 القسم: <span className="text-cyan-400 font-bold">{section === 'dental' ? 'طب الأسنان' : section === 'medical' ? 'الطب البشري' : section === 'nursing' ? 'التمريض' : section === 'pharmacy' ? 'الصيدلة' : section}</span></p>
+                  {track && <p>🎓 المسار: <span className="text-cyan-400 font-bold">{track}</span></p>}
+                  {subject && <p>📘 المادة: <span className="text-cyan-400 font-bold">{subject}</span></p>}
+                  <p>🔢 رقم السؤال: <span className="text-cyan-400 font-bold">{currentIndex + 1}</span></p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleReport}
+                  disabled={reportSending}
+                  className="flex-1 bg-orange-600 hover:bg-orange-500 text-white py-2.5 rounded-xl font-bold text-sm transition disabled:opacity-50"
+                >
+                  {reportSending ? '⏳ جاري الإرسال...' : '✅ تأكيد الإبلاغ'}
+                </button>
+                <button
+                  onClick={() => setShowReportModal(false)}
+                  className="flex-1 bg-white/10 hover:bg-white/20 text-white py-2.5 rounded-xl font-bold text-sm transition"
+                >
+                  إلغاء
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
 
         <button onClick={handleFinish} className="w-full bg-red-500/10 border border-red-500/20 text-red-400 py-3 rounded-xl text-sm font-semibold hover:bg-red-500/20 transition">
           🛑 إنهاء الجلسة

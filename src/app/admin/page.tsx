@@ -16,7 +16,7 @@ import {
   UserProfile
 } from '@/lib/firestore';
 
-type TabType = 'stats' | 'files' | 'users' | 'tools';
+type TabType = 'stats' | 'files' | 'users' | 'reports' | 'tools';
 
 export default function AdminPage() {
   const { user, profile, loading } = useAuth();
@@ -61,6 +61,12 @@ export default function AdminPage() {
     setReportsList(rep);
     setLoadingReports(false);
   };
+
+  useEffect(() => {
+    if (activeTab === 'reports') {
+      fetchReports();
+    }
+  }, [activeTab]);
   
   const handleResolveReport = async (reportId: string) => {
     const success = await resolveReport(reportId);
@@ -240,6 +246,7 @@ export default function AdminPage() {
     { id: 'stats', label: 'الإحصائيات', icon: '📊' },
     { id: 'files', label: 'بنك الأسئلة', icon: '📁' },
     { id: 'users', label: 'المستخدمين', icon: '👥' },
+    { id: 'reports', label: 'البلاغات', icon: '🚩' },
     { id: 'tools', label: 'أدوات النظام', icon: '🔧' },
   ];
 
@@ -706,6 +713,85 @@ export default function AdminPage() {
                   </table>
                 </div>
               </>
+            )}
+          </motion.div>
+        )}
+
+
+        {/* ====== REPORTS TAB ====== */}
+        {activeTab === 'reports' && (
+          <motion.div key="reports" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-4 sm:space-y-6">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-5 backdrop-blur-md flex items-center justify-between">
+              <div>
+                <h2 className="text-sm sm:text-lg font-bold text-white mb-1">🚩 الأسئلة المبلغ عنها</h2>
+                <p className="text-gray-400 text-[10px] sm:text-xs">الأسئلة التي أبلغ عنها المستخدمون لوجود أخطاء</p>
+              </div>
+              <button 
+                onClick={fetchReports} 
+                disabled={loadingReports}
+                className="bg-orange-500/10 border border-orange-500/30 text-orange-400 px-4 py-2 rounded-xl text-xs font-bold hover:bg-orange-500/20 transition disabled:opacity-50"
+              >
+                {loadingReports ? '⏳' : '🔄 تحديث'}
+              </button>
+            </div>
+
+            {loadingReports ? (
+              <div className="text-center py-12">
+                <div className="text-4xl mb-3 animate-pulse">🔍</div>
+                <p className="text-gray-400 text-sm">جاري تحميل البلاغات...</p>
+              </div>
+            ) : reportsList.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="text-4xl mb-3">✅</div>
+                <p className="text-gray-400 text-sm">لا توجد بلاغات معلقة</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {reportsList.map((report) => (
+                  <motion.div
+                    key={report.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-white/5 border border-orange-500/20 rounded-2xl p-4 sm:p-5 space-y-3"
+                    dir="rtl"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="space-y-2 flex-1">
+                        <div className="flex flex-wrap gap-2">
+                          <span className="bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                            📌 {report.section === 'dental' ? 'أسنان' : report.section === 'medical' ? 'بشري' : report.section === 'nursing' ? 'تمريض' : report.section === 'pharmacy' ? 'صيدلة' : report.section}
+                          </span>
+                          {report.track && (
+                            <span className="bg-purple-500/10 text-purple-400 border border-purple-500/20 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                              🎓 {report.track}
+                            </span>
+                          )}
+                          {report.subject && (
+                            <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                              📘 {report.subject}
+                            </span>
+                          )}
+                          <span className="bg-orange-500/10 text-orange-400 border border-orange-500/20 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                            🔢 سؤال #{report.questionIndex}
+                          </span>
+                        </div>
+                        <p className="text-gray-300 text-xs leading-relaxed bg-white/5 rounded-xl p-3 border border-white/5">
+                          {report.questionText}
+                        </p>
+                        <p className="text-gray-500 text-[10px]">
+                          👤 {report.userEmail} • {report.createdAt?.toDate?.()?.toLocaleDateString?.('ar-EG') || 'غير محدد'}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => report.id && handleResolveReport(report.id)}
+                        className="shrink-0 bg-green-500/10 hover:bg-green-500/20 border border-green-500/30 text-green-400 px-3 py-2 rounded-xl text-xs font-bold transition active:scale-95"
+                      >
+                        ✅ تم الحل
+                      </button>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
             )}
           </motion.div>
         )}
