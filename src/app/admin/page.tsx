@@ -285,7 +285,7 @@ export default function AdminPage() {
         </div>
         
         {/* Tabs - Mobile Scrollable */}
-        <div className="flex gap-2 mb-5 sm:mb-8 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-hide">
+        <div className="flex gap-2 mb-5 sm:mb-8 overflow-x-auto pt-4 pb-2 -mx-1 px-1 scrollbar-hide">
           {tabs.map((tab) => (
           <button
               key={tab.id}
