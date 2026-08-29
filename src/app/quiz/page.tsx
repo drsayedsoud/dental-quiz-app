@@ -375,16 +375,19 @@ function QuizContent() {
         className="glass rounded-2xl p-5 mb-4"
       >
         <p className="text-white text-base leading-relaxed font-medium">{currentQuestion.question}</p>
-        {currentQuestion.source && currentQuestion.source !== 'nan' && (
-          <div className="mt-3 flex items-start gap-1.5 text-cyan-400 bg-cyan-950/30 p-2 rounded-lg border border-cyan-500/20 inline-flex">
-            <span className="text-xs">📌</span>
-            <span className="text-[10px] sm:text-xs font-semibold leading-relaxed font-mono" dir="ltr">{currentQuestion.source}</span>
-          </div>
-        )}
         {currentQuestion.metadata && currentQuestion.metadata !== 'nan' && (
-          <p className="text-gray-300 text-sm sm:text-base font-bold mt-2 tracking-wide">{currentQuestion.metadata}</p>
-        )}
-      </motion.div>
+            <div className="mt-3 flex items-start gap-1.5 text-orange-400 bg-orange-950/30 p-2 rounded-lg border border-orange-500/20 inline-flex mr-2">
+              <span className="text-xs">📚</span>
+              <span className="text-[10px] sm:text-xs font-semibold leading-relaxed" dir="rtl">المادة: {currentQuestion.metadata}</span>
+            </div>
+          )}
+          {currentQuestion.source && currentQuestion.source !== 'nan' && (
+            <div className="mt-3 flex items-start gap-1.5 text-cyan-400 bg-cyan-950/30 p-2 rounded-lg border border-cyan-500/20 inline-flex">
+              <span className="text-xs">📖</span>
+              <span className="text-[10px] sm:text-xs font-semibold leading-relaxed font-mono" dir="ltr">المصدر: {currentQuestion.source}</span>
+            </div>
+          )}
+        </motion.div>
 
       {/* Choices */}
       <div className="space-y-3 mb-6">
