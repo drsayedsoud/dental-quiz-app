@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
+import { getUnresolvedReports } from '@/lib/firestore';
 import { useAlert, usePrompt } from '@/components/Modals';
 
 const sections = [
@@ -58,6 +59,15 @@ export default function DashboardPage() {
 
   // For showing cache clear success before reload
   const [showCacheSuccess, setShowCacheSuccess] = useState(false);
+  const [reportsCount, setReportsCount] = useState(0);
+
+  const isAdmin = user?.email === 'drsayedsoudnew@gmail.com' || profile?.role === 'admin';
+
+  useEffect(() => {
+    if (isAdmin) {
+      getUnresolvedReports().then(reports => setReportsCount(reports.length)).catch(console.error);
+    }
+  }, [isAdmin]);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -141,8 +151,6 @@ export default function DashboardPage() {
   }
 
   if (!user) return null;
-
-  const isAdmin = user.email === 'drsayedsoudnew@gmail.com' || profile?.role === 'admin';
 
   return (
     
@@ -286,10 +294,15 @@ export default function DashboardPage() {
             {isAdmin ? (
               <button
                 onClick={() => router.push('/admin')}
-                className="text-xs text-gray-500 hover:text-cyan-400 transition flex items-center gap-1.5 py-1 px-2.5 rounded-lg hover:bg-white/5"
+                className="relative text-xs text-gray-500 hover:text-cyan-400 transition flex items-center gap-1.5 py-1 px-2.5 rounded-lg hover:bg-white/5"
               >
                 <span>⚙️</span>
                 <span>خاص بالإدارة</span>
+                {reportsCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold min-w-[16px] h-[16px] flex items-center justify-center rounded-full shadow-lg shadow-red-500/50 animate-pulse">
+                    {reportsCount}
+                  </span>
+                )}
               </button>
             ) : (
               <button
