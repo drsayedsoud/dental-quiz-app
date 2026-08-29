@@ -5,6 +5,13 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
 
+const sectionIcons = [
+  { icon: '👨‍⚕️', label: 'الطب البشري', color: 'rgba(99,102,241,0.4)' },
+  { icon: '🦷', label: 'طب الأسنان', color: 'rgba(6,182,212,0.4)' },
+  { icon: '💊', label: 'الصيدلة', color: 'rgba(16,185,129,0.4)' },
+  { icon: '👩‍⚕️', label: 'التمريض', color: 'rgba(244,63,94,0.4)' },
+];
+
 export default function SplashPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
@@ -13,7 +20,7 @@ export default function SplashPage() {
     if (!loading) {
       const timer = setTimeout(() => {
         router.replace(user ? '/dashboard' : '/login');
-      }, 2000);
+      }, 3000);
       return () => clearTimeout(timer);
     }
   }, [user, loading, router]);
@@ -30,43 +37,71 @@ export default function SplashPage() {
         transition={{ duration: 0.8, ease: 'easeOut' }}
         className="relative z-10 text-center"
       >
-        {/* Logo / Icon */}
-        <motion.div
-          initial={{ y: -20 }}
-          animate={{ y: 0 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
-          className="text-5xl md:text-6xl mb-6 flex justify-center items-center gap-4 md:gap-6"
-        >
-          <span className="hover:scale-110 transition-transform drop-shadow-[0_0_10px_rgba(56,189,248,0.3)]">🩺</span>
-          <span className="text-6xl md:text-7xl hover:scale-110 transition-transform drop-shadow-[0_0_15px_rgba(56,189,248,0.5)] z-10">👨‍⚕️</span>
-          <span className="hover:scale-110 transition-transform drop-shadow-[0_0_10px_rgba(56,189,248,0.3)]">💊</span>
-          <span className="hover:scale-110 transition-transform drop-shadow-[0_0_10px_rgba(56,189,248,0.3)]">⚕️</span>
-        </motion.div>
+        {/* Icons appearing one by one */}
+        <div className="flex justify-center items-center gap-5 md:gap-8 mb-8">
+          {sectionIcons.map((item, i) => (
+            <motion.div
+              key={i}
+              initial={{ scale: 0, opacity: 0, y: 30 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              transition={{
+                delay: 0.3 + i * 0.35,
+                duration: 0.5,
+                type: 'spring',
+                stiffness: 200,
+                damping: 15,
+              }}
+              className="flex flex-col items-center gap-1"
+            >
+              <motion.span
+                animate={{ y: [0, -6, 0] }}
+                transition={{
+                  delay: 1.8 + i * 0.15,
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                }}
+                className="text-5xl md:text-6xl"
+                style={{ filter: `drop-shadow(0 0 12px ${item.color})` }}
+              >
+                {item.icon}
+              </motion.span>
+              <motion.span
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 + i * 0.35, duration: 0.4 }}
+                className="text-[9px] text-gray-500 font-bold"
+              >
+                {item.label}
+              </motion.span>
+            </motion.div>
+          ))}
+        </div>
 
         {/* App Name */}
         <motion.h1
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.5, duration: 0.6 }}
+          transition={{ delay: 1.8, duration: 0.6 }}
           className="text-4xl md:text-5xl font-extrabold text-gradient mb-3"
         >
-          Medical Prometric
+          MedicalPro
         </motion.h1>
 
         <motion.p
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.7, duration: 0.6 }}
-          className="text-gray-400 text-lg px-4"
+          transition={{ delay: 2.1, duration: 0.6 }}
+          className="text-gray-400 text-base sm:text-lg px-4"
         >
-          المنصة الشاملة للأطباء وأطباء الأسنان والصيادلة والتمريض
+          المنصة الشاملة لتحضير اختبارات القطاع الطبي
         </motion.p>
 
         {/* Loading dots */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.2 }}
+          transition={{ delay: 2.5 }}
           className="flex gap-2 justify-center mt-8"
         >
           {[0, 1, 2].map((i) => (

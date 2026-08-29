@@ -12,13 +12,13 @@ const cairo = Cairo({
 });
 
 export const metadata: Metadata = {
-  title: 'Medical Prometric',
+  title: 'MedicalPro',
   description: 'تطبيق اختبارات طب الأسنان البرومترك',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'Medical Prometric',
+    title: 'MedicalPro',
   },
 };
 

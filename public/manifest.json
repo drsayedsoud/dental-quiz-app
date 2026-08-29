@@ -1,7 +1,7 @@
 {
-  "name": "Prometric Dent Said",
-  "short_name": "Prometric Dent",
-  "description": "تطبيق اختبارات طب الأسنان البرومترك",
+  "name": "MedicalPro",
+  "short_name": "MedicalPro",
+  "description": "المنصة الشاملة لتحضير اختبارات القطاع الطبي",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a0a0a",

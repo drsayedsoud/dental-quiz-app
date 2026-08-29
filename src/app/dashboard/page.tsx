@@ -182,7 +182,7 @@ export default function DashboardPage() {
       {/* Deploy Version (Admin Only) */}
       {isAdmin && (
         <div className="absolute top-2 left-2 z-50 bg-white/5 text-white/40 px-2 py-0.5 rounded text-[10px] font-mono border border-white/10 shadow-lg">
-          v20
+          v21
         </div>
       )}
 
@@ -236,7 +236,7 @@ export default function DashboardPage() {
             </div>
           ) : (
             <>
-              <h1 className="text-2xl font-extrabold text-gradient mb-1">Medical Prometric</h1>
+              <h1 className="text-2xl font-extrabold text-gradient mb-1">MedicalPro</h1>
               <p className="text-gray-400 text-sm">
                 مرحباً {profile?.email?.split('@')[0] || 'بكم'} 👋
               </p>
