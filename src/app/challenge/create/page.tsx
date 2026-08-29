@@ -1,12 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { createChallengeRoom, ChallengePlayer } from '@/lib/firestore';
 import { motion } from 'framer-motion';
 
-export default function CreateChallengePage() {
+function CreateChallengeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, profile } = useAuth();
@@ -97,5 +97,13 @@ export default function CreateChallengePage() {
       <h1 className="text-2xl font-bold text-white mb-2">تجهيز ساحة التحدي</h1>
       <p className="text-orange-400 animate-pulse">{loadingMsg}</p>
     </div>
+  );
+}
+
+export default function CreateChallengePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center text-orange-400 animate-pulse">جاري التحميل...</div>}>
+      <CreateChallengeContent />
+    </Suspense>
   );
 }

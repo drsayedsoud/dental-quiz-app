@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { motion } from 'framer-motion';
 
-export default function JoinChallengePage() {
+function JoinChallengeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, profile, loading } = useAuth();
@@ -102,5 +102,13 @@ export default function JoinChallengePage() {
         )}
       </motion.div>
     </div>
+  );
+}
+
+export default function JoinChallengePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center text-orange-400 animate-pulse">جاري التحميل...</div>}>
+      <JoinChallengeContent />
+    </Suspense>
   );
 }
