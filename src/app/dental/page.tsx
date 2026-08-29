@@ -126,11 +126,11 @@ export default function DentalPage() {
 
           <motion.button 
             onClick={() => router.push(`/challenge/create?section=dental&track=${selectedTrack}`)} 
-            className="col-span-2 relative overflow-hidden bg-gradient-to-r from-red-700 via-red-600 to-red-800 border-2 border-red-500 hover:border-red-400 py-6 sm:py-8 rounded-3xl transition-all flex flex-row items-center justify-center gap-4 group shadow-[0_0_20px_rgba(220,38,38,0.4)] animate-heartbeat hover:animate-none hover:scale-[1.02] active:scale-95"
+            className="col-span-2 mx-auto w-3/4 sm:w-1/2 relative overflow-hidden bg-gradient-to-r from-red-700 via-red-600 to-red-800 border border-red-500 hover:border-red-400 py-3 sm:py-4 rounded-2xl transition-all flex flex-row items-center justify-center gap-2 group shadow-[0_0_10px_rgba(220,38,38,0.4)] animate-heartbeat hover:animate-none hover:scale-[1.02] active:scale-95"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
-            <span className="text-3xl sm:text-4xl group-hover:scale-110 transition-transform drop-shadow-lg">⚔️</span>
-            <span className="text-lg sm:text-2xl font-black text-white drop-shadow-md tracking-wide">تحدي الأصدقاء (Live)</span>
+            <span className="text-xl sm:text-2xl group-hover:scale-110 transition-transform drop-shadow-lg">⚔️</span>
+            <span className="text-sm sm:text-base font-black text-white drop-shadow-md tracking-wide">تحدي الأصدقاء</span>
           </motion.button>
         </div>
 
