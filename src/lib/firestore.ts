@@ -323,7 +323,12 @@ export const joinChallengeRoom = async (roomId: string, player: ChallengePlayer)
     if (!roomSnap.exists()) return { success: false, message: 'الغرفة غير موجودة' };
     
     const roomData = roomSnap.data() as ChallengeRoom;
-    if (roomData.status !== 'waiting') return { success: false, message: 'المسابقة بدأت بالفعل!' };
+    if (roomData.status !== 'waiting') {
+      if (roomData.players && roomData.players[player.uid]) {
+        return { success: true, message: 'موجود مسبقاً' };
+      }
+      return { success: false, message: 'المسابقة بدأت بالفعل!' };
+    }
 
     await updateDoc(roomRef, {
       [`players.${player.uid}`]: player

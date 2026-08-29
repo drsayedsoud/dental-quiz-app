@@ -62,10 +62,8 @@ export default function ChallengeRoomPage() {
         hasFinished: false
       };
 
-      // Try to join
       const res = await joinChallengeRoom(roomId, player);
-      if (!res.success && res.message !== 'المسابقة بدأت بالفعل!' && res.message !== 'الغرفة غير موجودة') {
-        // If they were already in the room, it's fine, but if it failed for another reason:
+      if (!res.success) {
         setError(res.message || 'حدث خطأ');
       }
     };
@@ -115,7 +113,8 @@ export default function ChallengeRoomPage() {
   // ==========================================
   if (room.status === 'waiting') {
     const origin = typeof window !== 'undefined' ? window.location.origin : 'https://dental-quiz-app.vercel.app';
-    const shareText = encodeURIComponent(`تحداني في مسابقة ${room.section === 'dental' ? 'طب الأسنان' : room.section === 'medical' ? 'الطب البشري' : 'التمريض'} المباشرة! ⚔️🔥\nاستخدم كود الغرفة هذا: *${roomId}*\nأو ادخل من الرابط مباشرة:\n${origin}/challenge/join?code=${roomId}`);
+    const sectionName = room.section === 'dental' ? 'طب الأسنان' : room.section === 'medical' ? 'الطب البشري' : room.section === 'pharmacy' ? 'الصيدلة' : 'التمريض';
+    const shareText = encodeURIComponent(`تحداني في مسابقة ${sectionName} المباشرة! ⚔️🔥\nاستخدم كود الغرفة هذا: *${roomId}*\nأو ادخل من الرابط مباشرة:\n${origin}/challenge/join?code=${roomId}`);
     
     return (
       <div className="min-h-screen bg-[#0a0a0a] p-4 sm:p-6" dir="rtl">
