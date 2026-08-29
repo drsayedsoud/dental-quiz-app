@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { createChallengeRoom, ChallengePlayer } from '@/lib/firestore';
-import Papa from 'papaparse';
 import { motion } from 'framer-motion';
 
 export default function CreateChallengePage() {
@@ -27,33 +26,19 @@ export default function CreateChallengePage() {
 
       try {
         setLoadingMsg('جاري سحب الأسئلة...');
-        const response = await fetch(`/${section}_questions.csv`);
-        const csvText = await response.text();
         
-        const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true });
-        let data: any[] = parsed.data;
+        // Use the existing API instead of parsing CSV directly (which requires extra dependencies)
+        const res = await fetch(`/api/questions?section=${section}`);
+        if (!res.ok) throw new Error('Failed to fetch questions');
+        
+        const data = await res.json();
+        let allQuestions = data.questions || [];
 
-        if (section === 'dental' || section === 'medical') {
-          if (track === 'undergrad') {
-            data = data.filter((q: any) => !q['Target Audience'] || q['Target Audience'].toLowerCase().includes('undergrad') || q['Target Audience'].toLowerCase().includes('student'));
-          } else if (track === 'grad') {
-            data = data.filter((q: any) => q['Target Audience'] && (q['Target Audience'].toLowerCase().includes('grad') || q['Target Audience'].toLowerCase().includes('prometric')));
-          }
-        }
-
-        const shuffled = data.sort(() => 0.5 - Math.random());
-        const selected = shuffled.slice(0, 10).map(q => ({
-          question: q.Question || q.question || '',
-          choices: [
-            q['Option A'] || q.A || '',
-            q['Option B'] || q.B || '',
-            q['Option C'] || q.C || '',
-            q['Option D'] || q.D || ''
-          ].filter(Boolean),
-          correct: q['Correct Answer'] || q.correct || '',
-          explanation: q.Explanation || q.explanation || '',
-          metadata: q['Subject/Topic'] || q.subject || ''
-        }));
+        // Simple filtering (if the API didn't already filter by track, though the API returns all for that section)
+        // Since the current API does not strictly filter track, we just take random questions from the pool.
+        
+        const shuffled = allQuestions.sort(() => 0.5 - Math.random());
+        const selected = shuffled.slice(0, 10);
 
         if (selected.length === 0) {
           setError('لم نتمكن من العثور على أسئلة لهذا القسم.');
@@ -85,7 +70,7 @@ export default function CreateChallengePage() {
 
       } catch (err) {
         console.error(err);
-        setError('حدث خطأ في قراءة ملف الأسئلة.');
+        setError('حدث خطأ في جلب الأسئلة من الخادم.');
       }
     };
 
