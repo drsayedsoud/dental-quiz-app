@@ -202,11 +202,9 @@ export default function ChallengeRoomPage() {
 
       // Automatically go to next question after 1.5 seconds
       setTimeout(() => {
-        if (!hasFinished) {
-          setCurrentQIndex(prev => prev + 1);
-          setSelectedAnswer(null);
-          setIsAnswered(false);
-        }
+        setCurrentQIndex(prev => prev + 1);
+        setSelectedAnswer(null);
+        setIsAnswered(false);
       }, 1500);
     };
 
