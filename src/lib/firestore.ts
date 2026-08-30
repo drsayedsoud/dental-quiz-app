@@ -63,10 +63,18 @@ export async function saveQuizSession(
   userId: string,
   session: Omit<QuizSession, 'date'>
 ) {
+  // 1. Save the session
   await addDoc(collection(db, 'users', userId, 'sessions'), {
     ...session,
     date: serverTimestamp(),
   });
+  
+  // 2. Increment user's total points globally for leaderboard
+  if (session.score > 0) {
+    await updateDoc(doc(db, 'users', userId), {
+      totalPoints: increment(session.score)
+    }).catch(e => console.error("Error updating total points:", e));
+  }
 }
 
 export async function getUserSessions(
@@ -367,3 +375,15 @@ export const updatePlayerScore = async (roomId: string, uid: string, newScore: n
   }
 };
 
+
+// ===== Leaderboard =====
+export async function getGlobalLeaderboard(limitCount: number = 50) {
+  try {
+    const q = query(collection(db, 'users'), orderBy('totalPoints', 'desc'), limit(limitCount));
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() } as UserProfile & { id: string })).filter(u => (u.totalPoints || 0) > 0);
+  } catch (error) {
+    console.error('Error fetching leaderboard:', error);
+    return [];
+  }
+}
