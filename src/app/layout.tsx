@@ -4,6 +4,7 @@ import './globals.css';
 import { AuthProvider } from '@/context/AuthContext';
 import InstallPrompt from '@/components/InstallPrompt';
 import WakeLock from '@/components/WakeLock';
+import CacheBuster from '@/components/CacheBuster';
 
 const cairo = Cairo({
   subsets: ['arabic', 'latin'],
@@ -60,7 +61,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
 
-      <body className="min-h-screen">
+      <body className={`${cairo.className} bg-[#0a0a0a] text-white antialiased`}>
+        <CacheBuster />
         <AuthProvider>
           <WakeLock />
           {children}
