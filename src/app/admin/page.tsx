@@ -16,7 +16,7 @@ import {
   UserProfile
 } from '@/lib/firestore';
 
-type TabType = 'stats' | 'files' | 'users' | 'reports' | 'tools';
+type TabType = 'stats' | 'files' | 'users' | 'reports' | 'tools' | 'notifications';
 
 export default function AdminPage() {
   const { user, profile, loading } = useAuth();
@@ -803,6 +803,70 @@ export default function AdminPage() {
                 ))}
               </div>
             )}
+          </motion.div>
+        )}
+
+        
+        {/* ====== NOTIFICATIONS TAB ====== */}
+        {activeTab === 'notifications' && (
+          <motion.div key="notifications" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-[#111] border border-white/10 rounded-3xl p-6">
+            <h2 className="text-xl font-bold text-cyan-400 mb-6 flex items-center gap-2">
+              <span>🔔</span> إرسال إشعار للمستخدمين
+            </h2>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm text-gray-400 mb-1">القسم المستهدف</label>
+                <select 
+                  value={notifyMajor}
+                  onChange={e => setNotifyMajor(e.target.value)}
+                  className="w-full bg-black/50 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-cyan-500 transition"
+                  dir="rtl"
+                >
+                  <option value="all">جميع الأقسام (كل المستخدمين)</option>
+                  <option value="dental">طب أسنان</option>
+                  <option value="medical">طب بشري</option>
+                  <option value="pharmacy">صيدلة</option>
+                  <option value="nursing">تمريض</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm text-gray-400 mb-1">عنوان الإشعار</label>
+                <input 
+                  type="text"
+                  value={notifyTitle}
+                  onChange={e => setNotifyTitle(e.target.value)}
+                  placeholder="مثال: أسئلة جديدة متاحة!"
+                  className="w-full bg-black/50 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-cyan-500 transition"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm text-gray-400 mb-1">تفاصيل الإشعار (الرسالة)</label>
+                <textarea 
+                  value={notifyBody}
+                  onChange={e => setNotifyBody(e.target.value)}
+                  placeholder="اكتب رسالتك هنا..."
+                  rows={4}
+                  className="w-full bg-black/50 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-cyan-500 transition resize-none"
+                />
+              </div>
+
+              <button 
+                onClick={handleSendNotification}
+                disabled={isSendingNotify}
+                className="w-full bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 text-white font-bold py-4 rounded-xl transition flex justify-center items-center gap-2 mt-4"
+              >
+                {isSendingNotify ? (
+                  <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                ) : (
+                  <>
+                    <span>🚀</span> إرسال الإشعار الآن
+                  </>
+                )}
+              </button>
+            </div>
           </motion.div>
         )}
 
