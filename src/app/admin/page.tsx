@@ -26,6 +26,45 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<TabType>('stats');
   const [usersList, setUsersList] = useState<(UserProfile & { id: string })[]>([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(true);
+
+  // Notification State
+  const [notifyTitle, setNotifyTitle] = useState('');
+  const [notifyBody, setNotifyBody] = useState('');
+  const [notifyMajor, setNotifyMajor] = useState('all');
+  const [isSendingNotify, setIsSendingNotify] = useState(false);
+
+  const handleSendNotification = async () => {
+    if (!notifyTitle || !notifyBody) {
+      alert('الرجاء كتابة العنوان والتفاصيل.');
+      return;
+    }
+    
+    setIsSendingNotify(true);
+    try {
+      const res = await fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          targetMajor: notifyMajor,
+          title: notifyTitle,
+          body: notifyBody
+        })
+      });
+      
+      const data = await res.json();
+      if (res.ok) {
+        await showAlert('تم الإرسال بنجاح!', `تم إرسال الإشعار لـ ${data.totalSent} جهاز`, 'success');
+        setNotifyTitle('');
+        setNotifyBody('');
+      } else {
+        await showAlert('فشل الإرسال', data.error || 'حدث خطأ غير معروف', 'error');
+      }
+    } catch (e) {
+      await showAlert('فشل الإرسال', 'تحقق من اتصالك بالإنترنت', 'error');
+    }
+    setIsSendingNotify(false);
+  };
+
   const [reportsList, setReportsList] = useState<QuestionReport[]>([]);
   const [loadingReports, setLoadingReports] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
