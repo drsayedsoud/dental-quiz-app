@@ -17,6 +17,7 @@ export interface UserProfile {
   displayName?: string;
   photoURL?: string;
   major?: string; // 'dental', 'medical', 'pharmacy', 'nursing'
+  fcmTokens?: string[];
 }
 
 export async function createUserProfile(userId: string, email: string) {
@@ -27,6 +28,20 @@ export async function createUserProfile(userId: string, email: string) {
     questionCount: 0,
     createdAt: serverTimestamp(),
   }, { merge: true });
+}
+
+export async function addFcmToken(userId: string, token: string) {
+  const profileRef = doc(db, 'users', userId);
+  const snap = await getDoc(profileRef);
+  if (snap.exists()) {
+    const data = snap.data() as UserProfile;
+    const tokens = data.fcmTokens || [];
+    if (!tokens.includes(token)) {
+      await updateDoc(profileRef, {
+        fcmTokens: [...tokens, token]
+      });
+    }
+  }
 }
 
 export async function updateUserMajor(userId: string, major: string) {

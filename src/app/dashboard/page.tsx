@@ -349,6 +349,28 @@ export default function DashboardPage() {
               </button>
             </div>
 
+            <button 
+              onClick={async () => {
+                try {
+                  const { requestNotificationPermission } = await import('@/lib/firebase');
+                  const { addFcmToken } = await import('@/lib/firestore');
+                  const token = await requestNotificationPermission();
+                  if (token && user) {
+                    await addFcmToken(user.uid, token);
+                    alert('تم تفعيل الإشعارات بنجاح! 🔔');
+                  } else {
+                    alert('يرجى السماح للإشعارات من إعدادات المتصفح.');
+                  }
+                } catch (e) {
+                  alert('حدث خطأ أثناء التفعيل.');
+                  console.error(e);
+                }
+              }}
+              className="w-full glass glass-hover rounded-xl py-3 text-cyan-400 hover:text-cyan-300 text-sm font-semibold transition flex items-center justify-center gap-2 mt-4 border border-cyan-500/30"
+            >
+              <span>🔔</span> تفعيل الإشعارات للتحديات الجديدة
+            </button>
+
             <button
               onClick={() => router.push('/stats')}
               className="w-full glass glass-hover rounded-xl py-3 text-blue-400 hover:text-blue-300 text-sm font-semibold transition flex items-center justify-center gap-2"
