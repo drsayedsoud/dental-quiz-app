@@ -1,9 +1,12 @@
-import * as admin from 'firebase-admin';
+import { initializeApp, getApps, cert } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
+import { getMessaging } from 'firebase-admin/messaging';
+import { getAuth } from 'firebase-admin/auth';
 
-if (!admin.apps.length) {
+if (getApps().length === 0) {
   try {
-    admin.initializeApp({
-      credential: admin.credential.cert({
+    initializeApp({
+      credential: cert({
         projectId: process.env.FIREBASE_ADMIN_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
         clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
         // Replace escaped newlines if passed via environment variables
@@ -15,6 +18,6 @@ if (!admin.apps.length) {
   }
 }
 
-export const adminAuth = admin.apps.length ? admin.auth() : null;
-export const adminDb = admin.apps.length ? admin.firestore() : null;
-export const adminMessaging = admin.apps.length ? admin.messaging() : null;
+export const adminAuth = getApps().length > 0 ? getAuth() : null;
+export const adminDb = getApps().length > 0 ? getFirestore() : null;
+export const adminMessaging = getApps().length > 0 ? getMessaging() : null;
