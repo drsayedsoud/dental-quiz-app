@@ -6,11 +6,11 @@ export async function POST(req: NextRequest) {
     const { targetUid, targetMajor, title, body, url } = await req.json();
 
     if (!title || !body) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+      return NextResponse.json({ error: 'يرجى كتابة عنوان وتفاصيل الإشعار أولاً' }, { status: 400 });
     }
 
     if (!adminMessaging || !adminDb) {
-      return NextResponse.json({ error: 'Firebase Admin not initialized' }, { status: 500 });
+      return NextResponse.json({ error: 'لم يتم تفعيل Firebase Admin على السيرفر (تأكد من المتغيرات البيئية FIREBASE_ADMIN_PRIVATE_KEY)' }, { status: 500 });
     }
 
     let allTokens: string[] = [];
@@ -36,18 +36,19 @@ export async function POST(req: NextRequest) {
         allTokens.push(...tokens);
       });
     } else {
-      return NextResponse.json({ error: 'Must provide targetUid or targetMajor' }, { status: 400 });
+      return NextResponse.json({ error: 'يجب تحديد القسم المستهدف أو المستخدم' }, { status: 400 });
     }
 
     // Deduplicate tokens
-    allTokens = Array.from(new Set(allTokens));
+    allTokens = Array.from(new Set(allTokens.filter(Boolean)));
 
     if (allTokens.length === 0) {
-      return NextResponse.json({ error: 'No registered devices found for the target audience' }, { status: 400 });
+      return NextResponse.json({ 
+        error: 'لا توجد أجهزة مفعلة لاستقبال الإشعارات في هذا القسم حتى الآن. يجب أن يضغط المستخدم أولاً على زر (🔔 تفعيل الإشعارات) في صفحته الرئيسية.' 
+      }, { status: 400 });
     }
 
     // Firebase sendEachForMulticast accepts max 500 tokens at a time.
-    // For simplicity, we chunk it into 500
     const chunks = [];
     for (let i = 0; i < allTokens.length; i += 500) {
       chunks.push(allTokens.slice(i, i + 500));
@@ -70,6 +71,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, successCount, failureCount, totalSent: allTokens.length });
   } catch (error: any) {
     console.error('Error sending notification:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error?.message || 'حدث خطأ غير متوقع أثناء إرسال الإشعار' }, { status: 500 });
   }
 }

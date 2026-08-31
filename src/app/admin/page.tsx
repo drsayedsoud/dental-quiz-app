@@ -51,16 +51,23 @@ export default function AdminPage() {
         })
       });
       
-      const data = await res.json();
-      if (res.ok) {
-        await showAlert('تم الإرسال بنجاح!', `تم إرسال الإشعار لـ ${data.totalSent} جهاز`, 'success');
+      let data: any = {};
+      try {
+        data = await res.json();
+      } catch {
+        // If response is not JSON
+      }
+
+      if (res.ok && data.success) {
+        await showAlert('تم الإرسال بنجاح!', `تم إرسال الإشعار لـ ${data.totalSent || data.successCount || 0} جهاز بنجاح 🎉`, 'success');
         setNotifyTitle('');
         setNotifyBody('');
       } else {
-        await showAlert('فشل الإرسال', data.error || 'حدث خطأ غير معروف', 'error');
+        const errorMsg = data.error || (res.status ? `خطأ من السيرفر (كود ${res.status})` : 'حدث خطأ أثناء الإرسال');
+        await showAlert('فشل الإرسال', errorMsg, 'error');
       }
-    } catch (e) {
-      await showAlert('فشل الإرسال', 'تحقق من اتصالك بالإنترنت', 'error');
+    } catch (e: any) {
+      await showAlert('فشل الإرسال', e?.message || 'تعذر الاتصال بالخادم، تحقق من الاتصال بالإنترنت', 'error');
     }
     setIsSendingNotify(false);
   };
