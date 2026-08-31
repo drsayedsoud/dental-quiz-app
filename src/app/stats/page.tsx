@@ -249,6 +249,28 @@ export default function StatsPage() {
         <p className="text-center text-orange-400/70 text-xs font-bold mt-3">🔥 لا تكسر السلسلة!</p>
       </motion.div>
 
+      
+      {/* ========== LEADERBOARD CARD ========== */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
+        className="mb-4"
+      >
+        <button 
+          onClick={() => router.push('/leaderboard')}
+          className="w-full group relative overflow-hidden bg-gradient-to-r from-yellow-500/20 to-amber-500/20 hover:from-yellow-500/30 hover:to-amber-500/30 border border-yellow-500/30 p-5 rounded-3xl transition-all hover:scale-[1.01] active:scale-95 flex items-center justify-between"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="relative flex items-center gap-4">
+            <span className="text-4xl drop-shadow-[0_0_15px_rgba(234,179,8,0.5)]">🏆</span>
+            <div className="text-right">
+              <h3 className="text-xl font-bold text-yellow-400">لوحة الشرف العالمية</h3>
+              <p className="text-xs text-gray-400 mt-1">شاهد ترتيبك بين جميع الأطباء في التطبيق</p>
+            </div>
+          </div>
+          <span className="text-yellow-500/50 text-2xl relative">←</span>
+        </button>
+      </motion.div>
+
       {/* ========== OVERALL STATS CARD ========== */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}

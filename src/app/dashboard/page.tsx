@@ -61,6 +61,17 @@ export default function DashboardPage() {
   const [showCacheSuccess, setShowCacheSuccess] = useState(false);
   const [reportsCount, setReportsCount] = useState(0);
 
+  const [showNotificationBtn, setShowNotificationBtn] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'Notification' in window) {
+      if (Notification.permission !== 'granted') {
+        setShowNotificationBtn(true);
+      }
+    }
+  }, []);
+
+
   // Major selection state
   const [isSelectingMajor, setIsSelectingMajor] = useState(false);
   const [isUpdatingMajor, setIsUpdatingMajor] = useState(false);
@@ -182,7 +193,7 @@ export default function DashboardPage() {
       {/* Deploy Version (Admin Only) */}
       {isAdmin && (
         <div className="absolute top-2 left-2 z-50 bg-white/5 text-white/40 px-2 py-0.5 rounded text-[10px] font-mono border border-white/10 shadow-lg">
-          v27
+          v28
         </div>
       )}
 
@@ -204,7 +215,8 @@ export default function DashboardPage() {
               تم مسح الذاكرة المؤقتة بنجاح!
             </p>
             <p className="text-gray-400 text-xs mt-2">جاري إعادة تحميل التطبيق...</p>
-            <button
+            {showNotificationBtn && (
+              <button
               onClick={() => {
                 window.location.href = window.location.origin + window.location.pathname + '?reload=' + Date.now();
               }}
@@ -318,37 +330,6 @@ export default function DashboardPage() {
             transition={{ delay: 0.5 }}
             className="space-y-3"
           >
-            {/* Action Buttons */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <button 
-                onClick={() => router.push('/challenge/join')}
-                className="group relative overflow-hidden bg-gradient-to-r from-orange-500/20 to-red-500/20 hover:from-orange-500/30 hover:to-red-500/30 border border-orange-500/30 p-6 rounded-3xl transition-all hover:scale-[1.02] active:scale-95"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="relative flex items-center justify-center gap-3">
-                  <span className="text-3xl">⚔️</span>
-                  <div>
-                    <h3 className="text-xl font-bold text-orange-400">تحدي الأصدقاء</h3>
-                    <p className="text-sm text-gray-400">منافسة حية</p>
-                  </div>
-                </div>
-              </button>
-
-              <button 
-                onClick={() => router.push('/leaderboard')}
-                className="group relative overflow-hidden bg-gradient-to-r from-yellow-500/20 to-amber-500/20 hover:from-yellow-500/30 hover:to-amber-500/30 border border-yellow-500/30 p-6 rounded-3xl transition-all hover:scale-[1.02] active:scale-95"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="relative flex items-center justify-center gap-3">
-                  <span className="text-3xl">🏆</span>
-                  <div>
-                    <h3 className="text-xl font-bold text-yellow-400">لوحة الشرف</h3>
-                    <p className="text-sm text-gray-400">الترتيب العالمي</p>
-                  </div>
-                </div>
-              </button>
-            </div>
-
             <button 
               onClick={async () => {
                 try {
@@ -358,6 +339,7 @@ export default function DashboardPage() {
                   if (token && user) {
                     await addFcmToken(user.uid, token);
                     alert('تم تفعيل الإشعارات بنجاح! 🔔');
+                    setShowNotificationBtn(false);
                   } else {
                     alert('يرجى السماح للإشعارات من إعدادات المتصفح.');
                   }
@@ -370,6 +352,7 @@ export default function DashboardPage() {
             >
               <span>🔔</span> تفعيل الإشعارات للتحديات الجديدة
             </button>
+            )}
 
             <button
               onClick={() => router.push('/stats')}
