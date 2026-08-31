@@ -51,9 +51,10 @@ export default function AdminPage() {
         })
       });
       
+      const rawText = await res.text();
       let data: any = {};
       try {
-        data = await res.json();
+        data = JSON.parse(rawText);
       } catch {
         // If response is not JSON
       }
@@ -63,7 +64,7 @@ export default function AdminPage() {
         setNotifyTitle('');
         setNotifyBody('');
       } else {
-        const errorMsg = data.error || (res.status ? `خطأ من السيرفر (كود ${res.status})` : 'حدث خطأ أثناء الإرسال');
+        const errorMsg = data.error || (rawText && rawText.length < 200 ? rawText : `خطأ من السيرفر (كود ${res.status})`);
         await showAlert('فشل الإرسال', errorMsg, 'error');
       }
     } catch (e: any) {

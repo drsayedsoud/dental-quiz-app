@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { adminMessaging, adminDb } from '@/lib/firebase-admin';
+import { getFirebaseAdmin } from '@/lib/firebase-admin';
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,9 +12,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'يرجى كتابة عنوان وتفاصيل الإشعار أولاً' }, { status: 400 });
     }
 
-    if (!adminMessaging || !adminDb) {
-      return NextResponse.json({ error: 'لم يتم تفعيل Firebase Admin على السيرفر (تأكد من المتغيرات البيئية FIREBASE_ADMIN_PRIVATE_KEY)' }, { status: 500 });
-    }
+    const { adminMessaging, adminDb } = getFirebaseAdmin();
 
     let allTokens: string[] = [];
 
@@ -33,7 +34,9 @@ export async function POST(req: NextRequest) {
 
       usersSnapshot.forEach(doc => {
         const tokens = doc.data().fcmTokens || [];
-        allTokens.push(...tokens);
+        if (Array.isArray(tokens)) {
+          allTokens.push(...tokens);
+        }
       });
     } else {
       return NextResponse.json({ error: 'يجب تحديد القسم المستهدف أو المستخدم' }, { status: 400 });
