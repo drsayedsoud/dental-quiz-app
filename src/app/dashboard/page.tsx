@@ -215,8 +215,7 @@ export default function DashboardPage() {
               تم مسح الذاكرة المؤقتة بنجاح!
             </p>
             <p className="text-gray-400 text-xs mt-2">جاري إعادة تحميل التطبيق...</p>
-            {showNotificationBtn && (
-              <button
+            <button
               onClick={() => {
                 window.location.href = window.location.origin + window.location.pathname + '?reload=' + Date.now();
               }}
@@ -330,6 +329,25 @@ export default function DashboardPage() {
             transition={{ delay: 0.5 }}
             className="space-y-3"
           >
+            
+                </div>
+              </button>
+
+              <button 
+                onClick={() => router.push('/leaderboard')}
+                className="group relative overflow-hidden bg-gradient-to-r from-yellow-500/20 to-amber-500/20 hover:from-yellow-500/30 hover:to-amber-500/30 border border-yellow-500/30 p-6 rounded-3xl transition-all hover:scale-[1.02] active:scale-95"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="relative flex items-center justify-center gap-3">
+                  <span className="text-3xl">🏆</span>
+                  <div>
+                    <h3 className="text-xl font-bold text-yellow-400">لوحة الشرف</h3>
+                    <p className="text-sm text-gray-400">الترتيب العالمي</p>
+                  </div>
+                </div>
+              </button>
+            </div>
+
             <button 
               onClick={async () => {
                 try {
@@ -339,7 +357,6 @@ export default function DashboardPage() {
                   if (token && user) {
                     await addFcmToken(user.uid, token);
                     alert('تم تفعيل الإشعارات بنجاح! 🔔');
-                    setShowNotificationBtn(false);
                   } else {
                     alert('يرجى السماح للإشعارات من إعدادات المتصفح.');
                   }
@@ -352,7 +369,6 @@ export default function DashboardPage() {
             >
               <span>🔔</span> تفعيل الإشعارات للتحديات الجديدة
             </button>
-            )}
 
             <button
               onClick={() => router.push('/stats')}
