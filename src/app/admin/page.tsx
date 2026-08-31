@@ -291,6 +291,7 @@ export default function AdminPage() {
     { id: 'files', label: 'بنك الأسئلة', icon: '📁' },
     { id: 'users', label: 'المستخدمين', icon: '👥' },
     { id: 'reports', label: 'البلاغات', icon: '🚩' },
+    { id: 'notifications', label: 'الإشعارات', icon: '🔔' },
     { id: 'tools', label: 'أدوات النظام', icon: '🔧' },
   ];
 

@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 
-const CURRENT_VERSION = 'v29';
+const CURRENT_VERSION = 'v30';
 
 export default function CacheBuster() {
   useEffect(() => {
