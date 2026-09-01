@@ -200,7 +200,7 @@ export default function DashboardPage() {
       {/* Deploy Version (Admin Only) */}
       {isAdmin && (
         <div className="absolute top-2 left-2 z-50 bg-white/5 text-white/40 px-2 py-0.5 rounded text-[10px] font-mono border border-white/10 shadow-lg">
-          v40
+          v41
         </div>
       )}
 
@@ -336,27 +336,30 @@ export default function DashboardPage() {
             transition={{ delay: 0.5 }}
             className="space-y-3"
           >
-            <button 
-              onClick={async () => {
-                try {
-                  const { requestNotificationPermission } = await import('@/lib/firebase');
-                  const { addFcmToken } = await import('@/lib/firestore');
-                  const token = await requestNotificationPermission();
-                  if (token && user) {
-                    await addFcmToken(user.uid, token);
-                    alert('تم تفعيل الإشعارات بنجاح! 🔔');
-                  } else {
-                    alert('يرجى السماح للإشعارات من إعدادات المتصفح.');
+            {showNotificationBtn && (
+              <button 
+                onClick={async () => {
+                  try {
+                    const { requestNotificationPermission } = await import('@/lib/firebase');
+                    const { addFcmToken } = await import('@/lib/firestore');
+                    const token = await requestNotificationPermission();
+                    if (token && user) {
+                      await addFcmToken(user.uid, token);
+                      alert('تم تفعيل الإشعارات بنجاح! 🔔');
+                      setShowNotificationBtn(false);
+                    } else {
+                      alert('يرجى السماح للإشعارات من إعدادات المتصفح.');
+                    }
+                  } catch (e) {
+                    alert('حدث خطأ أثناء التفعيل.');
+                    console.error(e);
                   }
-                } catch (e) {
-                  alert('حدث خطأ أثناء التفعيل.');
-                  console.error(e);
-                }
-              }}
-              className="w-full glass glass-hover rounded-xl py-3 text-cyan-400 hover:text-cyan-300 text-sm font-semibold transition flex items-center justify-center gap-2 mt-4 border border-cyan-500/30"
-            >
-              <span>🔔</span> تفعيل الإشعارات للتحديات الجديدة
-            </button>
+                }}
+                className="w-full glass glass-hover rounded-xl py-3 text-cyan-400 hover:text-cyan-300 text-sm font-semibold transition flex items-center justify-center gap-2 mt-4 border border-cyan-500/30"
+              >
+                <span>🔔</span> تفعيل الإشعارات والتنبيهات
+              </button>
+            )}
 
             <button
               onClick={() => router.push('/stats')}
