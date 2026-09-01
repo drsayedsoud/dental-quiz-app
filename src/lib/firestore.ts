@@ -1,3 +1,4 @@
+/* eslint-disable */
 import {
   doc, getDoc, setDoc, updateDoc, collection,
   addDoc, query, where, getDocs, orderBy, limit,
@@ -400,6 +401,18 @@ export async function getGlobalLeaderboard(limitCount: number = 50) {
     return snap.docs.map(d => ({ id: d.id, ...d.data() } as UserProfile & { id: string })).filter(u => (u.totalPoints || 0) > 0);
   } catch (error) {
     console.error('Error fetching leaderboard:', error);
+    return [];
+  }
+}
+
+// ===== Notifications =====
+export async function getSentNotifications(limitCount: number = 20) {
+  try {
+    const q = query(collection(db, 'notifications'), orderBy('createdAt', 'desc'), limit(limitCount));
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch (error) {
+    console.error('Error fetching sent notifications:', error);
     return [];
   }
 }

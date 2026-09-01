@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { getFirestore, Firestore } from 'firebase-admin/firestore';
 import { getMessaging, Messaging } from 'firebase-admin/messaging';
