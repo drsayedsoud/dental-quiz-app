@@ -14,6 +14,7 @@ function formatPrivateKey(key: string | undefined): string | undefined {
 export function getFirebaseAdmin(): {
   adminDb: Firestore;
   adminMessaging: Messaging;
+  FieldValue: any;
 } {
   if (getApps().length === 0) {
     const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
@@ -41,6 +42,7 @@ export function getFirebaseAdmin(): {
   return {
     adminDb: getFirestore(app),
     adminMessaging: getMessaging(app),
+    FieldValue: require('firebase-admin/firestore').FieldValue,
   };
 }
 

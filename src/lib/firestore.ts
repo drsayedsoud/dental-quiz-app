@@ -18,6 +18,7 @@ export interface UserProfile {
   photoURL?: string;
   major?: string; // 'dental', 'medical', 'pharmacy', 'nursing'
   fcmTokens?: string[];
+  lastReadNotifications?: any;
 }
 
 export async function createUserProfile(userId: string, email: string) {

@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
 import { getUnresolvedReports, updateUserMajor } from '@/lib/firestore';
 import { useAlert, usePrompt } from '@/components/Modals';
+import NotificationBell from '@/components/NotificationBell';
 
 const sections = [
   {
@@ -190,10 +191,15 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] relative flex flex-col items-center justify-center">
+      {/* Notification Bell */}
+      <div className="absolute top-2 right-2 z-50">
+        <NotificationBell />
+      </div>
+
       {/* Deploy Version (Admin Only) */}
       {isAdmin && (
         <div className="absolute top-2 left-2 z-50 bg-white/5 text-white/40 px-2 py-0.5 rounded text-[10px] font-mono border border-white/10 shadow-lg">
-          v36
+          v37
         </div>
       )}
 

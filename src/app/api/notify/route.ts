@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     }
 
     const { getFirebaseAdmin } = await import('@/lib/firebase-admin');
-    const { adminMessaging, adminDb } = getFirebaseAdmin();
+    const { adminMessaging, adminDb, FieldValue } = getFirebaseAdmin();
 
     let allTokens: string[] = [];
 
@@ -45,9 +45,20 @@ export async function POST(req: NextRequest) {
     // Deduplicate tokens
     allTokens = Array.from(new Set(allTokens.filter(Boolean)));
 
+    // 1. Save to Firestore (Database) FIRST
+    const targetValue = targetUid ? targetUid : (targetMajor ? targetMajor : 'all');
+    await adminDb.collection('notifications').add({
+      target: targetValue,
+      title,
+      body,
+      url: url || '/',
+      createdAt: FieldValue.serverTimestamp(),
+      sender: 'admin'
+    });
+
     if (allTokens.length === 0) {
       return NextResponse.json({ 
-        error: 'لا توجد أجهزة مفعلة لاستقبال الإشعارات في هذا القسم حتى الآن. يجب أن يضغط المستخدم أولاً على زر (🔔 تفعيل الإشعارات) في صفحته الرئيسية.' 
+        error: 'تم حفظ الرسالة في صندوق الوارد، لكن لا توجد أجهزة مفعلة لاستقبال الإشعار الفوري المزعج (Push) في هذا القسم حتى الآن.' 
       }, { status: 400 });
     }
 
