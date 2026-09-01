@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getFirebaseAdmin } from '@/lib/firebase-admin';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -12,6 +11,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'يرجى كتابة عنوان وتفاصيل الإشعار أولاً' }, { status: 400 });
     }
 
+    const { getFirebaseAdmin } = await import('@/lib/firebase-admin');
     const { adminMessaging, adminDb } = getFirebaseAdmin();
 
     let allTokens: string[] = [];

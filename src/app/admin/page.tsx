@@ -64,7 +64,8 @@ export default function AdminPage() {
         setNotifyTitle('');
         setNotifyBody('');
       } else {
-        const errorMsg = data.error || (rawText && rawText.length < 200 ? rawText : `خطأ من السيرفر (كود ${res.status})`);
+        const fallbackError = rawText ? `رسالة السيرفر: ${rawText.substring(0, 150)}` : `خطأ من السيرفر (كود ${res.status})`;
+        const errorMsg = data.error || fallbackError;
         await showAlert('فشل الإرسال', errorMsg, 'error');
       }
     } catch (e: any) {
