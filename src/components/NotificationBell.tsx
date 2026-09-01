@@ -52,6 +52,15 @@ export default function NotificationBell() {
 
       setNotifications(notifs);
       setUnreadCount(newUnreadCount);
+      
+      // Update the App Icon Badge (PWA)
+      if (typeof navigator !== 'undefined' && 'setAppBadge' in navigator) {
+        if (newUnreadCount > 0) {
+          (navigator as any).setAppBadge(newUnreadCount).catch(console.error);
+        } else {
+          (navigator as any).clearAppBadge().catch(console.error);
+        }
+      }
     }, (error) => {
       console.error('Error fetching notifications:', error);
     });
@@ -64,6 +73,12 @@ export default function NotificationBell() {
     
     if (!isOpen && unreadCount > 0 && user?.uid) {
       setUnreadCount(0);
+      
+      // Clear App Icon Badge
+      if (typeof navigator !== 'undefined' && 'clearAppBadge' in navigator) {
+        (navigator as any).clearAppBadge().catch(console.error);
+      }
+
       try {
         await updateDoc(doc(db, 'users', user.uid), {
           lastReadNotifications: serverTimestamp()
