@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
         usersSnapshot = await adminDb.collection('users').where('major', '==', targetMajor).get();
       }
 
-      usersSnapshot.forEach(doc => {
+      usersSnapshot.forEach((doc: any) => {
         const tokens = doc.data().fcmTokens || [];
         if (Array.isArray(tokens)) {
           allTokens.push(...tokens);
