@@ -91,7 +91,7 @@ export default function NotificationBell() {
           animate={unreadCount > 0 ? { rotate: [0, -15, 15, -15, 15, 0] } : {}}
           transition={{ duration: 0.5, repeat: unreadCount > 0 ? Infinity : 0, repeatDelay: 3 }}
         >
-          <span className="text-2xl">??</span>
+          <span className="text-2xl">🔔</span>
         </motion.div>
         
         <AnimatePresence>
@@ -119,17 +119,17 @@ export default function NotificationBell() {
             style={{ direction: 'rtl' }}
           >
             <div className="p-4 border-b border-white/10 bg-gray-800/80 backdrop-blur-sm sticky top-0 flex justify-between items-center">
-              <h3 className="text-lg font-bold text-white m-0">���������</h3>
+              <h3 className="text-lg font-bold text-white m-0">الإشعارات</h3>
               {unreadCount > 0 && (
-                <span className="text-xs bg-red-500/20 text-red-400 px-2 py-1 rounded-full">{unreadCount} �����</span>
+                <span className="text-xs bg-red-500/20 text-red-400 px-2 py-1 rounded-full">{unreadCount} جديدة</span>
               )}
             </div>
             
             <div className="overflow-y-auto flex-1 p-2 custom-scrollbar">
               {notifications.length === 0 ? (
                 <div className="text-center py-8 text-gray-400">
-                  <span className="text-4xl block mb-2 opacity-50">??</span>
-                  �� ���� ������� ��� ����
+                  <span className="text-4xl block mb-2 opacity-50">📭</span>
+                  لا توجد إشعارات حتى الآن
                 </div>
               ) : (
                 <div className="flex flex-col gap-2">
