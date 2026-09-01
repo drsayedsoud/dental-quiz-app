@@ -110,43 +110,69 @@ export default function NotificationBell() {
 
       <AnimatePresence>
         {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
-            className="absolute left-0 md:right-0 md:left-auto mt-2 w-72 md:w-80 bg-gray-800 rounded-xl shadow-2xl border border-white/10 z-50 overflow-hidden flex flex-col max-h-[400px]"
-            style={{ direction: 'rtl' }}
-          >
-            <div className="p-4 border-b border-white/10 bg-gray-800/80 backdrop-blur-sm sticky top-0 flex justify-between items-center">
-              <h3 className="text-lg font-bold text-white m-0">الإشعارات</h3>
-              {unreadCount > 0 && (
-                <span className="text-xs bg-red-500/20 text-red-400 px-2 py-1 rounded-full">{unreadCount} جديدة</span>
-              )}
-            </div>
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsOpen(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
             
-            <div className="overflow-y-auto flex-1 p-2 custom-scrollbar">
-              {notifications.length === 0 ? (
-                <div className="text-center py-8 text-gray-400">
-                  <span className="text-4xl block mb-2 opacity-50">📭</span>
-                  لا توجد إشعارات حتى الآن
+            {/* Modal Content */}
+            <motion.div
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.95 }}
+              transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
+              className="relative w-full max-w-md bg-gradient-to-b from-[#1a1a2e] to-[#111122] rounded-2xl shadow-[0_0_40px_rgba(0,200,255,0.15)] border border-cyan-500/30 z-10 overflow-hidden flex flex-col max-h-[85vh]"
+              style={{ direction: 'rtl' }}
+            >
+              {/* Header */}
+              <div className="p-4 border-b border-cyan-500/20 bg-white/5 flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl">🔔</span>
+                  <h3 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400 m-0">الإشعارات</h3>
+                  {unreadCount > 0 && (
+                    <span className="text-xs bg-red-500 text-white px-2 py-1 rounded-full shadow-lg shadow-red-500/30 mr-2 animate-pulse">{unreadCount} جديدة</span>
+                  )}
                 </div>
-              ) : (
-                <div className="flex flex-col gap-2">
-                  {notifications.map((notif, index) => (
-                    <div 
-                      key={notif.id} 
-                      className={`p-3 rounded-lg transition-colors ${index < unreadCount ? 'bg-blue-500/10 border border-blue-500/20' : 'bg-white/5 hover:bg-white/10'}`}
-                    >
-                      <h4 className="font-bold text-white text-sm mb-1">{notif.title}</h4>
-                      <p className="text-gray-300 text-xs mb-2 leading-relaxed">{notif.body}</p>
-                      <span className="text-[10px] text-gray-500 block text-left w-full" dir="ltr">{formatDate(notif.time)}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </motion.div>
+                <button 
+                  onClick={() => setIsOpen(false)}
+                  className="p-2 bg-white/5 hover:bg-white/10 rounded-full transition-colors text-gray-400 hover:text-white"
+                >
+                  ✕
+                </button>
+              </div>
+              
+              {/* Body */}
+              <div className="overflow-y-auto flex-1 p-3 custom-scrollbar">
+                {notifications.length === 0 ? (
+                  <div className="text-center py-12 text-gray-400 flex flex-col items-center">
+                    <span className="text-6xl block mb-4 opacity-50 drop-shadow-lg">📭</span>
+                    <span className="text-lg">لا توجد إشعارات حتى الآن</span>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-3">
+                    {notifications.map((notif, index) => (
+                      <motion.div 
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        key={notif.id} 
+                        className={`p-4 rounded-xl transition-all duration-300 ${index < unreadCount ? 'bg-gradient-to-r from-blue-900/40 to-cyan-900/20 border border-cyan-400/30 shadow-lg shadow-cyan-900/20' : 'bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10'}`}
+                      >
+                        <h4 className={`font-bold text-base mb-2 ${index < unreadCount ? 'text-cyan-300' : 'text-gray-100'}`}>{notif.title}</h4>
+                        <p className="text-gray-300 text-sm mb-3 leading-relaxed whitespace-pre-wrap">{notif.body}</p>
+                        <span className="text-xs text-gray-500 block text-left w-full border-t border-white/5 pt-2 mt-2" dir="ltr">{formatDate(notif.time)}</span>
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </div>
