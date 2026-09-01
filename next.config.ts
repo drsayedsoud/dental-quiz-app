@@ -1,6 +1,12 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {\n  eslint: {\n    ignoreDuringBuilds: true,\n  },\n  typescript: {\n    ignoreBuildErrors: true,\n  },
+const nextConfig: NextConfig = {
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   serverExternalPackages: ['firebase-admin'],
 };
 
