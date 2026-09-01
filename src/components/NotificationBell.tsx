@@ -85,13 +85,13 @@ export default function NotificationBell() {
     <div className="relative" ref={dropdownRef}>
       <button 
         onClick={handleOpen}
-        className="relative p-2 rounded-full hover:bg-white/10 transition-colors focus:outline-none"
+        className="relative p-1.5 rounded-full hover:bg-white/10 transition-colors focus:outline-none"
       >
         <motion.div
           animate={unreadCount > 0 ? { rotate: [0, -15, 15, -15, 15, 0] } : {}}
           transition={{ duration: 0.5, repeat: unreadCount > 0 ? Infinity : 0, repeatDelay: 3 }}
         >
-          <span className="text-2xl">🔔</span>
+          <span className="text-lg">🔔</span>
         </motion.div>
         
         <AnimatePresence>
@@ -100,7 +100,7 @@ export default function NotificationBell() {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0 }}
-              className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-gray-900 shadow-md"
+              className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[9px] font-bold w-3.5 h-3.5 flex items-center justify-center rounded-full border border-gray-900 shadow-md"
             >
               {unreadCount > 9 ? '9+' : unreadCount}
             </motion.div>
