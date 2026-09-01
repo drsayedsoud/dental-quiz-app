@@ -1,7 +1,4 @@
-import { initializeApp, getApps, cert } from 'firebase-admin/app';
-import { getFirestore, Firestore } from 'firebase-admin/firestore';
-import { getMessaging, Messaging } from 'firebase-admin/messaging';
-import { getAuth, Auth } from 'firebase-admin/auth';
+import * as admin from 'firebase-admin';
 
 function formatPrivateKey(key: string | undefined): string | undefined {
   if (!key) return undefined;
@@ -12,12 +9,8 @@ function formatPrivateKey(key: string | undefined): string | undefined {
   return formatted.replace(/\\n/g, '\n');
 }
 
-export function getFirebaseAdmin(): {
-  adminAuth: Auth;
-  adminDb: Firestore;
-  adminMessaging: Messaging;
-} {
-  if (getApps().length === 0) {
+export function getFirebaseAdmin() {
+  if (admin.apps.length === 0) {
     const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
     const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL;
     const privateKey = formatPrivateKey(process.env.FIREBASE_ADMIN_PRIVATE_KEY);
@@ -30,8 +23,8 @@ export function getFirebaseAdmin(): {
       throw new Error(`يرجى إضافة متغيرات Firebase Admin الناقصة في إعدادات Vercel: (${missing.join(', ')})`);
     }
 
-    initializeApp({
-      credential: cert({
+    admin.initializeApp({
+      credential: admin.credential.cert({
         projectId,
         clientEmail,
         privateKey,
@@ -39,11 +32,11 @@ export function getFirebaseAdmin(): {
     });
   }
 
-  const app = getApps()[0];
+  const app = admin.app();
   return {
-    adminAuth: getAuth(app),
-    adminDb: getFirestore(app),
-    adminMessaging: getMessaging(app),
+    adminAuth: app.auth(),
+    adminDb: app.firestore(),
+    adminMessaging: app.messaging(),
   };
 }
 
