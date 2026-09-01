@@ -13,7 +13,8 @@ import {
   toggleUserVip, 
   resetUserQuestionCount,
   resetUserDevices,
-  UserProfile
+  UserProfile,
+  getSentNotifications
 } from '@/lib/firestore';
 
 type TabType = 'stats' | 'files' | 'users' | 'reports' | 'tools' | 'notifications';
@@ -32,6 +33,15 @@ export default function AdminPage() {
   const [notifyBody, setNotifyBody] = useState('');
   const [notifyMajor, setNotifyMajor] = useState('all');
   const [isSendingNotify, setIsSendingNotify] = useState(false);
+  const [sentNotifications, setSentNotifications] = useState<any[]>([]);
+  const [loadingNotifications, setLoadingNotifications] = useState(false);
+
+  const fetchNotifications = async () => {
+    setLoadingNotifications(true);
+    const notifs = await getSentNotifications();
+    setSentNotifications(notifs);
+    setLoadingNotifications(false);
+  };
 
   const handleSendNotification = async () => {
     if (!notifyTitle || !notifyBody) {
@@ -63,6 +73,7 @@ export default function AdminPage() {
         await showAlert('تم الإرسال بنجاح!', `تم إرسال الإشعار لـ ${data.totalSent || data.successCount || 0} جهاز بنجاح 🎉`, 'success');
         setNotifyTitle('');
         setNotifyBody('');
+        fetchNotifications();
       } else {
         const fallbackError = rawText ? `رسالة السيرفر: ${rawText.substring(0, 150)}` : `خطأ من السيرفر (كود ${res.status})`;
         const errorMsg = data.error || fallbackError;
@@ -113,6 +124,9 @@ export default function AdminPage() {
   useEffect(() => {
     if (activeTab === 'reports') {
       fetchReports();
+    }
+    if (activeTab === 'notifications') {
+      fetchNotifications();
     }
   }, [activeTab]);
 
@@ -915,6 +929,47 @@ export default function AdminPage() {
                   </>
                 )}
               </button>
+            </div>
+            
+            {/* ====== SENT NOTIFICATIONS TABLE ====== */}
+            <div className="mt-8 border-t border-white/10 pt-6">
+              <h3 className="text-lg font-bold text-white mb-4">الرسائل المرسلة سابقاً</h3>
+              {loadingNotifications ? (
+                <div className="text-gray-400 text-center py-4">جاري تحميل الرسائل...</div>
+              ) : sentNotifications.length === 0 ? (
+                <div className="text-gray-500 bg-white/5 rounded-xl p-4 text-center">لا توجد رسائل مرسلة بعد</div>
+              ) : (
+                <div className="overflow-x-auto rounded-xl border border-white/10">
+                  <table className="w-full text-sm text-right text-gray-400">
+                    <thead className="text-xs text-gray-300 uppercase bg-white/10">
+                      <tr>
+                        <th className="px-4 py-3">التاريخ</th>
+                        <th className="px-4 py-3">الهدف</th>
+                        <th className="px-4 py-3">العنوان</th>
+                        <th className="px-4 py-3">النص</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {sentNotifications.map((notif, idx) => (
+                        <tr key={notif.id || idx} className="border-b border-white/5 hover:bg-white/5">
+                          <td className="px-4 py-3 whitespace-nowrap" dir="ltr">
+                            {notif.createdAt ? new Date(notif.createdAt.toMillis()).toLocaleString('ar-EG', { dateStyle: 'short', timeStyle: 'short' }) : 'الآن'}
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            {notif.target === 'all' ? 'الجميع' : 
+                             notif.target === 'dental' ? 'أسنان' : 
+                             notif.target === 'medical' ? 'بشري' : 
+                             notif.target === 'nursing' ? 'تمريض' : 
+                             notif.target === 'pharmacy' ? 'صيدلة' : notif.target}
+                          </td>
+                          <td className="px-4 py-3 text-white font-bold max-w-[150px] truncate">{notif.title}</td>
+                          <td className="px-4 py-3 max-w-[200px] truncate">{notif.body}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </motion.div>
         )}
