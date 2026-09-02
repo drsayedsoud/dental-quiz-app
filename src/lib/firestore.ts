@@ -5,6 +5,7 @@ import {
   serverTimestamp, increment, Timestamp, deleteDoc
 } from 'firebase/firestore';
 import { db } from './firebase';
+import { isAdminUser } from './admin';
 
 // ===== Users =====
 export interface UserProfile {
@@ -210,7 +211,7 @@ export async function checkAndRegisterDevice(uid: string, deviceId: string): Pro
 
   const data = snap.data() as UserProfile;
   // Admin bypass
-  if (data.email === 'drsayedsoudnew@gmail.com' || data.role === 'admin') return true;
+  if (isAdminUser({ email: data.email, role: data.role })) return true;
 
   const devices = data.devices || [];
   

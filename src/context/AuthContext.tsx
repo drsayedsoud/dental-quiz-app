@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   User,
   onAuthStateChanged,
@@ -11,6 +12,13 @@ import {
 } from 'firebase/auth';
 import { auth, googleProvider } from '@/lib/firebase';
 import { createUserProfile, getUserProfile, UserProfile, checkAndRegisterDevice } from '@/lib/firestore';
+import { isAdminUser } from '@/lib/admin';
+
+// Routes a signed-in user may visit without having picked a "major" (specialty) yet.
+// Everything else requires a major, because notification targeting and question
+// filtering are keyed off it — a user who never sets one silently misses any
+// specialty-targeted admin message.
+const MAJOR_EXEMPT_PATHS = ['/dashboard', '/admin', '/login', '/signup', '/about', '/privacy'];
 
 interface AuthContextType {
   user: User | null;
@@ -29,6 +37,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const pathname = usePathname();
+  const router = useRouter();
 
   // Auto clear cache on session start
   useEffect(() => {
@@ -73,6 +83,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
     return () => unsubscribe();
   }, []);
+
+  // Force any user without a saved specialty ("major") back to /dashboard to pick one.
+  // Without this, a user who signed up before the major feature existed — or who
+  // deep-links straight into a subject page — can keep `major` unset forever, which
+  // makes them invisible to any specialty-targeted admin notification.
+  useEffect(() => {
+    if (loading || !user || !profile) return;
+    if (isAdminUser({ email: user.email, role: profile.role }) || profile.major) return;
+    if (MAJOR_EXEMPT_PATHS.some((p) => pathname === p || pathname?.startsWith(p + '/'))) return;
+    router.replace('/dashboard');
+  }, [user, profile, loading, pathname, router]);
 
   const loginWithEmail = async (email: string, password: string) => {
     await signInWithEmailAndPassword(auth, email, password);

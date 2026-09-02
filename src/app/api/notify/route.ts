@@ -5,13 +5,24 @@ export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
   try {
+    const { requireAdmin, getFirebaseAdmin } = await import('@/lib/firebase-admin');
+
+    try {
+      await requireAdmin(req);
+    } catch (authError: any) {
+      const message = authError?.message === 'UNAUTHENTICATED'
+        ? 'يجب تسجيل الدخول أولاً'
+        : 'ليس لديك صلاحية إرسال إشعارات';
+      const status = authError?.message === 'UNAUTHENTICATED' ? 401 : 403;
+      return NextResponse.json({ error: message }, { status });
+    }
+
     const { targetUid, targetMajor, title, body, url } = await req.json();
 
     if (!title || !body) {
       return NextResponse.json({ error: 'يرجى كتابة عنوان وتفاصيل الإشعار أولاً' }, { status: 400 });
     }
 
-    const { getFirebaseAdmin } = await import('@/lib/firebase-admin');
     const { adminMessaging, adminDb, FieldValue } = getFirebaseAdmin();
 
     let allTokens: string[] = [];
@@ -57,9 +68,15 @@ export async function POST(req: NextRequest) {
     });
 
     if (allTokens.length === 0) {
-      return NextResponse.json({ 
-        error: 'تم حفظ الرسالة في صندوق الوارد، لكن لا توجد أجهزة مفعلة لاستقبال الإشعار الفوري المزعج (Push) في هذا القسم حتى الآن.' 
-      }, { status: 400 });
+      // The message WAS saved and every matching user will see it in-app via the bell —
+      // this is a partial success, not a failure, so it must not be reported as an error.
+      return NextResponse.json({
+        success: true,
+        totalSent: 0,
+        successCount: 0,
+        failureCount: 0,
+        warning: 'تم حفظ الرسالة وستظهر في صندوق الإشعارات، لكن لا توجد أجهزة مفعلة لاستقبال إشعار فوري (Push) في هذا القسم حتى الآن.',
+      }, { status: 200 });
     }
 
     // Firebase sendEachForMulticast accepts max 500 tokens at a time.

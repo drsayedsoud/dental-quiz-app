@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
 import { getUnresolvedReports, resolveReport, QuestionReport } from '@/lib/firestore';
+import { isAdminUser } from '@/lib/admin';
 import { useAlert } from '@/components/Modals';
 import { ConfirmModal } from '@/components/Modals';
 import { 
@@ -36,12 +37,19 @@ export default function AdminPage() {
   const [isSendingNotify, setIsSendingNotify] = useState(false);
   const [sentNotifications, setSentNotifications] = useState<any[]>([]);
   const [loadingNotifications, setLoadingNotifications] = useState(false);
+  const [notifPageSize, setNotifPageSize] = useState(20);
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = async (count: number = notifPageSize) => {
     setLoadingNotifications(true);
-    const notifs = await getSentNotifications();
+    const notifs = await getSentNotifications(count);
     setSentNotifications(notifs);
     setLoadingNotifications(false);
+  };
+
+  const handleLoadMoreNotifications = async () => {
+    const nextSize = notifPageSize + 20;
+    setNotifPageSize(nextSize);
+    await fetchNotifications(nextSize);
   };
 
   const handleSendNotification = async () => {
@@ -50,18 +58,24 @@ export default function AdminPage() {
       return;
     }
     
+    if (!user) return;
+
     setIsSendingNotify(true);
     try {
+      const idToken = await user.getIdToken();
       const res = await fetch('/api/notify', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${idToken}`,
+        },
         body: JSON.stringify({
           targetMajor: notifyMajor,
           title: notifyTitle,
           body: notifyBody
         })
       });
-      
+
       const rawText = await res.text();
       let data: any = {};
       try {
@@ -71,17 +85,21 @@ export default function AdminPage() {
       }
 
       if (res.ok && data.success) {
-        await showAlert('تم الإرسال بنجاح!', `تم إرسال الإشعار لـ ${data.totalSent || data.successCount || 0} جهاز بنجاح 🎉`, 'success');
+        if (data.warning) {
+          await showAlert(data.warning, '📬', 'info');
+        } else {
+          await showAlert(`تم إرسال الإشعار لـ ${data.totalSent || data.successCount || 0} جهاز بنجاح 🎉`, '✅', 'success');
+        }
         setNotifyTitle('');
         setNotifyBody('');
         fetchNotifications();
       } else {
         const fallbackError = rawText ? `رسالة السيرفر: ${rawText.substring(0, 150)}` : `خطأ من السيرفر (كود ${res.status})`;
         const errorMsg = data.error || fallbackError;
-        await showAlert('فشل الإرسال', errorMsg, 'error');
+        await showAlert(errorMsg, '❌', 'error');
       }
     } catch (e: any) {
-      await showAlert('فشل الإرسال', e?.message || 'تعذر الاتصال بالخادم، تحقق من الاتصال بالإنترنت', 'error');
+      await showAlert(e?.message || 'تعذر الاتصال بالخادم، تحقق من الاتصال بالإنترنت', '❌', 'error');
     }
     setIsSendingNotify(false);
   };
@@ -109,7 +127,7 @@ export default function AdminPage() {
   useEffect(() => {
     if (!loading) {
       const isPinAuth = typeof window !== 'undefined' && sessionStorage.getItem('admin_pin_auth') === 'true';
-      if (!user || (!isPinAuth && profile?.role !== 'admin' && user.email !== 'drsayedsoudnew@gmail.com')) {
+      if (!user || (!isPinAuth && !isAdminUser({ email: user.email, role: profile?.role }))) {
         router.replace('/dashboard');
       }
     }
@@ -158,7 +176,11 @@ export default function AdminPage() {
   const handleToggleVip = async (uid: string, currentStatus: boolean) => {
     if (!window.confirm('هل أنت متأكد من ' + (currentStatus ? 'إلغاء' : 'تفعيل') + ' اشتراك الـ VIP لهذا المستخدم؟')) return;
     const success = await toggleUserVip(uid, currentStatus);
-    if (success) setUsersList(prev => prev.map(u => u.id === uid ? { ...u, isVip: !currentStatus } : u));
+    if (success) {
+      setUsersList(prev => prev.map(u => u.id === uid ? { ...u, isVip: !currentStatus } : u));
+    } else {
+      await showAlert('تعذر تحديث حالة VIP، حاول مرة أخرى', '❌', 'error');
+    }
   };
 
   const handleResetDevices = async (uid: string, email: string) => {
@@ -182,6 +204,8 @@ export default function AdminPage() {
     if (success) {
       setUsersList(prev => prev.map(u => u.id === uid ? { ...u, questionCount: 0 } : u));
       await showAlert('تم تصفير عداد الأسئلة بنجاح', '✅', 'success');
+    } else {
+      await showAlert('تعذر تصفير عداد الأسئلة، حاول مرة أخرى', '❌', 'error');
     }
     setConfirmModal({ open: false, uid: '', email: '' });
   };
@@ -302,7 +326,7 @@ export default function AdminPage() {
 
   const isPinAuthed = typeof window !== 'undefined' && sessionStorage.getItem('admin_pin_auth') === 'true';
 
-  if (loading || !user || (!isPinAuthed && profile?.role !== 'admin' && user.email !== 'drsayedsoudnew@gmail.com')) {
+  if (loading || !user || (!isPinAuthed && !isAdminUser({ email: user.email, role: profile?.role }))) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black text-cyan-400">
         ⏳ جاري التحقق من صلاحيات الإدارة...
@@ -970,6 +994,14 @@ export default function AdminPage() {
                     </tbody>
                   </table>
                 </div>
+              )}
+              {sentNotifications.length >= notifPageSize && !loadingNotifications && (
+                <button
+                  onClick={handleLoadMoreNotifications}
+                  className="w-full mt-3 py-2.5 rounded-xl text-sm font-semibold text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 hover:bg-cyan-500/20 transition"
+                >
+                  تحميل المزيد
+                </button>
               )}
             </div>
           </motion.div>

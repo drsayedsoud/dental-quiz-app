@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
 import { getUnresolvedReports, updateUserMajor } from '@/lib/firestore';
+import { isAdminUser } from '@/lib/admin';
 import { useAlert, usePrompt } from '@/components/Modals';
 import NotificationBell from '@/components/NotificationBell';
 
@@ -79,7 +80,7 @@ export default function DashboardPage() {
   const [isUpdatingMajor, setIsUpdatingMajor] = useState(false);
   const [localMajor, setLocalMajor] = useState<string | null>(null);
 
-  const isAdmin = user?.email === 'drsayedsoudnew@gmail.com' || profile?.role === 'admin';
+  const isAdmin = isAdminUser({ email: user?.email, role: profile?.role });
 
   useEffect(() => {
     if (isAdmin) {

@@ -1,0 +1,83 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // -----------------------------------------
+    // ✅ قواعد التطبيق القديم (لا نلمسها لكي لا يتعطل)
+    // -----------------------------------------
+    match /questions/{questionId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+    match /azkar/{azkarId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+    match /results/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // -----------------------------------------
+    // ✅ قواعد التطبيق الجديد (Prometric)
+    // -----------------------------------------
+
+    // 1. جلسات الامتحانات الخاصة بالتطبيق الجديد
+    match /sessions/{sessionId} {
+      allow read, write: if request.auth != null;
+    }
+
+    // 2. إدارة المستخدمين (لكي تعمل لوحة التحكم Admin Panel ولوحة الشرف)
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && (request.auth.uid == userId || request.auth.token.email == 'drsayedsoudnew@gmail.com');
+
+      match /sessions/{subSessionId} {
+        allow read, write: if request.auth != null && (request.auth.uid == userId || request.auth.token.email == 'drsayedsoudnew@gmail.com');
+      }
+
+      // ✅ الإضافة الجديدة الخاصة بالمحفوظات (Bookmarks)
+      match /bookmarks/{bookmarkId} {
+        allow read, write: if request.auth != null && (request.auth.uid == userId || request.auth.token.email == 'drsayedsoudnew@gmail.com');
+      }
+    }
+
+    // 3. بلاغات الأخطاء (Reports)
+    match /reports/{reportId} {
+      allow read, write: if request.auth != null;
+    }
+
+    // 4. 🔔 الإضافة الجديدة: صندوق الإشعارات
+    match /notifications/{notificationId} {
+      // السماح للجميع بالقراءة فقط، بينما الكتابة تتم حصراً من لوحة الإدارة عبر سيرفر Vercel الآمن
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+
+    // -----------------------------------------
+    // ⚔️ قواعد غرف التحدي المباشر (Multiplayer Challenge)
+    // -----------------------------------------
+    match /rooms/{roomId} {
+      allow read, write: if true;
+    }
+
+    // -----------------------------------------
+    // 🔥 قواعد مركز البيانات الجديد (Data Hub للشيتات) 🔥
+    // -----------------------------------------
+    match /sheet_versions/{versionId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.email == 'drsayedsoudnew@gmail.com';
+
+      match /chunks/{chunkId} {
+        allow read: if true;
+        allow write: if request.auth != null && request.auth.token.email == 'drsayedsoudnew@gmail.com';
+      }
+    }
+
+    // -----------------------------------------
+    // ⛔ الحماية القصوى: رفض أي وصول لملفات غير المحددة أعلاه
+    // -----------------------------------------
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

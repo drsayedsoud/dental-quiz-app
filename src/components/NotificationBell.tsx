@@ -9,10 +9,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export default function NotificationBell() {
   const { user, profile } = useAuth();
-  const [notifications, setNotifications] = useState<any[]>([]);
+  const [rawNotifs, setRawNotifs] = useState<any[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [localLastRead, setLocalLastRead] = useState<number | null>(null);
+  const [loadError, setLoadError] = useState(false);
+  const [fetchLimit, setFetchLimit] = useState(20);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -31,59 +33,69 @@ export default function NotificationBell() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Subscribes to the inbox. Deliberately does NOT depend on `localLastRead` —
+  // that only affects which already-fetched notifications count as unread, not
+  // which ones to fetch, so re-subscribing on every "mark as read" would be wasted work.
   useEffect(() => {
-    if (!user || !profile || localLastRead === null) return;
+    if (!user || !profile) return;
+
+    // A user with no saved specialty yet still gets broadcast + personal messages;
+    // they get redirected to /dashboard to pick a real one (see AuthContext), so this
+    // is only a brief window rather than a permanent gap.
+    const targets = profile.major ? ['all', profile.major, user.uid] : ['all', user.uid];
 
     const q = query(
       collection(db, 'notifications'),
-      where('target', 'in', ['all', profile.major || 'dental', user.uid]),
+      where('target', 'in', targets),
       orderBy('createdAt', 'desc'),
-      limit(20)
+      limit(fetchLimit)
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const notifs: any[] = [];
-      let newUnreadCount = 0;
-      
       snapshot.forEach((doc) => {
         const data = doc.data();
         const notifTime = data.createdAt ? data.createdAt.toMillis() : Date.now();
         notifs.push({ id: doc.id, ...data, time: notifTime });
-        
-        if (notifTime > localLastRead) {
-          newUnreadCount++;
-        }
       });
-
-      const displayLimit = Math.max(4, newUnreadCount);
-      setNotifications(notifs.slice(0, displayLimit));
-      setUnreadCount(newUnreadCount);
-      
-      // Update the App Icon Badge (PWA)
-      if (typeof navigator !== 'undefined' && 'setAppBadge' in navigator) {
-        if (newUnreadCount > 0) {
-          (navigator as any).setAppBadge(newUnreadCount).catch(console.error);
-        } else {
-          (navigator as any).clearAppBadge().catch(console.error);
-        }
-      }
+      setLoadError(false);
+      setRawNotifs(notifs);
     }, (error) => {
       console.error('Error fetching notifications:', error);
+      setLoadError(true);
     });
 
     return () => unsubscribe();
-  }, [user, profile, localLastRead]);
+  }, [user, profile, fetchLimit]);
+
+  // Recomputes unread state whenever the fetched list or the read cutoff changes,
+  // without touching the Firestore subscription above.
+  useEffect(() => {
+    if (localLastRead === null) return;
+    const newUnreadCount = rawNotifs.filter((n) => n.time > localLastRead).length;
+    setUnreadCount(newUnreadCount);
+
+    if (typeof navigator !== 'undefined' && 'setAppBadge' in navigator) {
+      if (newUnreadCount > 0) {
+        (navigator as any).setAppBadge(newUnreadCount).catch(() => {});
+      } else {
+        (navigator as any).clearAppBadge().catch(() => {});
+      }
+    }
+  }, [rawNotifs, localLastRead]);
+
+  const notifications = rawNotifs;
 
   const handleOpen = async () => {
     setIsOpen(!isOpen);
-    
+
     if (!isOpen && unreadCount > 0 && user?.uid) {
+      const previousLocalLastRead = localLastRead;
       setUnreadCount(0);
       setLocalLastRead(Date.now());
-      
-      // Clear App Icon Badge
+
       if (typeof navigator !== 'undefined' && 'clearAppBadge' in navigator) {
-        (navigator as any).clearAppBadge().catch(console.error);
+        (navigator as any).clearAppBadge().catch(() => {});
       }
 
       try {
@@ -92,6 +104,8 @@ export default function NotificationBell() {
         });
       } catch (err) {
         console.error('Error updating read status', err);
+        // Roll back so the unread count/badge reflect what's actually saved server-side.
+        setLocalLastRead(previousLocalLastRead);
       }
     }
   };
@@ -105,8 +119,9 @@ export default function NotificationBell() {
 
   return (
     <div className="relative" ref={dropdownRef}>
-      <button 
+      <button
         onClick={handleOpen}
+        aria-label={unreadCount > 0 ? `الإشعارات (${unreadCount} غير مقروءة)` : 'الإشعارات'}
         className="relative p-1.5 rounded-full hover:bg-white/10 transition-colors focus:outline-none"
       >
         <motion.div
@@ -170,26 +185,43 @@ export default function NotificationBell() {
               
               {/* Body */}
               <div className="overflow-y-auto flex-1 p-3 custom-scrollbar">
-                {notifications.length === 0 ? (
+                {loadError ? (
+                  <div className="text-center py-12 text-gray-400 flex flex-col items-center">
+                    <span className="text-6xl block mb-4 opacity-50 drop-shadow-lg">⚠️</span>
+                    <span className="text-lg">تعذر تحميل الإشعارات</span>
+                    <span className="text-sm text-gray-500 mt-1">تحقق من اتصالك بالإنترنت وحاول مجدداً</span>
+                  </div>
+                ) : notifications.length === 0 ? (
                   <div className="text-center py-12 text-gray-400 flex flex-col items-center">
                     <span className="text-6xl block mb-4 opacity-50 drop-shadow-lg">📭</span>
                     <span className="text-lg">لا توجد إشعارات حتى الآن</span>
                   </div>
                 ) : (
                   <div className="flex flex-col gap-3">
-                    {notifications.map((notif, index) => (
-                      <motion.div 
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.05 }}
-                        key={notif.id} 
-                        className={`p-4 rounded-xl transition-all duration-300 ${index < unreadCount ? 'bg-gradient-to-r from-blue-900/40 to-cyan-900/20 border border-cyan-400/30 shadow-lg shadow-cyan-900/20' : 'bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10'}`}
+                    {notifications.map((notif, index) => {
+                      const isUnread = localLastRead !== null && notif.time > localLastRead;
+                      return (
+                        <motion.div
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.05 }}
+                          key={notif.id}
+                          className={`p-4 rounded-xl transition-all duration-300 ${isUnread ? 'bg-gradient-to-r from-blue-900/40 to-cyan-900/20 border border-cyan-400/30 shadow-lg shadow-cyan-900/20' : 'bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10'}`}
+                        >
+                          <h4 className={`font-bold text-base mb-2 ${isUnread ? 'text-cyan-300' : 'text-gray-100'}`}>{notif.title}</h4>
+                          <p className="text-gray-300 text-sm mb-3 leading-relaxed whitespace-pre-wrap">{notif.body}</p>
+                          <span className="text-xs text-gray-500 block text-left w-full border-t border-white/5 pt-2 mt-2" dir="ltr">{formatDate(notif.time)}</span>
+                        </motion.div>
+                      );
+                    })}
+                    {notifications.length >= fetchLimit && (
+                      <button
+                        onClick={() => setFetchLimit((n) => n + 20)}
+                        className="w-full py-2.5 rounded-xl text-sm font-semibold text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 hover:bg-cyan-500/20 transition"
                       >
-                        <h4 className={`font-bold text-base mb-2 ${index < unreadCount ? 'text-cyan-300' : 'text-gray-100'}`}>{notif.title}</h4>
-                        <p className="text-gray-300 text-sm mb-3 leading-relaxed whitespace-pre-wrap">{notif.body}</p>
-                        <span className="text-xs text-gray-500 block text-left w-full border-t border-white/5 pt-2 mt-2" dir="ltr">{formatDate(notif.time)}</span>
-                      </motion.div>
-                    ))}
+                        تحميل المزيد
+                      </button>
+                    )}
                   </div>
                 )}
               </div>
