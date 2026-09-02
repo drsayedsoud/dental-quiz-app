@@ -10,7 +10,7 @@ import { useAlert } from '@/components/Modals';
 
 const subjects = [
   { name: 'Internal Medicine', icon: '🩺' },
-  { name: 'General Surgery', icon: '🔪' },
+  { name: 'Surgery', icon: '🔪' },
   { name: 'Pediatrics', icon: '👶' },
   { name: 'Obstetrics & Gynecology', icon: '🤰' },
   { name: 'Family Medicine', icon: '👨‍👩‍👧‍👦' },
@@ -19,7 +19,7 @@ const subjects = [
   { name: 'Orthopedics', icon: '🦴' },
   { name: 'Ophthalmology', icon: '👁️' },
   { name: 'ENT', icon: '👂' },
-  { name: 'Dermatology', icon: ' छा' },
+  { name: 'Dermatology', icon: '🩹' },
   { name: 'Radiology', icon: '☢️' },
   { name: 'Anatomy', icon: '💀' },
   { name: 'Physiology', icon: '⚡' },
@@ -31,6 +31,12 @@ const subjects = [
   { name: 'Forensic Medicine', icon: '⚖️' },
   { name: 'General Practice', icon: '🩺' },
 ];
+
+// Subjects the local question bank actually has content for — every other subject
+// below is shown but marked "قريبًا" instead of leading to a "no questions" dead end.
+const AVAILABLE_MEDICAL_SUBJECTS = new Set([
+  'Internal Medicine', 'Surgery', 'Anatomy', 'Physiology', 'Pathology', 'Pharmacology',
+]);
 
 const studentModules = [
   { name: 'Basic Structure and Function', icon: '🧬' },
@@ -177,19 +183,31 @@ export default function MedicalPage() {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
           {currentSubjects.map((subject, index) => {
             const accuracy = getSubjectStats(subject.name);
+            const hasContent = AVAILABLE_MEDICAL_SUBJECTS.has(subject.name);
             return (
               <motion.button
                 key={subject.name}
                 initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.03 }}
                 whileTap={{ scale: 0.96 }}
-                onClick={() => startExam(subject.name, 'standard')}
-                className="glass rounded-3xl p-4 flex flex-col items-center justify-between text-center border border-white/10 hover:border-blue-500/40 hover:bg-white/10 transition-all shadow-xl group aspect-square relative overflow-hidden"
+                onClick={() => {
+                  if (!hasContent) {
+                    showAlert('يتم الآن تجميع وتصنيف أسئلة هذه المادة، تابعنا قريبًا!', '🚧', 'info');
+                    return;
+                  }
+                  startExam(subject.name, 'standard');
+                }}
+                className={`glass rounded-3xl p-4 flex flex-col items-center justify-between text-center border transition-all shadow-xl group aspect-square relative overflow-hidden ${hasContent ? 'border-white/10 hover:border-blue-500/40 hover:bg-white/10' : 'border-white/5 opacity-50 hover:opacity-70'}`}
               >
-                {accuracy !== null && (
+                {hasContent && accuracy !== null && (
                   <div className="absolute top-2 left-2 text-[10px] font-bold bg-white/10 px-2 py-0.5 rounded-full flex items-center gap-1 text-white">
                     <span className={accuracy >= 80 ? 'text-green-400' : accuracy >= 50 ? 'text-yellow-400' : 'text-red-400'}>
                       {accuracy}%
                     </span>
+                  </div>
+                )}
+                {!hasContent && (
+                  <div className="absolute top-2 left-2 text-[9px] font-bold bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full">
+                    قريبًا
                   </div>
                 )}
                 <div className="text-3xl sm:text-4xl mb-2 sm:mb-3 mt-4 group-hover:scale-110 transition-transform">

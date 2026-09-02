@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
 import { getAllUserSessions, QuizSession } from '@/lib/firestore';
+import { useAlert } from '@/components/Modals';
 
 const subjects = [
   { name: 'التمريض العام', icon: '👩‍⚕️' },
@@ -15,6 +16,10 @@ export default function NursingPage() {
   const router = useRouter();
   const [sessions, setSessions] = useState<QuizSession[]>([]);
   const [showSubjectMenu, setShowSubjectMenu] = useState(false);
+  const { showAlert, AlertComponent } = useAlert();
+
+  const FREE_LIMIT = 100;
+  const isLimited = !profile?.isVip && (profile?.questionCount || 0) >= FREE_LIMIT;
 
   useEffect(() => {
     if (!loading && !user) {
@@ -42,6 +47,10 @@ export default function NursingPage() {
   };
 
   const handleModeSelect = (mode: string, section: string, subj?: string) => {
+    if (isLimited) {
+      showAlert('لقد وصلت للحد الأقصى للأسئلة المجانية.', '🔒', 'warning');
+      return;
+    }
     const params = new URLSearchParams();
     params.set('mode', mode);
     params.set('section', section);
@@ -63,6 +72,7 @@ export default function NursingPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] relative overflow-hidden pb-10">
+      {AlertComponent}
       {/* Background Effects */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-purple-500/5 rounded-full blur-[150px] pointer-events-none" />
 
@@ -93,7 +103,8 @@ export default function NursingPage() {
               <motion.button
                 initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}
                 onClick={() => handleModeSelect('exam', 'nursing')}
-                className="w-full relative overflow-hidden group bg-gradient-to-l from-fuchsia-600 to-purple-700 rounded-3xl p-6 text-right hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg"
+                disabled={isLimited}
+                className="w-full relative overflow-hidden group bg-gradient-to-l from-fuchsia-600 to-purple-700 rounded-3xl p-6 text-right hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg disabled:opacity-40"
               >
                 <div className="absolute inset-0 bg-[url('/noise.png')] opacity-20 mix-blend-overlay"></div>
                 <div className="relative z-10 flex items-center gap-4">
@@ -110,7 +121,8 @@ export default function NursingPage() {
               <motion.button
                 initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}
                 onClick={() => handleModeSelect('simulation', 'nursing')}
-                className="w-full glass rounded-3xl p-6 text-right hover:bg-white/5 active:scale-[0.98] transition-all border border-white/10"
+                disabled={isLimited}
+                className="w-full glass rounded-3xl p-6 text-right hover:bg-white/5 active:scale-[0.98] transition-all border border-white/10 disabled:opacity-40"
               >
                 <div className="flex items-center gap-4">
                   <div className="bg-white/5 p-3 rounded-2xl">
@@ -167,7 +179,8 @@ export default function NursingPage() {
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: index * 0.05 }}
                       onClick={() => handleModeSelect('practice', 'nursing', subject.name)}
-                      className="glass glass-hover rounded-2xl p-4 text-center group border border-white/5 relative overflow-hidden"
+                      disabled={isLimited}
+                      className="glass glass-hover rounded-2xl p-4 text-center group border border-white/5 relative overflow-hidden disabled:opacity-40"
                     >
                       {accuracy !== null && (
                         <div className="absolute top-2 right-2 text-[10px] font-bold text-purple-300 bg-purple-900/40 px-1.5 py-0.5 rounded">
