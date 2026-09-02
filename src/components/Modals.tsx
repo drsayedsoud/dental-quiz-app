@@ -115,7 +115,7 @@ export function PromptModal({ isOpen, title, subtitle, icon, placeholder, inputT
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
                 placeholder={placeholder || '••••••••'}
-                className="w-full bg-white/5 border-2 border-white/15 rounded-2xl px-4 py-3.5 text-white text-center text-lg font-bold placeholder-gray-500 focus:outline-none focus:border-cyan-500/60 focus:ring-2 focus:ring-cyan-500/20 transition tracking-[0.3em]"
+                className="w-full bg-white/5 border-2 border-white/15 rounded-2xl px-4 py-3.5 text-white text-center text-lg font-bold placeholder-gray-400 focus:outline-none focus:border-cyan-500/60 focus:ring-2 focus:ring-cyan-500/20 transition tracking-[0.3em]"
                 dir="ltr"
                 autoComplete="off"
               />
@@ -267,4 +267,43 @@ export function usePrompt() {
   );
 
   return { showPrompt, PromptComponent };
+}
+
+export function useConfirm() {
+  const [state, setState] = useState<{ isOpen: boolean; message: string; icon?: string; confirmText?: string; cancelText?: string; type?: 'danger' | 'info' }>({ isOpen: false, message: '' });
+  const resolveRef = useRef<((value: boolean) => void) | null>(null);
+
+  const showConfirm = useCallback((message: string, opts?: { icon?: string; confirmText?: string; cancelText?: string; type?: 'danger' | 'info' }): Promise<boolean> => {
+    return new Promise((resolve) => {
+      resolveRef.current = resolve;
+      setState({ isOpen: true, message, ...opts });
+    });
+  }, []);
+
+  const handleConfirm = useCallback(() => {
+    setState(s => ({ ...s, isOpen: false }));
+    resolveRef.current?.(true);
+    resolveRef.current = null;
+  }, []);
+
+  const handleCancel = useCallback(() => {
+    setState(s => ({ ...s, isOpen: false }));
+    resolveRef.current?.(false);
+    resolveRef.current = null;
+  }, []);
+
+  const ConfirmComponent = (
+    <ConfirmModal
+      isOpen={state.isOpen}
+      message={state.message}
+      icon={state.icon}
+      confirmText={state.confirmText}
+      cancelText={state.cancelText}
+      type={state.type}
+      onConfirm={handleConfirm}
+      onCancel={handleCancel}
+    />
+  );
+
+  return { showConfirm, ConfirmComponent };
 }

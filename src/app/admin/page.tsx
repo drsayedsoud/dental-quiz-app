@@ -5,11 +5,12 @@ import { useEffect, useState, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+import { BarChart3, FolderOpen, Users, Flag, Bell, Wrench, type LucideIcon } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { getUnresolvedReports, resolveReport, QuestionReport } from '@/lib/firestore';
 import { isAdminUser } from '@/lib/admin';
-import { useAlert } from '@/components/Modals';
-import { ConfirmModal } from '@/components/Modals';
+import { useAlert, useConfirm, ConfirmModal } from '@/components/Modals';
+import { UserRowSkeleton, ReportCardSkeleton } from '@/components/Skeleton';
 import { 
   getAllUsers, 
   toggleUserVip, 
@@ -25,6 +26,7 @@ export default function AdminPage() {
   const { user, profile, loading } = useAuth();
   const router = useRouter();
   const { showAlert, AlertComponent } = useAlert();
+  const { showConfirm, ConfirmComponent } = useConfirm();
   
   const [activeTab, setActiveTab] = useState<TabType>('stats');
   const [usersList, setUsersList] = useState<(UserProfile & { id: string })[]>([]);
@@ -54,7 +56,7 @@ export default function AdminPage() {
 
   const handleSendNotification = async () => {
     if (!notifyTitle || !notifyBody) {
-      alert('الرجاء كتابة العنوان والتفاصيل.');
+      await showAlert('الرجاء كتابة العنوان والتفاصيل.', '⚠️', 'warning');
       return;
     }
     
@@ -174,7 +176,11 @@ export default function AdminPage() {
   }, []);
 
   const handleToggleVip = async (uid: string, currentStatus: boolean) => {
-    if (!window.confirm('هل أنت متأكد من ' + (currentStatus ? 'إلغاء' : 'تفعيل') + ' اشتراك الـ VIP لهذا المستخدم؟')) return;
+    const ok = await showConfirm(
+      'هل أنت متأكد من ' + (currentStatus ? 'إلغاء' : 'تفعيل') + ' اشتراك الـ VIP لهذا المستخدم؟',
+      { icon: '⭐', confirmText: 'تأكيد', type: 'info' }
+    );
+    if (!ok) return;
     const success = await toggleUserVip(uid, currentStatus);
     if (success) {
       setUsersList(prev => prev.map(u => u.id === uid ? { ...u, isVip: !currentStatus } : u));
@@ -184,13 +190,16 @@ export default function AdminPage() {
   };
 
   const handleResetDevices = async (uid: string, email: string) => {
-    if (window.confirm(`هل أنت متأكد من تصفير الأجهزة المتصلة بحساب ${email} ليتمكن من الدخول من هاتف جديد؟`)) {
-      try {
-        await resetUserDevices(uid);
-        await showAlert('تم تصفير الأجهزة بنجاح!', '📱', 'success');
-      } catch (err) {
-        await showAlert('حدث خطأ أثناء تصفير الأجهزة', '❌', 'error');
-      }
+    const ok = await showConfirm(
+      `هل أنت متأكد من تصفير الأجهزة المتصلة بحساب ${email} ليتمكن من الدخول من هاتف جديد؟`,
+      { icon: '📱', confirmText: 'تصفير', type: 'danger' }
+    );
+    if (!ok) return;
+    try {
+      await resetUserDevices(uid);
+      await showAlert('تم تصفير الأجهزة بنجاح!', '📱', 'success');
+    } catch (err) {
+      await showAlert('حدث خطأ أثناء تصفير الأجهزة', '❌', 'error');
     }
   };
 
@@ -334,18 +343,19 @@ export default function AdminPage() {
     );
   }
 
-  const tabs: { id: TabType; label: string; icon: string }[] = [
-    { id: 'stats', label: 'الإحصائيات', icon: '📊' },
-    { id: 'files', label: 'بنك الأسئلة', icon: '📁' },
-    { id: 'users', label: 'المستخدمين', icon: '👥' },
-    { id: 'reports', label: 'البلاغات', icon: '🚩' },
-    { id: 'notifications', label: 'الإشعارات', icon: '🔔' },
-    { id: 'tools', label: 'أدوات النظام', icon: '🔧' },
+  const tabs: { id: TabType; label: string; icon: LucideIcon }[] = [
+    { id: 'stats', label: 'الإحصائيات', icon: BarChart3 },
+    { id: 'files', label: 'بنك الأسئلة', icon: FolderOpen },
+    { id: 'users', label: 'المستخدمين', icon: Users },
+    { id: 'reports', label: 'البلاغات', icon: Flag },
+    { id: 'notifications', label: 'الإشعارات', icon: Bell },
+    { id: 'tools', label: 'أدوات النظام', icon: Wrench },
   ];
 
   return (
     <div className="min-h-screen bg-[#070707] text-white selection:bg-cyan-500/30 flex flex-col">
       {AlertComponent}
+      {ConfirmComponent}
       <ConfirmModal
         isOpen={confirmModal.open}
         message={`هل أنت متأكد من تصفير عداد أسئلة\n${confirmModal.email}؟`}
@@ -379,12 +389,12 @@ export default function AdminPage() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`shrink-0 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm transition font-bold flex items-center gap-1.5 relative ${
-                activeTab === tab.id 
-                  ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-600/30' 
+                activeTab === tab.id
+                  ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-600/30'
                   : 'bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10'
               }`}
             >
-              <span>{tab.icon}</span>
+              <tab.icon className="w-4 h-4" />
               <span>{tab.label}</span>
               {tab.id === 'reports' && reportsList.length > 0 && (
                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center rounded-full shadow-lg shadow-red-500/50 animate-pulse">
@@ -695,7 +705,7 @@ export default function AdminPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="🔍 بحث بالإيميل..."
-                  className="w-full bg-white/5 border border-white/15 rounded-2xl px-4 py-3 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition"
+                  className="w-full bg-white/5 border border-white/15 rounded-2xl px-4 py-3 text-white text-sm placeholder-gray-400 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition"
                   dir="ltr"
                 />
                 {searchQuery && (
@@ -713,9 +723,8 @@ export default function AdminPage() {
             </div>
 
             {isLoadingUsers ? (
-              <div className="text-center py-10">
-                <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }} className="text-4xl mb-3 inline-block">⏳</motion.div>
-                <p className="text-gray-400 text-sm">جاري تحميل المستخدمين...</p>
+              <div className="space-y-3">
+                {Array.from({ length: 6 }).map((_, i) => <UserRowSkeleton key={i} />)}
               </div>
             ) : (
               <>
@@ -834,9 +843,8 @@ export default function AdminPage() {
             </div>
 
             {loadingReports ? (
-              <div className="text-center py-12">
-                <div className="text-4xl mb-3 animate-pulse">🔍</div>
-                <p className="text-gray-400 text-sm">جاري تحميل البلاغات...</p>
+              <div className="space-y-3">
+                {Array.from({ length: 4 }).map((_, i) => <ReportCardSkeleton key={i} />)}
               </div>
             ) : reportsList.length === 0 ? (
               <div className="text-center py-12">
@@ -926,7 +934,7 @@ export default function AdminPage() {
                   value={notifyTitle}
                   onChange={e => setNotifyTitle(e.target.value)}
                   placeholder="مثال: أسئلة جديدة متاحة!"
-                  className="w-full bg-black/50 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-cyan-500 transition"
+                  className="w-full bg-black/50 border border-white/10 rounded-xl p-3 text-white placeholder-gray-400 outline-none focus:border-cyan-500 transition"
                 />
               </div>
 
@@ -937,7 +945,7 @@ export default function AdminPage() {
                   onChange={e => setNotifyBody(e.target.value)}
                   placeholder="اكتب رسالتك هنا..."
                   rows={4}
-                  className="w-full bg-black/50 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-cyan-500 transition resize-none"
+                  className="w-full bg-black/50 border border-white/10 rounded-xl p-3 text-white placeholder-gray-400 outline-none focus:border-cyan-500 transition resize-none"
                 />
               </div>
 

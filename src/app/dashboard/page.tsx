@@ -9,6 +9,8 @@ import { getUnresolvedReports, updateUserMajor } from '@/lib/firestore';
 import { isAdminUser } from '@/lib/admin';
 import { useAlert, usePrompt } from '@/components/Modals';
 import NotificationBell from '@/components/NotificationBell';
+import { Bell, BarChart3, RefreshCw, Settings } from 'lucide-react';
+import { SectionCardSkeleton } from '@/components/Skeleton';
 
 const sections = [
   {
@@ -180,8 +182,10 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-cyan-400 text-xl">⏳ جاري التحميل...</div>
+      <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center px-4">
+        <div className="w-full max-w-lg space-y-3">
+          {Array.from({ length: 4 }).map((_, i) => <SectionCardSkeleton key={i} />)}
+        </div>
       </div>
     );
   }
@@ -346,19 +350,19 @@ export default function DashboardPage() {
                     const token = await requestNotificationPermission();
                     if (token && user) {
                       await addFcmToken(user.uid, token);
-                      alert('تم تفعيل الإشعارات بنجاح! 🔔');
+                      await showAlert('تم تفعيل الإشعارات بنجاح!', '🔔', 'success');
                       setShowNotificationBtn(false);
                     } else {
-                      alert('يرجى السماح للإشعارات من إعدادات المتصفح.');
+                      await showAlert('يرجى السماح للإشعارات من إعدادات المتصفح.', '🔕', 'warning');
                     }
                   } catch (e) {
-                    alert('حدث خطأ أثناء التفعيل.');
+                    await showAlert('حدث خطأ أثناء التفعيل.', '❌', 'error');
                     console.error(e);
                   }
                 }}
                 className="w-full glass glass-hover rounded-xl py-3 text-cyan-400 hover:text-cyan-300 text-sm font-semibold transition flex items-center justify-center gap-2 mt-4 border border-cyan-500/30"
               >
-                <span>🔔</span> تفعيل الإشعارات والتنبيهات
+                <Bell className="w-4 h-4" /> تفعيل الإشعارات والتنبيهات
               </button>
             )}
 
@@ -366,7 +370,7 @@ export default function DashboardPage() {
               onClick={() => router.push('/stats')}
               className="w-full glass glass-hover rounded-xl py-3 text-blue-400 hover:text-blue-300 text-sm font-semibold transition flex items-center justify-center gap-2"
             >
-              📊 الإحصائيات والأداء
+              <BarChart3 className="w-4 h-4" /> الإحصائيات والأداء
             </button>
             <div className="grid grid-cols-2 gap-3">
               <button
@@ -386,9 +390,9 @@ export default function DashboardPage() {
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => setIsSelectingMajor(true)}
-                className="w-full bg-cyan-500/10 border border-cyan-500/20 rounded-xl py-3 text-cyan-400 hover:bg-cyan-500/20 text-sm font-semibold transition"
+                className="w-full bg-cyan-500/10 border border-cyan-500/20 rounded-xl py-3 text-cyan-400 hover:bg-cyan-500/20 text-sm font-semibold transition flex items-center justify-center gap-2"
               >
-                تغيير التخصص 🔄
+                تغيير التخصص <RefreshCw className="w-4 h-4" />
               </button>
               <button
                 onClick={logout}
@@ -405,7 +409,7 @@ export default function DashboardPage() {
                   onClick={() => router.push('/admin')}
                   className="relative text-xs text-gray-500 hover:text-cyan-400 transition flex items-center gap-1.5 py-1 px-2.5 rounded-lg hover:bg-white/5"
                 >
-                  <span>⚙️</span>
+                  <Settings className="w-3.5 h-3.5" />
                   <span>لوحة التحكم</span>
                   {reportsCount > 0 && (
                     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold min-w-[16px] h-[16px] flex items-center justify-center rounded-full shadow-lg shadow-red-500/50 animate-pulse">

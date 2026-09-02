@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
 import { getAllUserSessions, QuizSession } from '@/lib/firestore';
+import { useAlert } from '@/components/Modals';
 
 const subjects = [
   { name: 'Internal Medicine', icon: '🩺' },
@@ -62,6 +63,7 @@ export default function MedicalPage() {
   const { user, profile, loading } = useAuth();
   const router = useRouter();
   const [sessions, setSessions] = useState<QuizSession[]>([]);
+  const { showAlert, AlertComponent } = useAlert();
 
   useEffect(() => {
     if (!loading && !user) router.replace('/login');
@@ -75,7 +77,7 @@ export default function MedicalPage() {
 
   const startExam = (subject?: string, mode: string = 'exam') => {
     if (isLimited) {
-      alert('لقد وصلت للحد الأقصى للأسئلة المجانية.');
+      showAlert('لقد وصلت للحد الأقصى للأسئلة المجانية.', '🔒', 'warning');
       return;
     }
     const params = new URLSearchParams({ section: 'medical', track: selectedTrack || '' });
@@ -124,6 +126,7 @@ export default function MedicalPage() {
 
   return (
     <div className="min-h-screen pt-24 pb-10 px-4 sm:px-6 max-w-7xl mx-auto">
+      {AlertComponent}
       <div className="mb-6 flex justify-between items-center bg-white/5 p-4 rounded-2xl border border-white/10">
         <h2 className="text-xl font-bold text-white flex items-center gap-2">
           {selectedTrack === 'undergrad' ? '🎓 مسار الطلبة' : '👨‍⚕️ مسار الخريجين'}

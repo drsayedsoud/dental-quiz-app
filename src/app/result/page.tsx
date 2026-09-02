@@ -3,10 +3,12 @@
 import { Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { useAlert } from '@/components/Modals';
 
 function ResultContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { showAlert, AlertComponent } = useAlert();
 
   const score = parseInt(searchParams.get('score') || '0');
   const attempted = parseInt(searchParams.get('attempted') || '0');
@@ -23,6 +25,7 @@ function ResultContent() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-4">
+      {AlertComponent}
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -100,7 +103,7 @@ function ResultContent() {
                   navigator.share(shareData).catch(console.error);
                 } else {
                   navigator.clipboard.writeText(shareData.text);
-                  alert('تم نسخ النتيجة للحافظة!');
+                  showAlert('تم نسخ النتيجة للحافظة!', '📋', 'success');
                 }
               }}
               className="w-full bg-green-500/10 border border-green-500/20 text-green-400 font-bold py-3.5 rounded-xl hover:bg-green-500/20 transition flex justify-center items-center gap-2"

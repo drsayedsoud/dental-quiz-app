@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { motion } from 'framer-motion';
+import { useAlert } from '@/components/Modals';
 
 function JoinChallengeContent() {
   const router = useRouter();
@@ -13,6 +14,7 @@ function JoinChallengeContent() {
   const [code, setCode] = useState(searchParams.get('code') || '');
   const [guestName, setGuestName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { showAlert, AlertComponent } = useAlert();
 
   // If user is already logged in and has a code, skip this page
   useEffect(() => {
@@ -24,15 +26,15 @@ function JoinChallengeContent() {
   const handleJoin = (e: React.FormEvent) => {
     e.preventDefault();
     if (code.length !== 4) {
-      alert('كود الغرفة يجب أن يكون 4 أرقام');
+      showAlert('كود الغرفة يجب أن يكون 4 أرقام', '⚠️', 'warning');
       return;
     }
-    
+
     setIsSubmitting(true);
 
     if (!user) {
       if (!guestName.trim()) {
-        alert('الرجاء إدخال اسمك للانضمام');
+        showAlert('الرجاء إدخال اسمك للانضمام', '⚠️', 'warning');
         setIsSubmitting(false);
         return;
       }
@@ -48,7 +50,8 @@ function JoinChallengeContent() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4" dir="rtl">
-      <motion.div 
+      {AlertComponent}
+      <motion.div
         initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
         className="bg-white/5 border border-white/10 p-8 rounded-3xl w-full max-w-sm backdrop-blur-md"
       >
@@ -67,7 +70,7 @@ function JoinChallengeContent() {
               value={code}
               onChange={(e) => setCode(e.target.value.replace(/[^0-9]/g, ''))}
               placeholder="مثال: 5932"
-              className="w-full bg-black/50 border border-white/10 rounded-xl p-3 text-center text-2xl font-bold text-white tracking-widest focus:border-orange-500 focus:outline-none transition"
+              className="w-full bg-black/50 border border-white/10 rounded-xl p-3 text-center text-2xl font-bold text-white placeholder-gray-400 tracking-widest focus:border-orange-500 focus:outline-none transition"
               required
             />
           </div>
@@ -80,7 +83,7 @@ function JoinChallengeContent() {
                 value={guestName}
                 onChange={(e) => setGuestName(e.target.value)}
                 placeholder="اكتب اسمك الأول..."
-                className="w-full bg-black/50 border border-white/10 rounded-xl p-3 text-white focus:border-orange-500 focus:outline-none transition"
+                className="w-full bg-black/50 border border-white/10 rounded-xl p-3 text-white placeholder-gray-400 focus:border-orange-500 focus:outline-none transition"
                 required
               />
             </div>

@@ -6,6 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import { db } from '@/lib/firebase';
 import { collection, query, where, orderBy, limit, onSnapshot, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Bell } from 'lucide-react';
 
 export default function NotificationBell() {
   const { user, profile } = useAuth();
@@ -128,7 +129,7 @@ export default function NotificationBell() {
           animate={unreadCount > 0 ? { rotate: [0, -15, 15, -15, 15, 0] } : {}}
           transition={{ duration: 0.5, repeat: unreadCount > 0 ? Infinity : 0, repeatDelay: 3 }}
         >
-          <span className="text-lg">🔔</span>
+          <Bell className="w-5 h-5 text-gray-200" />
         </motion.div>
         
         <AnimatePresence>
@@ -169,7 +170,7 @@ export default function NotificationBell() {
               {/* Header */}
               <div className="p-4 border-b border-cyan-500/20 bg-white/5 flex justify-between items-center">
                 <div className="flex items-center gap-2">
-                  <span className="text-2xl">🔔</span>
+                  <Bell className="w-5 h-5 text-cyan-400" />
                   <h3 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400 m-0">الإشعارات</h3>
                   {unreadCount > 0 && (
                     <span className="text-xs bg-red-500 text-white px-2 py-1 rounded-full shadow-lg shadow-red-500/30 mr-2 animate-pulse">{unreadCount} جديدة</span>

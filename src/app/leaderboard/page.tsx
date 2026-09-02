@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getGlobalLeaderboard, UserProfile } from '@/lib/firestore';
 import { useAuth } from '@/context/AuthContext';
+import { LeaderboardRowSkeleton } from '@/components/Skeleton';
 
 export default function LeaderboardPage() {
   const router = useRouter();
@@ -39,8 +40,8 @@ export default function LeaderboardPage() {
         </div>
 
         {loading ? (
-          <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400"></div>
+          <div className="space-y-3">
+            {Array.from({ length: 6 }).map((_, i) => <LeaderboardRowSkeleton key={i} />)}
           </div>
         ) : leaders.length === 0 ? (
           <div className="text-center py-20 text-gray-500">لا يوجد بيانات حتى الآن. كن أنت الأول!</div>
