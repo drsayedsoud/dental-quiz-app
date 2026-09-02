@@ -12,7 +12,14 @@ export default function NotificationBell() {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
+  const [localLastRead, setLocalLastRead] = useState<number | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (profile && localLastRead === null) {
+      setLocalLastRead(profile.lastReadNotifications ? profile.lastReadNotifications.toMillis() : 0);
+    }
+  }, [profile, localLastRead]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -25,7 +32,7 @@ export default function NotificationBell() {
   }, []);
 
   useEffect(() => {
-    if (!user || !profile) return;
+    if (!user || !profile || localLastRead === null) return;
 
     const q = query(
       collection(db, 'notifications'),
@@ -38,19 +45,18 @@ export default function NotificationBell() {
       const notifs: any[] = [];
       let newUnreadCount = 0;
       
-      const lastReadTime = profile.lastReadNotifications ? profile.lastReadNotifications.toMillis() : 0;
-
       snapshot.forEach((doc) => {
         const data = doc.data();
         const notifTime = data.createdAt ? data.createdAt.toMillis() : Date.now();
         notifs.push({ id: doc.id, ...data, time: notifTime });
         
-        if (notifTime > lastReadTime) {
+        if (notifTime > localLastRead) {
           newUnreadCount++;
         }
       });
 
-      setNotifications(notifs);
+      const displayLimit = Math.max(4, newUnreadCount);
+      setNotifications(notifs.slice(0, displayLimit));
       setUnreadCount(newUnreadCount);
       
       // Update the App Icon Badge (PWA)
@@ -66,13 +72,14 @@ export default function NotificationBell() {
     });
 
     return () => unsubscribe();
-  }, [user, profile]);
+  }, [user, profile, localLastRead]);
 
   const handleOpen = async () => {
     setIsOpen(!isOpen);
     
     if (!isOpen && unreadCount > 0 && user?.uid) {
       setUnreadCount(0);
+      setLocalLastRead(Date.now());
       
       // Clear App Icon Badge
       if (typeof navigator !== 'undefined' && 'clearAppBadge' in navigator) {
